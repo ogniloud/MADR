@@ -10,5 +10,6 @@ type LeitnerId int
 // Also, for each flashcard defined CoolDown. A flashcard can't be returned
 // if CoolDown is not passed.
 type Leitner interface {
-	Deck
+	Decks
+	GetRandom() (*Flashcard, error)
 }
