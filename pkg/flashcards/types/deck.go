@@ -9,6 +9,9 @@ type Box interface {
 	Get(CardId) (*Flashcard, error)
 	Delete(CardId) error
 	Add(*Flashcard) error
+
+	// Update - looking up by CardId.
+	// Level must be the same.
 	Update(*Flashcard) error
 
 	// GetRandom returns a random AVAILABLE card from the box
@@ -17,6 +20,11 @@ type Box interface {
 }
 
 type Boxes interface {
+
+	// Insert inserts a flashcard to the box with
+	// corresponding Level.
+	Insert(*Flashcard) error
+
 	// Box returns a box by id. Returns an error if not exists
 	Box(BoxId) (Box, error)
 }

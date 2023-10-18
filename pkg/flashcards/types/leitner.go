@@ -11,5 +11,5 @@ type LeitnerId int
 // if CoolDown is not passed.
 type Leitner interface {
 	Decks
-	GetRandom() (*Flashcard, error)
+	GetRandom() (*Flashcard, DeckId, error)
 }
