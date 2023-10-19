@@ -16,14 +16,12 @@ var (
 
 type Box struct {
 	l  ftypes.Level
-	cd map[ftypes.CardId]*ftypes.Flashcard
 	av map[ftypes.CardId]*ftypes.Flashcard
 }
 
 func NewBox(l ftypes.Level) Box {
 	return Box{
 		l:  l,
-		cd: map[ftypes.CardId]*ftypes.Flashcard{},
 		av: map[ftypes.CardId]*ftypes.Flashcard{},
 	}
 }
@@ -38,11 +36,6 @@ func (b Box) Get(id ftypes.CardId) (*ftypes.Flashcard, error) {
 		return fc, nil
 	}
 
-	fc, ok = b.cd[id]
-	if ok {
-		return fc, nil
-	}
-
 	return nil, ErrCardNotFound
 }
 
@@ -53,12 +46,6 @@ func (b Box) Delete(id ftypes.CardId) error {
 		return nil
 	}
 
-	_, ok = b.cd[id]
-	if ok {
-		delete(b.cd, id)
-		return nil
-	}
-
 	return ErrCardNotFound
 }
 
@@ -66,11 +53,6 @@ func (b Box) Add(flashcard *ftypes.Flashcard) error {
 	id := flashcard.Id
 
 	_, ok := b.av[id]
-	if ok {
-		return ErrCardAlreadyExists
-	}
-
-	_, ok = b.cd[id]
 	if ok {
 		return ErrCardAlreadyExists
 	}
