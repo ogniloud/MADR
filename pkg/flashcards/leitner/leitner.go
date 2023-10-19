@@ -50,6 +50,7 @@ func (l Leitner) GetRandom() (*ftypes.Flashcard, ftypes.DeckId, error) {
 
 	ln := ftypes.DeckId(len(l.decks))
 	for j := (ri + 1) % ln; j != ri; j = (j + 1) % ln {
+		deck, _ = l.Deck(j)
 		fc, err = deck.GetRandom(l.p)
 		if err == nil {
 			return fc, ri, nil
