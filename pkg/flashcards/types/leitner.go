@@ -2,6 +2,14 @@ package types
 
 type LeitnerId int
 
+type Rate int
+
+const (
+	Bad = Rate(iota)
+	Satisfactry
+	Good
+)
+
 // Leitner is an abstract data structure consisting of
 // Boxes. Each box has a temperature Level. It means that
 // the hotter the box the higher chance to be chosen by GetRandom.
@@ -12,4 +20,5 @@ type LeitnerId int
 type Leitner interface {
 	Decks
 	GetRandom() (*Flashcard, DeckId, error)
+	Rate(*Flashcard, DeckId, Rate) error
 }

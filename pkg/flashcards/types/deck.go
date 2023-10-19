@@ -1,7 +1,5 @@
 package types
 
-type BoxId Level
-
 type Box interface {
 	// Level return a level of Box (0-Hot, Max-Cold)
 	Level() Level
@@ -10,10 +8,6 @@ type Box interface {
 	Delete(CardId) error
 	Add(*Flashcard) error
 
-	// Update - looking up by CardId.
-	// Level must be the same.
-	Update(*Flashcard) error
-
 	// GetRandom returns a random AVAILABLE card from the box
 	// Randomization depends on implementation.
 	GetRandom() (*Flashcard, error)
@@ -21,12 +15,8 @@ type Box interface {
 
 type Boxes interface {
 
-	// Insert inserts a flashcard to the box with
-	// corresponding Level.
-	Insert(*Flashcard) error
-
 	// Box returns a box by id. Returns an error if not exists
-	Box(BoxId) (Box, error)
+	Box(Level) (Box, error)
 }
 
 type DeckId int
@@ -34,9 +24,15 @@ type DeckId int
 type Deck interface {
 	Boxes
 
+	// Insert inserts a flashcard to the box with
+	// corresponding Level.
+	Insert(*Flashcard) error
+
+	Delete(CardId) error
+
 	// GetRandom returns a random available flashcard from the random box.
 	// The random choose of a box depends on the level of the box.
-	GetRandom() (*Flashcard, error)
+	GetRandom([]float32) (*Flashcard, error)
 }
 
 type Decks interface {

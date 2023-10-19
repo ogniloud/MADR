@@ -28,9 +28,17 @@ type Backside interface {
 }
 
 type Flashcard struct {
-	id CardId
-	w  Word
-	b  Backside
-	l  Level
-	cd CoolDown
+	Id CardId
+	W  Word
+	B  Backside
+	L  Level
+	Cd CoolDown
+}
+
+func (fc *Flashcard) IsAvailable() bool {
+	return fc.Cd.Passed()
+}
+
+func (fc *Flashcard) CoolDown(f func(Level) CoolDown) {
+	fc.Cd = f(fc.L)
 }
