@@ -25,7 +25,7 @@ func cooldownTest(l types.Level) types.CoolDown {
 	panic("invalid level")
 }
 
-func TestCoolDownPassed(t *testing.T) {
+func loadCards() ([]*types.Flashcard, types.Leitner, error) {
 	cards := []*types.Flashcard{
 		{
 			Id: 0,
@@ -57,33 +57,41 @@ func TestCoolDownPassed(t *testing.T) {
 	b1 := types.Box(NewBox(0))
 	b2 := types.Box(NewBox(1))
 	b3 := types.Box(NewBox(2))
-
+	b11 := types.Box(NewBox(0))
+	b22 := types.Box(NewBox(1))
+	b33 := types.Box(NewBox(2))
 	d1 := types.Deck(Deck{
 		maxLevel: 3,
 		boxes:    []types.Box{b1, b2, b3},
 	})
 	d2 := types.Deck(Deck{
 		maxLevel: 3,
-		boxes:    []types.Box{b1, b2, b3},
+		boxes:    []types.Box{b11, b22, b33},
 	})
 
 	if err := d1.Insert(cards[0]); err != nil {
-		t.Errorf("unexpected error %v", err)
-		return
+		return nil, nil, err
 	}
 	if err := d1.Insert(cards[1]); err != nil {
-		t.Errorf("unexpected error %v", err)
-		return
+		return nil, nil, err
 	}
 	if err := d2.Insert(cards[2]); err != nil {
-		t.Errorf("unexpected error %v", err)
-		return
+		return nil, nil, err
 	}
 	if err := d1.Insert(cards[3]); err != nil {
+		return nil, nil, err
+	}
+	lt := NewLeitner(3, []types.Deck{d1, d2}, cooldownTest)
+
+	return cards, lt, nil
+}
+
+func TestCoolDownPassed(t *testing.T) {
+	cards, lt, err := loadCards()
+	if err != nil {
 		t.Errorf("unexpected error %v", err)
 		return
 	}
-	lt := NewLeitner(3, []types.Deck{d1, d2}, cooldownTest)
 
 	if _, _, err := lt.GetRandom(); err != nil {
 		t.Errorf("unexpected error %v", err)
@@ -111,4 +119,76 @@ func TestCoolDownPassed(t *testing.T) {
 		t.Errorf("wanted error but got nil, fc: %#+v", *fc)
 		return
 	}
+}
+
+func TestLeitner_Rate(t *testing.T) {
+	cards, l, err := loadCards()
+	lt := l.(Leitner)
+
+	if err != nil {
+		t.Errorf("unexpected error %v", err)
+		return
+	}
+
+	// Deck0: 0:Zero, 1:One, 3:Three
+	// Deck1: 2:Two
+
+	t.Run("rating #1", func(t *testing.T) {
+		err = lt.Rate(cards[3], 0, types.Bad)
+		if err != nil {
+			t.Errorf("unexpected error %v", err)
+			return
+		}
+
+		if cards[3].L != 1 {
+			t.Errorf("expected level 1, got %v", cards[3].L)
+			return
+		}
+
+		if cards[3].Cd != CoolDownTest(2) {
+			t.Errorf("expected cd 2, got %v", cards[3].Cd)
+			return
+		}
+
+		if _, err := lt.decks[0].(Deck).boxes[1].Get(3); err != nil {
+			t.Errorf("Flashcard must be in box 1, but got error: %v", err)
+			return
+		}
+	})
+
+	t.Run("rating all", func(t *testing.T) {
+		err = lt.Rate(cards[2], 1, types.Bad)
+		if err != nil {
+			t.Errorf("unexpected error %v", err)
+			return
+		}
+
+		if cards[2].L != 0 {
+			t.Errorf("expected level 1, got %v", cards[3].L)
+			return
+		}
+
+		err = lt.Rate(cards[1], 0, types.Satisfactory)
+		if err != nil {
+			t.Errorf("unexpected error %v", err)
+			return
+		}
+
+		if cards[1].L != 0 {
+			t.Errorf("expected level 1, got %v", cards[3].L)
+			return
+		}
+
+		err = lt.Rate(cards[0], 0, types.Good)
+		if err != nil {
+			t.Errorf("unexpected error %v", err)
+			return
+		}
+
+		if cards[0].L != 1 {
+			t.Errorf("expected level 1, got %v", cards[3].L)
+			return
+		}
+	})
+
 }
