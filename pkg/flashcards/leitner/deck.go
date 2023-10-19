@@ -2,7 +2,6 @@ package leitner
 
 import (
 	"fmt"
-	ftypes "github.com/ogniloud/madr/pkg/flashcards/types"
 	"math/rand"
 )
 
@@ -14,23 +13,24 @@ var (
 	ErrDeckBadIndex      = fmt.Errorf("deck index is bad")
 )
 
+type BoxId = Level
 type Box struct {
-	l  ftypes.Level
-	av map[ftypes.CardId]*ftypes.Flashcard
+	l  Level
+	av map[CardId]*Flashcard
 }
 
-func NewBox(l ftypes.Level) Box {
+func NewBox(l Level) Box {
 	return Box{
 		l:  l,
-		av: map[ftypes.CardId]*ftypes.Flashcard{},
+		av: map[CardId]*Flashcard{},
 	}
 }
 
-func (b Box) Level() ftypes.Level {
+func (b Box) Level() Level {
 	return b.l
 }
 
-func (b Box) Get(id ftypes.CardId) (*ftypes.Flashcard, error) {
+func (b Box) Get(id CardId) (*Flashcard, error) {
 	fc, ok := b.av[id]
 	if ok {
 		return fc, nil
@@ -39,7 +39,7 @@ func (b Box) Get(id ftypes.CardId) (*ftypes.Flashcard, error) {
 	return nil, ErrCardNotFound
 }
 
-func (b Box) Delete(id ftypes.CardId) error {
+func (b Box) Delete(id CardId) error {
 	_, ok := b.av[id]
 	if ok {
 		delete(b.av, id)
@@ -49,7 +49,7 @@ func (b Box) Delete(id ftypes.CardId) error {
 	return ErrCardNotFound
 }
 
-func (b Box) Add(flashcard *ftypes.Flashcard) error {
+func (b Box) Add(flashcard *Flashcard) error {
 	id := flashcard.Id
 
 	_, ok := b.av[id]
@@ -61,7 +61,9 @@ func (b Box) Add(flashcard *ftypes.Flashcard) error {
 	return nil
 }
 
-func (b Box) GetRandom() (*ftypes.Flashcard, error) {
+// GetRandom returns a random AVAILABLE card from the box
+// Randomization depends on implementation.
+func (b Box) GetRandom() (*Flashcard, error) {
 	for _, v := range b.av {
 		if v.IsAvailable() {
 			return v, nil
@@ -70,12 +72,29 @@ func (b Box) GetRandom() (*ftypes.Flashcard, error) {
 	return nil, ErrCardsUnavailable
 }
 
+type DeckId int
 type Deck struct {
-	maxLevel ftypes.Level
-	boxes    []ftypes.Box
+	maxLevel Level
+	boxes    []Box
 }
 
-func (d Deck) Insert(flashcard *ftypes.Flashcard) error {
+func NewDeck(l Level) Deck {
+	d := Deck{
+		maxLevel: l,
+		boxes:    make([]Box, l),
+	}
+
+	for i := 0; i < int(l); i++ {
+		d.boxes[i].l = Level(i)
+		d.boxes[i].av = map[CardId]*Flashcard{}
+	}
+
+	return d
+}
+
+// Insert inserts a flashcard to the box with
+// corresponding Level.
+func (d Deck) Insert(flashcard *Flashcard) error {
 	l := flashcard.L
 
 	b, err := d.Box(l)
@@ -87,15 +106,16 @@ func (d Deck) Insert(flashcard *ftypes.Flashcard) error {
 	return err
 }
 
-func (d Deck) Box(id ftypes.Level) (ftypes.Box, error) {
+// Box returns a box by id. Returns an error if not exists
+func (d Deck) Box(id BoxId) (Box, error) {
 	if id < 0 || int(id) >= len(d.boxes) {
-		return nil, ErrBoxBadIndex
+		return Box{}, ErrBoxBadIndex
 	}
 
 	return d.boxes[id], nil
 }
 
-func (d Deck) Delete(id ftypes.CardId) error {
+func (d Deck) Delete(id CardId) error {
 	for _, b := range d.boxes {
 		if err := b.Delete(id); err == nil {
 			return nil
@@ -104,9 +124,11 @@ func (d Deck) Delete(id ftypes.CardId) error {
 	return ErrCardNotFound
 }
 
-func (d Deck) GetRandom(p []float32) (*ftypes.Flashcard, error) {
+// GetRandom returns a random available flashcard from the random box.
+// The random choose of a box depends on the level of the box.
+func (d Deck) GetRandom(p []float32) (*Flashcard, error) {
 	rd := rand.Float32()
-	i := ftypes.Level(0)
+	i := Level(0)
 	for i != d.maxLevel-1 && rd > p[i+1] {
 		i++
 	}

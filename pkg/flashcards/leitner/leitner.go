@@ -1,20 +1,49 @@
 package leitner
 
 import (
-	ftypes "github.com/ogniloud/madr/pkg/flashcards/types"
 	"math"
 	"math/rand"
 )
 
+type Id int
+
+type Rate int
+
+const (
+	Bad = Rate(iota)
+	Satisfactory
+	Good
+)
+
+// Leitner is an abstract data structure consisting of
+// Boxes. Each box has a temperature Level. It means that
+// the hotter the box the higher chance to be chosen by GetRandom.
+// Leitner should consist of deck (deck of decks).
+//
+// Also, for each flashcard defined CoolDown. A flashcard can't be returned
+// if CoolDown is not passed.
 type Leitner struct {
-	maxLevel ftypes.Level // 0 to maxLevel-1
-	decks    []ftypes.Deck
-	cooldown func(ftypes.Level) ftypes.CoolDown
+	maxLevel Level // 0 to maxLevel-1
+	decks    []Deck
+	cooldown func(Level) CoolDown
 	p        []float32
 }
 
-func (l Leitner) Rate(fc *ftypes.Flashcard, id ftypes.DeckId, rate ftypes.Rate) error {
-	if rate == ftypes.Satisfactory {
+func NewLeitner(
+	maxLevel Level,
+	decks []Deck,
+	cooldown func(Level) CoolDown,
+) Leitner {
+	p := countDistribution(0.2, maxLevel)
+	l := Leitner{p: p, maxLevel: maxLevel, decks: decks, cooldown: cooldown}
+
+	return l
+}
+
+// Rate takes a mark from the user and inserts the card
+// in a corresponding to its level box
+func (l Leitner) Rate(fc *Flashcard, id DeckId, rate Rate) error {
+	if rate == Satisfactory {
 		fc.CoolDown(l.cooldown)
 	}
 
@@ -28,9 +57,9 @@ func (l Leitner) Rate(fc *ftypes.Flashcard, id ftypes.DeckId, rate ftypes.Rate) 
 		return err
 	}
 
-	if rate == ftypes.Good && fc.L < l.maxLevel-1 {
+	if rate == Good && fc.L < l.maxLevel-1 {
 		fc.L++
-	} else if rate == ftypes.Bad && fc.L > 0 {
+	} else if rate == Bad && fc.L > 0 {
 		fc.L--
 	}
 
@@ -39,8 +68,9 @@ func (l Leitner) Rate(fc *ftypes.Flashcard, id ftypes.DeckId, rate ftypes.Rate) 
 	return d.Insert(fc)
 }
 
-func (l Leitner) GetRandom() (*ftypes.Flashcard, ftypes.DeckId, error) {
-	ri := ftypes.DeckId(rand.Intn(len(l.decks)))
+// GetRandom means take a random card from a random deck
+func (l Leitner) GetRandom() (*Flashcard, DeckId, error) {
+	ri := DeckId(rand.Intn(len(l.decks)))
 	deck, _ := l.Deck(ri)
 
 	fc, err := deck.GetRandom(l.p)
@@ -48,7 +78,7 @@ func (l Leitner) GetRandom() (*ftypes.Flashcard, ftypes.DeckId, error) {
 		return fc, ri, nil
 	}
 
-	ln := ftypes.DeckId(len(l.decks))
+	ln := DeckId(len(l.decks))
 	for j := (ri + 1) % ln; j != ri; j = (j + 1) % ln {
 		deck, _ = l.Deck(j)
 		fc, err = deck.GetRandom(l.p)
@@ -60,26 +90,15 @@ func (l Leitner) GetRandom() (*ftypes.Flashcard, ftypes.DeckId, error) {
 	return nil, 0, ErrCardsUnavailable
 }
 
-func (l Leitner) Deck(id ftypes.DeckId) (ftypes.Deck, error) {
+func (l Leitner) Deck(id DeckId) (Deck, error) {
 	if id < 0 || int(id) >= len(l.decks) {
-		return nil, ErrDeckBadIndex
+		return Deck{}, ErrDeckBadIndex
 	}
 
 	return l.decks[id], nil
 }
 
-func NewLeitner(
-	maxLevel ftypes.Level,
-	decks []ftypes.Deck,
-	cooldown func(ftypes.Level) ftypes.CoolDown,
-) Leitner {
-	p := countDistribution(0.2, maxLevel)
-	l := Leitner{p: p, maxLevel: maxLevel, decks: decks, cooldown: cooldown}
-
-	return l
-}
-
-func countDistribution(offset float32, maxLevel ftypes.Level) []float32 {
+func countDistribution(offset float32, maxLevel Level) []float32 {
 	p := make([]float32, maxLevel)
 	rest := 1 - offset
 
