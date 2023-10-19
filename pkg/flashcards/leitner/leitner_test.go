@@ -1,4 +1,4 @@
-package flashcards
+package leitner
 
 import (
 	"github.com/ogniloud/madr/pkg/flashcards/types"
@@ -65,29 +65,46 @@ func TestCoolDownPassed(t *testing.T) {
 
 	if err := d.Insert(cards[0]); err != nil {
 		t.Errorf("unexpected error %v", err)
+		return
 	}
 	if err := d.Insert(cards[1]); err != nil {
 		t.Errorf("unexpected error %v", err)
+		return
 	}
 	if err := d.Insert(cards[2]); err != nil {
 		t.Errorf("unexpected error %v", err)
+		return
 	}
 	if err := d.Insert(cards[3]); err != nil {
 		t.Errorf("unexpected error %v", err)
+		return
 	}
 	lt := NewLeitner(3, []types.Deck{d}, cooldownTest)
 
 	if _, _, err := lt.GetRandom(); err != nil {
 		t.Errorf("unexpected error %v", err)
+		return
 	}
 
-	for _, c := range cards {
+	for _, c := range cards[:3] {
 		c.CoolDown(cooldownTest)
 	}
 
 	fc, _, err := lt.GetRandom()
-	if err == nil {
-		t.Errorf("wanted error but got nil, fc: %#+v", *fc)
+	if err != nil {
+		t.Errorf("unexpected error %v", err)
+		return
 	}
 
+	if fc.Id != 3 {
+		t.Errorf("Bad random: Expected id=3, got id=%v", fc.Id)
+		return
+	}
+	cards[3].CoolDown(cooldownTest)
+
+	fc, _, err = lt.GetRandom()
+	if err == nil {
+		t.Errorf("wanted error but got nil, fc: %#+v", *fc)
+		return
+	}
 }

@@ -1,7 +1,6 @@
-package flashcards
+package leitner
 
 import (
-	"errors"
 	ftypes "github.com/ogniloud/madr/pkg/flashcards/types"
 	"math"
 	"math/rand"
@@ -15,7 +14,7 @@ type Leitner struct {
 }
 
 func (l Leitner) Rate(fc *ftypes.Flashcard, id ftypes.DeckId, rate ftypes.Rate) error {
-	if rate == ftypes.Satisfactry {
+	if rate == ftypes.Satisfactory {
 		fc.CoolDown(l.cooldown)
 	}
 
@@ -57,12 +56,12 @@ func (l Leitner) GetRandom() (*ftypes.Flashcard, ftypes.DeckId, error) {
 		}
 	}
 
-	return nil, 0, errors.ErrUnsupported
+	return nil, 0, ErrBoxBadIndex
 }
 
 func (l Leitner) Deck(id ftypes.DeckId) (ftypes.Deck, error) {
 	if id < 0 || int(id) >= len(l.decks) {
-		return nil, errors.New("TODO")
+		return nil, ErrDeckBadIndex
 	}
 
 	return l.decks[id], nil

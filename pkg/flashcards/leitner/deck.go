@@ -1,9 +1,17 @@
-package flashcards
+package leitner
 
 import (
-	"errors"
+	"fmt"
 	ftypes "github.com/ogniloud/madr/pkg/flashcards/types"
 	"math/rand"
+)
+
+var (
+	ErrCardNotFound      = fmt.Errorf("flashcard not found")
+	ErrCardAlreadyExists = fmt.Errorf("flashcard already exists")
+	ErrCardsUnavailable  = fmt.Errorf("all flashcards unavailable")
+	ErrBoxBadIndex       = fmt.Errorf("box index is bad")
+	ErrDeckBadIndex      = fmt.Errorf("deck index is bad")
 )
 
 type Box struct {
@@ -35,7 +43,7 @@ func (b Box) Get(id ftypes.CardId) (*ftypes.Flashcard, error) {
 		return fc, nil
 	}
 
-	return nil, errors.ErrUnsupported
+	return nil, ErrCardNotFound
 }
 
 func (b Box) Delete(id ftypes.CardId) error {
@@ -51,7 +59,7 @@ func (b Box) Delete(id ftypes.CardId) error {
 		return nil
 	}
 
-	return errors.ErrUnsupported
+	return ErrCardNotFound
 }
 
 func (b Box) Add(flashcard *ftypes.Flashcard) error {
@@ -59,12 +67,12 @@ func (b Box) Add(flashcard *ftypes.Flashcard) error {
 
 	_, ok := b.av[id]
 	if ok {
-		return errors.ErrUnsupported
+		return ErrCardAlreadyExists
 	}
 
 	_, ok = b.cd[id]
 	if ok {
-		return errors.ErrUnsupported
+		return ErrCardAlreadyExists
 	}
 
 	b.av[id] = flashcard
@@ -77,7 +85,7 @@ func (b Box) GetRandom() (*ftypes.Flashcard, error) {
 			return v, nil
 		}
 	}
-	return nil, errors.ErrUnsupported
+	return nil, ErrCardsUnavailable
 }
 
 type Deck struct {
@@ -99,7 +107,7 @@ func (d Deck) Insert(flashcard *ftypes.Flashcard) error {
 
 func (d Deck) Box(id ftypes.Level) (ftypes.Box, error) {
 	if id < 0 || int(id) >= len(d.boxes) {
-		return nil, errors.ErrUnsupported
+		return nil, ErrBoxBadIndex
 	}
 
 	return d.boxes[id], nil
@@ -111,7 +119,7 @@ func (d Deck) Delete(id ftypes.CardId) error {
 			return nil
 		}
 	}
-	return errors.ErrUnsupported
+	return ErrCardNotFound
 }
 
 func (d Deck) GetRandom(p []float32) (*ftypes.Flashcard, error) {
@@ -128,11 +136,11 @@ func (d Deck) GetRandom(p []float32) (*ftypes.Flashcard, error) {
 	}
 
 	for j := (i + 1) % d.maxLevel; j != i; j = (j + 1) % d.maxLevel {
-		b, _ = d.Box(i)
+		b, _ = d.Box(j)
 		fc, err = b.GetRandom()
 		if err == nil {
 			return fc, nil
 		}
 	}
-	return nil, errors.ErrUnsupported
+	return nil, ErrCardsUnavailable
 }
