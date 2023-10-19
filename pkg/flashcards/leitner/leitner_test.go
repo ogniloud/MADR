@@ -58,28 +58,32 @@ func TestCoolDownPassed(t *testing.T) {
 	b2 := types.Box(NewBox(1))
 	b3 := types.Box(NewBox(2))
 
-	d := types.Deck(Deck{
+	d1 := types.Deck(Deck{
+		maxLevel: 3,
+		boxes:    []types.Box{b1, b2, b3},
+	})
+	d2 := types.Deck(Deck{
 		maxLevel: 3,
 		boxes:    []types.Box{b1, b2, b3},
 	})
 
-	if err := d.Insert(cards[0]); err != nil {
+	if err := d1.Insert(cards[0]); err != nil {
 		t.Errorf("unexpected error %v", err)
 		return
 	}
-	if err := d.Insert(cards[1]); err != nil {
+	if err := d1.Insert(cards[1]); err != nil {
 		t.Errorf("unexpected error %v", err)
 		return
 	}
-	if err := d.Insert(cards[2]); err != nil {
+	if err := d2.Insert(cards[2]); err != nil {
 		t.Errorf("unexpected error %v", err)
 		return
 	}
-	if err := d.Insert(cards[3]); err != nil {
+	if err := d1.Insert(cards[3]); err != nil {
 		t.Errorf("unexpected error %v", err)
 		return
 	}
-	lt := NewLeitner(3, []types.Deck{d}, cooldownTest)
+	lt := NewLeitner(3, []types.Deck{d1, d2}, cooldownTest)
 
 	if _, _, err := lt.GetRandom(); err != nil {
 		t.Errorf("unexpected error %v", err)
