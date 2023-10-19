@@ -6,7 +6,7 @@ type Rate int
 
 const (
 	Bad = Rate(iota)
-	Satisfactry
+	Satisfactory
 	Good
 )
 
@@ -19,6 +19,11 @@ const (
 // if CoolDown is not passed.
 type Leitner interface {
 	Decks
+
+	// GetRandom means take a random card from a random deck
 	GetRandom() (*Flashcard, DeckId, error)
+
+	// Rate takes a mark from the user and inserts the card
+	// in a corresponding to its level box
 	Rate(*Flashcard, DeckId, Rate) error
 }

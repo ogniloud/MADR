@@ -27,11 +27,21 @@ type Backside interface {
 	Answer() any
 }
 
+// Flashcard is a model of real flashcards where one side is a word
+// and another one is an explanation
 type Flashcard struct {
+	// Id is id of a card that must be unique for each Deck
 	Id CardId
-	W  Word
-	B  Backside
-	L  Level
+
+	// Word is a top side of a card
+	W Word
+
+	B Backside
+
+	// Level is a number of a Box in Leitner's system
+	L Level
+
+	// CoolDown is a timestamp before that the card is unavailable to learn
 	Cd CoolDown
 }
 
