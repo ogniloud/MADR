@@ -7,20 +7,20 @@ import (
 
 type CoolDownTest int
 
-var t = CoolDownTest(0)
+var tm = CoolDownTest(0)
 
 func (cd CoolDownTest) Passed() bool {
-	return t >= cd
+	return tm >= cd
 }
 
 func cooldownTest(l types.Level) types.CoolDown {
 	switch l {
 	case 0:
-		return t + 1
+		return tm + 1
 	case 1:
-		return t + 2
+		return tm + 2
 	case 2:
-		return t + 5
+		return tm + 5
 	}
 	panic("invalid level")
 }
@@ -115,8 +115,12 @@ func TestCoolDownPassed(t *testing.T) {
 	cards[3].CoolDown(cooldownTest)
 
 	fc, _, err = lt.GetRandom()
-	if err == nil {
-		t.Errorf("wanted error but got nil, fc: %#+v", *fc)
+	if err != ErrCardsUnavailable {
+		if err == nil {
+			t.Errorf("wanted error but got nil, fc: %#+v", *fc)
+		} else {
+			t.Errorf("wanted another error, got: %v", err)
+		}
 		return
 	}
 }
@@ -191,4 +195,53 @@ func TestLeitner_Rate(t *testing.T) {
 		}
 	})
 
+}
+
+func TestCoolDown_TimeDynamic(t *testing.T) {
+	tm = CoolDownTest(0)
+
+	cards, lt, err := loadCards()
+	if err != nil {
+		t.Errorf("unexpected error %v", err)
+		return
+	}
+
+	for _, c := range cards {
+		c.CoolDown(cooldownTest)
+	}
+
+	fc, _, err := lt.GetRandom()
+	if err != ErrCardsUnavailable {
+		if err == nil {
+			t.Errorf("wanted error but got nil, fc: %#+v", *fc)
+		} else {
+			t.Errorf("wanted another error, got: %v", err)
+		}
+		return
+	}
+
+	tm++
+	fc, _, err = lt.GetRandom()
+	if err != nil {
+		t.Errorf("unexpected error: %v", err)
+		return
+	}
+	fc.CoolDown(cooldownTest)
+
+	fc, _, err = lt.GetRandom()
+	if err != nil {
+		t.Errorf("unexpected error: %v", err)
+		return
+	}
+	fc.CoolDown(cooldownTest)
+
+	fc, _, err = lt.GetRandom()
+	if err != ErrCardsUnavailable {
+		if err == nil {
+			t.Errorf("wanted error but got nil, fc: %#+v", *fc)
+		} else {
+			t.Errorf("wanted another error, got: %v", err)
+		}
+		return
+	}
 }
