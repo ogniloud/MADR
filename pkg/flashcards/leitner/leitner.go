@@ -57,7 +57,7 @@ func (l Leitner) GetRandom() (*ftypes.Flashcard, ftypes.DeckId, error) {
 		}
 	}
 
-	return nil, 0, ErrBoxBadIndex
+	return nil, 0, ErrCardsUnavailable
 }
 
 func (l Leitner) Deck(id ftypes.DeckId) (ftypes.Deck, error) {
