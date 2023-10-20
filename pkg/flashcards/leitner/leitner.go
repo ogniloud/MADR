@@ -42,12 +42,12 @@ func NewLeitner(
 
 // Rate takes a mark from the user and inserts the card
 // in a corresponding to its level box
-func (l Leitner) Rate(fc *Flashcard, id DeckId, rate Rate) error {
+func (l Leitner) Rate(fc *Flashcard, rate Rate) error {
 	if rate == Satisfactory {
 		fc.CoolDown(l.cooldown)
 	}
 
-	d, err := l.Deck(id)
+	d, err := l.Deck(fc.DeckId)
 	if err != nil {
 		return err
 	}
@@ -69,13 +69,13 @@ func (l Leitner) Rate(fc *Flashcard, id DeckId, rate Rate) error {
 }
 
 // GetRandom means take a random card from a random deck
-func (l Leitner) GetRandom() (*Flashcard, DeckId, error) {
+func (l Leitner) GetRandom() (*Flashcard, error) {
 	ri := DeckId(rand.Intn(len(l.decks)))
 	deck, _ := l.Deck(ri)
 
 	fc, err := deck.GetRandom(l.p)
 	if err == nil {
-		return fc, ri, nil
+		return fc, nil
 	}
 
 	ln := DeckId(len(l.decks))
@@ -83,11 +83,11 @@ func (l Leitner) GetRandom() (*Flashcard, DeckId, error) {
 		deck, _ = l.Deck(j)
 		fc, err = deck.GetRandom(l.p)
 		if err == nil {
-			return fc, ri, nil
+			return fc, nil
 		}
 	}
 
-	return nil, 0, ErrCardsUnavailable
+	return nil, ErrCardsUnavailable
 }
 
 func (l Leitner) Deck(id DeckId) (Deck, error) {
@@ -96,6 +96,10 @@ func (l Leitner) Deck(id DeckId) (Deck, error) {
 	}
 
 	return l.decks[id], nil
+}
+
+func (l Leitner) Probabilities() []float32 {
+	return l.p
 }
 
 func countDistribution(offset float32, maxLevel Level) []float32 {

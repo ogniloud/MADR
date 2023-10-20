@@ -10,6 +10,8 @@ type Flashcard struct {
 	// Id is id of a card that must be unique for each Deck
 	Id CardId
 
+	DeckId DeckId
+
 	// Word is a top side of a card
 	W Word
 

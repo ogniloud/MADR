@@ -1,6 +1,7 @@
-package leitner
+package leitner_test
 
 import (
+	ltn "github.com/ogniloud/madr/pkg/flashcards/leitner"
 	"testing"
 )
 
@@ -12,7 +13,7 @@ func (cd CoolDownTest) Passed() bool {
 	return tm >= cd
 }
 
-func cooldownTest(l Level) CoolDown {
+func cooldownTest(l ltn.Level) ltn.CoolDown {
 	switch l {
 	case 0:
 		return tm + 1
@@ -24,63 +25,55 @@ func cooldownTest(l Level) CoolDown {
 	panic("invalid level")
 }
 
-func loadCards() ([]*Flashcard, Leitner, error) {
-	cards := []*Flashcard{
+func loadCards() ([]*ltn.Flashcard, ltn.Leitner, error) {
+	cards := []*ltn.Flashcard{
 		{
-			Id: 0,
-			W:  "Zero",
-			B:  Translation("Ноль"),
-			L:  0,
-			Cd: CoolDownTest(0),
+			Id:     0,
+			DeckId: 0,
+			W:      "Zero",
+			B:      ltn.Translation("Ноль"),
+			L:      0,
+			Cd:     CoolDownTest(0),
 		}, {
-			Id: 1,
-			W:  "One",
-			B:  Translation("Адин"),
-			L:  0,
-			Cd: CoolDownTest(0),
+			Id:     1,
+			DeckId: 0,
+			W:      "One",
+			B:      ltn.Translation("Адин"),
+			L:      0,
+			Cd:     CoolDownTest(0),
 		}, {
-			Id: 2,
-			W:  "Two",
-			B:  Translation("Два"),
-			L:  1,
-			Cd: CoolDownTest(0),
+			Id:     2,
+			DeckId: 1,
+			W:      "Two",
+			B:      ltn.Translation("Два"),
+			L:      1,
+			Cd:     CoolDownTest(0),
 		}, {
-			Id: 3,
-			W:  "Three",
-			B:  Translation("Три"),
-			L:  2,
-			Cd: CoolDownTest(0),
+			Id:     3,
+			DeckId: 0,
+			W:      "Three",
+			B:      ltn.Translation("Три"),
+			L:      2,
+			Cd:     CoolDownTest(0),
 		},
 	}
 
-	b1 := NewBox(0)
-	b2 := NewBox(1)
-	b3 := NewBox(2)
-	b11 := NewBox(0)
-	b22 := NewBox(1)
-	b33 := NewBox(2)
-	d1 := Deck{
-		maxLevel: 3,
-		boxes:    []Box{b1, b2, b3},
-	}
-	d2 := Deck{
-		maxLevel: 3,
-		boxes:    []Box{b11, b22, b33},
-	}
+	d1 := ltn.NewDeck(3)
+	d2 := ltn.NewDeck(3)
 
 	if err := d1.Insert(cards[0]); err != nil {
-		return nil, Leitner{}, err
+		return nil, ltn.Leitner{}, err
 	}
 	if err := d1.Insert(cards[1]); err != nil {
-		return nil, Leitner{}, err
+		return nil, ltn.Leitner{}, err
 	}
 	if err := d2.Insert(cards[2]); err != nil {
-		return nil, Leitner{}, err
+		return nil, ltn.Leitner{}, err
 	}
 	if err := d1.Insert(cards[3]); err != nil {
-		return nil, Leitner{}, err
+		return nil, ltn.Leitner{}, err
 	}
-	lt := NewLeitner(3, []Deck{d1, d2}, cooldownTest)
+	lt := ltn.NewLeitner(3, []ltn.Deck{d1, d2}, cooldownTest)
 
 	return cards, lt, nil
 }
@@ -92,7 +85,7 @@ func TestCoolDownPassed(t *testing.T) {
 		return
 	}
 
-	if _, _, err := lt.GetRandom(); err != nil {
+	if _, err := lt.GetRandom(); err != nil {
 		t.Errorf("unexpected error %v", err)
 		return
 	}
@@ -101,7 +94,7 @@ func TestCoolDownPassed(t *testing.T) {
 		c.CoolDown(cooldownTest)
 	}
 
-	fc, _, err := lt.GetRandom()
+	fc, err := lt.GetRandom()
 	if err != nil {
 		t.Errorf("unexpected error %v", err)
 		return
@@ -113,8 +106,8 @@ func TestCoolDownPassed(t *testing.T) {
 	}
 	cards[3].CoolDown(cooldownTest)
 
-	fc, _, err = lt.GetRandom()
-	if err != ErrCardsUnavailable {
+	fc, err = lt.GetRandom()
+	if err != ltn.ErrCardsUnavailable {
 		if err == nil {
 			t.Errorf("wanted error but got nil, fc: %#+v", *fc)
 		} else {
@@ -136,7 +129,7 @@ func TestLeitner_Rate(t *testing.T) {
 	// Deck1: 2:Two
 
 	t.Run("rating #1", func(t *testing.T) {
-		err = lt.Rate(cards[3], 0, Bad)
+		err = lt.Rate(cards[3], ltn.Bad)
 		if err != nil {
 			t.Errorf("unexpected error %v", err)
 			return
@@ -152,14 +145,16 @@ func TestLeitner_Rate(t *testing.T) {
 			return
 		}
 
-		if _, err := lt.decks[0].boxes[1].Get(3); err != nil {
+		d, _ := lt.Deck(0)
+		b, _ := d.Box(1)
+		if _, err := b.Get(3); err != nil {
 			t.Errorf("Flashcard must be in box 1, but got error: %v", err)
 			return
 		}
 	})
 
 	t.Run("rating all", func(t *testing.T) {
-		err = lt.Rate(cards[2], 1, Bad)
+		err = lt.Rate(cards[2], ltn.Bad)
 		if err != nil {
 			t.Errorf("unexpected error %v", err)
 			return
@@ -170,7 +165,7 @@ func TestLeitner_Rate(t *testing.T) {
 			return
 		}
 
-		err = lt.Rate(cards[1], 0, Satisfactory)
+		err = lt.Rate(cards[1], ltn.Satisfactory)
 		if err != nil {
 			t.Errorf("unexpected error %v", err)
 			return
@@ -181,7 +176,7 @@ func TestLeitner_Rate(t *testing.T) {
 			return
 		}
 
-		err = lt.Rate(cards[0], 0, Good)
+		err = lt.Rate(cards[0], ltn.Good)
 		if err != nil {
 			t.Errorf("unexpected error %v", err)
 			return
@@ -208,8 +203,8 @@ func TestCoolDown_TimeDynamic(t *testing.T) {
 		c.CoolDown(cooldownTest)
 	}
 
-	fc, _, err := lt.GetRandom()
-	if err != ErrCardsUnavailable {
+	fc, err := lt.GetRandom()
+	if err != ltn.ErrCardsUnavailable {
 		if err == nil {
 			t.Errorf("wanted error but got nil, fc: %#+v", *fc)
 		} else {
@@ -219,22 +214,22 @@ func TestCoolDown_TimeDynamic(t *testing.T) {
 	}
 
 	tm++
-	fc, _, err = lt.GetRandom()
+	fc, err = lt.GetRandom()
 	if err != nil {
 		t.Errorf("unexpected error: %v", err)
 		return
 	}
 	fc.CoolDown(cooldownTest)
 
-	fc, _, err = lt.GetRandom()
+	fc, err = lt.GetRandom()
 	if err != nil {
 		t.Errorf("unexpected error: %v", err)
 		return
 	}
 	fc.CoolDown(cooldownTest)
 
-	fc, _, err = lt.GetRandom()
-	if err != ErrCardsUnavailable {
+	fc, err = lt.GetRandom()
+	if err != ltn.ErrCardsUnavailable {
 		if err == nil {
 			t.Errorf("wanted error but got nil, fc: %#+v", *fc)
 		} else {

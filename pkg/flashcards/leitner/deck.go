@@ -15,23 +15,23 @@ var (
 
 type BoxId = Level
 type Box struct {
-	l  Level
-	av map[CardId]*Flashcard
+	L     Level
+	Cards map[CardId]*Flashcard
 }
 
 func NewBox(l Level) Box {
 	return Box{
-		l:  l,
-		av: map[CardId]*Flashcard{},
+		L:     l,
+		Cards: map[CardId]*Flashcard{},
 	}
 }
 
 func (b Box) Level() Level {
-	return b.l
+	return b.L
 }
 
 func (b Box) Get(id CardId) (*Flashcard, error) {
-	fc, ok := b.av[id]
+	fc, ok := b.Cards[id]
 	if ok {
 		return fc, nil
 	}
@@ -40,9 +40,9 @@ func (b Box) Get(id CardId) (*Flashcard, error) {
 }
 
 func (b Box) Delete(id CardId) error {
-	_, ok := b.av[id]
+	_, ok := b.Cards[id]
 	if ok {
-		delete(b.av, id)
+		delete(b.Cards, id)
 		return nil
 	}
 
@@ -52,19 +52,19 @@ func (b Box) Delete(id CardId) error {
 func (b Box) Add(flashcard *Flashcard) error {
 	id := flashcard.Id
 
-	_, ok := b.av[id]
+	_, ok := b.Cards[id]
 	if ok {
 		return ErrCardAlreadyExists
 	}
 
-	b.av[id] = flashcard
+	b.Cards[id] = flashcard
 	return nil
 }
 
 // GetRandom returns a random AVAILABLE card from the box
 // Randomization depends on implementation.
 func (b Box) GetRandom() (*Flashcard, error) {
-	for _, v := range b.av {
+	for _, v := range b.Cards {
 		if v.IsAvailable() {
 			return v, nil
 		}
@@ -74,19 +74,17 @@ func (b Box) GetRandom() (*Flashcard, error) {
 
 type DeckId int
 type Deck struct {
-	maxLevel Level
-	boxes    []Box
+	MaxLevel Level
+	Boxes    []Box
 }
 
 func NewDeck(l Level) Deck {
 	d := Deck{
-		maxLevel: l,
-		boxes:    make([]Box, l),
+		MaxLevel: l,
+		Boxes:    make([]Box, 0, l),
 	}
-
 	for i := 0; i < int(l); i++ {
-		d.boxes[i].l = Level(i)
-		d.boxes[i].av = map[CardId]*Flashcard{}
+		d.Boxes = append(d.Boxes, NewBox(l))
 	}
 
 	return d
@@ -108,15 +106,15 @@ func (d Deck) Insert(flashcard *Flashcard) error {
 
 // Box returns a box by id. Returns an error if not exists
 func (d Deck) Box(id BoxId) (Box, error) {
-	if id < 0 || int(id) >= len(d.boxes) {
+	if id < 0 || int(id) >= len(d.Boxes) {
 		return Box{}, ErrBoxBadIndex
 	}
 
-	return d.boxes[id], nil
+	return d.Boxes[id], nil
 }
 
 func (d Deck) Delete(id CardId) error {
-	for _, b := range d.boxes {
+	for _, b := range d.Boxes {
 		if err := b.Delete(id); err == nil {
 			return nil
 		}
@@ -129,7 +127,7 @@ func (d Deck) Delete(id CardId) error {
 func (d Deck) GetRandom(p []float32) (*Flashcard, error) {
 	rd := rand.Float32()
 	i := Level(0)
-	for i != d.maxLevel-1 && rd > p[i+1] {
+	for i != d.MaxLevel-1 && rd > p[i+1] {
 		i++
 	}
 
@@ -139,7 +137,7 @@ func (d Deck) GetRandom(p []float32) (*Flashcard, error) {
 		return fc, nil
 	}
 
-	for j := (i + 1) % d.maxLevel; j != i; j = (j + 1) % d.maxLevel {
+	for j := (i + 1) % d.MaxLevel; j != i; j = (j + 1) % d.MaxLevel {
 		b, _ = d.Box(j)
 		fc, err = b.GetRandom()
 		if err == nil {
