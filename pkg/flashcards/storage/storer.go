@@ -2,36 +2,48 @@ package storage
 
 import "github.com/ogniloud/madr/pkg/flashcards/leitner"
 
-type UserId int
+type UserConfig struct {
+	Id       int
+	MaxLevel leitner.Level
+}
+
+type UserConfigStorer interface {
+	Store(deck UserConfig) error
+	Get(id int) (UserConfig, error)
+}
+
+type Card struct {
+	Id       leitner.CardId
+	DeckId   leitner.DeckId
+	Word     leitner.Word
+	Backside leitner.Backside
+}
+
+type CardStorer interface {
+	Store(card Card) error
+	Get(id leitner.CardId) (Card, error)
+}
+
+type DeckPrivacy struct {
+	DeckId  leitner.DeckId
+	Private bool
+}
+
+type DeckPrivacyStorer interface {
+	Store(deck DeckPrivacy) error
+	Get(id leitner.DeckId) (DeckPrivacy, error)
+}
 
 type Leitner struct {
-	LtId   leitner.Id
-	UserId UserId
-	DkId   leitner.DeckId
-	Decks  []leitner.Level
+	Id     leitner.Id
+	UserId int
+	CardId leitner.CardId
 	Level  leitner.Level
-}
-
-type Flashcard struct {
-	W  leitner.Word
-	B  leitner.Backside
-	Cd leitner.CoolDownTime
-}
-
-type Deck struct {
-	DkId leitner.DeckId
-	Fcs  []Flashcard
+	Cd     leitner.CoolDown
 }
 
 type LeitnerStorer interface {
+	Store(l Leitner) error
 	Get(leitner.Id) (Leitner, error)
-	GetAllByUserId(UserId) ([]Leitner, error)
-	Put(Leitner) error
-	Update(Leitner) error
-}
-
-type DeckStorer interface {
-	Get(leitner.DeckId) (Deck, error)
-	Put(Deck) error
-	Update(Deck) error
+	GetAllByUserId(int) ([]Leitner, error)
 }
