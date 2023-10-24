@@ -1,18 +1,57 @@
-package api_server
+package main
 
 import (
 	"context"
+	"net/http"
 	"os"
 	"os/signal"
 	"time"
 
-	"github.com/rs/zerolog"
-	"github.com/rs/zerolog/log"
+	"github.com/ogniloud/madr/internal/data"
+	"github.com/ogniloud/madr/internal/handlers"
+
+	"github.com/charmbracelet/log"
+	"github.com/go-chi/chi/v5"
+	"github.com/go-chi/chi/v5/middleware"
 )
 
+var bindAddress = ":8080"
+
 func main() {
-	// UNIX Time is faster and smaller than most timestamps
-	zerolog.TimeFieldFormat = zerolog.TimeFormatUnix
+	l := log.NewWithOptions(os.Stderr, log.Options{
+		ReportCaller:    true,
+		ReportTimestamp: true,
+	})
+
+	// Set up a router
+	r := chi.NewRouter()
+	r.Use(middleware.Logger)
+
+	// Set up a datalayer
+	dl := data.NewDatalayer()
+
+	// Set up endpoints
+	endpoints := handlers.NewEndpoints(dl, l)
+
+	// Set up routes
+	r.Post("/api/signup", endpoints.SignUp)
+
+	// create a new server
+	s := http.Server{
+		Addr:         bindAddress, // configure the bind address
+		Handler:      r,           // set the default handler
+		ErrorLog:     l.StandardLog(),
+		ReadTimeout:  5 * time.Second,   // max time to read request from the client
+		WriteTimeout: 10 * time.Second,  // max time to write response to the client
+		IdleTimeout:  120 * time.Second, // max time for connections using TCP Keep-Alive
+	}
+
+	// start the server
+	go func() {
+		l.Info("Starting server", "port", bindAddress)
+
+		l.Fatal("Error form server", "error", s.ListenAndServe())
+	}()
 
 	// trap interrupt and gracefully shutdown the server
 	c := make(chan os.Signal, 1)
@@ -20,10 +59,15 @@ func main() {
 
 	// Block until a signal is received.
 	sig := <-c
-	log.Info().Msgf("Got signal: %v", sig)
-	log.Info().Msg("Shutting down...")
+	l.Infof("Got signal: %v", sig)
+	l.Infof("Shutting down...")
 
 	// gracefully shutdown the server, waiting max 30 seconds for current operations to complete
-	_, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
+
+	err := s.Shutdown(ctx)
+	if err != nil {
+		l.Fatal("Error shutting down server", "error", err)
+	}
 }
