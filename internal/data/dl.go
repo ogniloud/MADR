@@ -6,17 +6,24 @@ import (
 	"github.com/ogniloud/madr/internal/models"
 )
 
+// ErrEmailExists is an error that is returned when a user with the given email already exists
 var ErrEmailExists error = fmt.Errorf("user with this email already exists")
 
+// Datalayer is a struct that helps us to interact with the data
 type Datalayer struct {
 }
 
+// NewDatalayer returns a new Datalayer struct
 func NewDatalayer() *Datalayer {
 	return &Datalayer{}
 }
 
+// users is a slice of models.User
+// This is our in-memory database. We will replace this with a real database later.
 var users models.Users
 
+// isEmailExists is a helper function to check if a user with the given email already exists.
+// Returns true if the user exists, false otherwise.
 func (d *Datalayer) isEmailExists(email string) bool {
 	for _, user := range users {
 		if user.Email == email {
@@ -26,6 +33,7 @@ func (d *Datalayer) isEmailExists(email string) bool {
 	return false
 }
 
+// CreateUser is a function to create a new user.
 func (d *Datalayer) CreateUser(user models.User) (models.User, error) {
 	if d.isEmailExists(user.Email) {
 		return models.User{}, ErrEmailExists

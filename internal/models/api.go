@@ -6,6 +6,7 @@ type SignUpRequest struct {
 	Password string `json:"password"`
 }
 
+// SignUpResponse is a struct that defines the response body for the sign-up endpoint.
 type SignUpResponse struct {
 	ID    int    `json:"id"`
 	Email string `json:"email"`
