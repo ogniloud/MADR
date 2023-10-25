@@ -18,3 +18,8 @@ type Service interface {
 	CreateNewDeck(cfg DeckConfig, flashcards []storage.Flashcard) error
 	DeleteDeck(id storage.DeckId) error
 }
+
+// Handler with methods http.HandlerFunc
+type Handler struct {
+	s *storage.Storage
+}

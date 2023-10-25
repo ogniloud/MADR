@@ -95,3 +95,9 @@ type LeitnerStorage interface {
 	Put(leitner UserLeitner) error
 	Delete(id LeitnerId) error
 }
+
+type Storage struct {
+	Dcs DeckConfigStorage
+	Fs  FlashcardStorage
+	Ls  LeitnerStorage
+}
