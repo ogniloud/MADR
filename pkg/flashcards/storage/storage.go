@@ -8,15 +8,15 @@ type DeckId = int
 type UserId = int
 type FlashcardId = int
 
-type DeckConfigRow struct {
+type DeckConfig struct {
 	Id      DeckId
 	Name    string
 	Private bool
 }
 
 type DeckConfigStorage interface {
-	Get(id DeckId) (DeckConfigRow, error)
-	Put(config DeckConfigRow) error
+	Get(id DeckId) (DeckConfig, error)
+	Put(config DeckConfig) error
 	Delete(id DeckId) error
 }
 
@@ -29,7 +29,7 @@ type Backside interface {
 	Answer() any
 }
 
-type FlashcardRow struct {
+type Flashcard struct {
 	Id     FlashcardId
 	W      Word
 	B      Backside
@@ -37,8 +37,8 @@ type FlashcardRow struct {
 }
 
 type FlashcardStorage interface {
-	Get(id FlashcardId) (FlashcardRow, error)
-	Put(flashcard FlashcardRow) error
+	Get(id FlashcardId) (Flashcard, error)
+	Put(flashcard Flashcard) error
 	Delete(id FlashcardId) error
 }
 
@@ -82,7 +82,7 @@ func (cd CoolDown) IsPassed(t time.Time) bool {
 	return cd.state.Compare(t) != -1
 }
 
-type UserLeitnerRow struct {
+type UserLeitner struct {
 	Id          LeitnerId
 	UserId      UserId
 	FlashcardId FlashcardId
@@ -91,7 +91,7 @@ type UserLeitnerRow struct {
 }
 
 type LeitnerStorage interface {
-	Get(id LeitnerId) (UserLeitnerRow, error)
-	Put(leitner UserLeitnerRow) error
+	Get(id LeitnerId) (UserLeitner, error)
+	Put(leitner UserLeitner) error
 	Delete(id LeitnerId) error
 }
