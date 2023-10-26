@@ -47,3 +47,4 @@ linters:
     - misspell
     - prealloc
     - whitespace
+    - wsl

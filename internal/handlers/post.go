@@ -37,8 +37,10 @@ func (e *Endpoints) SignUp(w http.ResponseWriter, r *http.Request) {
 			e.writeGenericError(w, http.StatusConflict, data.ErrEmailExists.Error())
 			return
 		}
+
 		e.logger.Error("Unable to create user", "error", err)
 		e.writeGenericError(w, http.StatusInternalServerError, models.ErrInternalServer.Error())
+
 		return
 	}
 
@@ -49,6 +51,7 @@ func (e *Endpoints) SignUp(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		e.logger.Error("Unable to write JSON response", "error", err)
 		e.writeGenericError(w, http.StatusInternalServerError, models.ErrInternalServer.Error())
+
 		return
 	}
 
@@ -73,8 +76,10 @@ func (e *Endpoints) SignIn(w http.ResponseWriter, r *http.Request) {
 			e.writeGenericError(w, http.StatusUnauthorized, models.ErrUnauthorized.Error())
 			return
 		}
+
 		e.logger.Error("Unable to get Bearer token", "error", err)
 		e.writeGenericError(w, http.StatusInternalServerError, models.ErrInternalServer.Error())
+
 		return
 	}
 
@@ -86,6 +91,7 @@ func (e *Endpoints) SignIn(w http.ResponseWriter, r *http.Request) {
 		e.logger.Error("Unable to write JSON response", "error", err)
 		// write a generic error to the response writer, so we don't expose the actual error
 		e.writeGenericError(w, http.StatusInternalServerError, models.ErrInternalServer.Error())
+
 		return
 	}
 

@@ -30,6 +30,7 @@ func (d *Datalayer) isEmailExists(email string) bool {
 			return true
 		}
 	}
+
 	return false
 }
 
@@ -40,6 +41,7 @@ func (d *Datalayer) isPasswordCorrect(email, password string) bool {
 			return true
 		}
 	}
+
 	return false
 }
 
@@ -48,12 +50,15 @@ func (d *Datalayer) CreateUser(_ context.Context, user models.User) (models.User
 	if d.isEmailExists(user.Email) {
 		return models.User{}, ErrEmailExists
 	}
+
 	if len(users) == 0 {
 		user.ID = 1
 	} else {
 		user.ID = users[len(users)-1].ID + 1
 	}
+
 	users = append(users, user)
+
 	return user, nil
 }
 
@@ -64,5 +69,6 @@ func (d *Datalayer) SignInUser(_ context.Context, email, password string) (autho
 		authorization = "Bearer blablablaIMATOKENyouAREpoorBASTARD"
 		return
 	}
+
 	return authorization, models.ErrUnauthorized
 }
