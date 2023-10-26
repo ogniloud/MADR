@@ -1,0 +1,8 @@
+.github
+.dockerignore
+.gitignore
+.golangci.yml
+Dockerfile
+LICENSE
+Makefile
+swagger.yaml

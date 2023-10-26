@@ -8,7 +8,7 @@ import (
 	"github.com/ogniloud/madr/internal/models"
 )
 
-// swagger:route POST /api/signup signup signUp
+// swagger:route POST /api/signup SignUp
 // Creates a new user.
 //
 // Consumes:
