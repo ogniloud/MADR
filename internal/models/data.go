@@ -9,3 +9,6 @@ type User struct {
 
 // Users is a struct that defines a slice of User
 type Users []User
+
+// AuthorizationToken is a type that defines the authorization token
+type AuthorizationToken string

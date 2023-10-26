@@ -35,6 +35,7 @@ func main() {
 
 	// Set up routes
 	r.Post("/api/signup", endpoints.SignUp)
+	r.Post("/api/signin", endpoints.SignIn)
 
 	// create a new server
 	s := http.Server{

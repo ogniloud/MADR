@@ -17,3 +17,8 @@ type SignInRequest struct {
 	Email    string `json:"email"`
 	Password string `json:"password"`
 }
+
+// SignInResponse is a struct that defines the response body for the sign-in endpoint.
+type SignInResponse struct {
+	Authorization string `json:"authorization"`
+}

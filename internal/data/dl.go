@@ -1,6 +1,7 @@
 package data
 
 import (
+	"context"
 	"fmt"
 
 	"github.com/ogniloud/madr/internal/models"
@@ -33,8 +34,18 @@ func (d *Datalayer) isEmailExists(email string) bool {
 	return false
 }
 
+// isPasswordCorrect is a helper function to check if the given password is correct for the given email.
+func (d *Datalayer) isPasswordCorrect(email, password string) bool {
+	for _, user := range users {
+		if user.Email == email && user.Password == password {
+			return true
+		}
+	}
+	return false
+}
+
 // CreateUser is a function to create a new user.
-func (d *Datalayer) CreateUser(user models.User) (models.User, error) {
+func (d *Datalayer) CreateUser(_ context.Context, user models.User) (models.User, error) {
 	if d.isEmailExists(user.Email) {
 		return models.User{}, ErrEmailExists
 	}
@@ -45,4 +56,14 @@ func (d *Datalayer) CreateUser(user models.User) (models.User, error) {
 	}
 	users = append(users, user)
 	return user, nil
+}
+
+// SignInUser is a function to sign in a user.
+// It returns an authorization token if the user is signed in successfully.
+func (d *Datalayer) SignInUser(_ context.Context, email, password string) (authorization string, err error) {
+	if d.isPasswordCorrect(email, password) {
+		authorization = "Bearer blablablaIMATOKENyouAREpoorBASTARD"
+		return
+	}
+	return authorization, models.ErrUnauthorized
 }

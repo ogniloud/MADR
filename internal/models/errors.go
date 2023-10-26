@@ -9,7 +9,10 @@ import (
 // the real error to the client. All the internal server errors
 // should be logged and fixed. Don't use this error if it's
 // something that can be fixed by the client.
-var ErrInternalServer error = errors.New("don't worry, we are working on it")
+var (
+	ErrInternalServer = errors.New("don't worry, we are working on it")
+	ErrUnauthorized   = errors.New("invalid credentials")
+)
 
 // GenericError is a generic error message returned by a server
 type GenericError struct {
