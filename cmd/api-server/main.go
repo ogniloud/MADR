@@ -15,7 +15,13 @@ import (
 	"github.com/go-chi/chi/v5/middleware"
 )
 
-var bindAddress = ":8080"
+const (
+	bindAddress     = ":8080"
+	shutdownTimeout = 30 * time.Second
+	readTimeout     = 5 * time.Second
+	writeTimeout    = 10 * time.Second
+	idleTimeout     = 120 * time.Second
+)
 
 func main() {
 	l := log.NewWithOptions(os.Stderr, log.Options{
@@ -42,9 +48,9 @@ func main() {
 		Addr:         bindAddress, // configure the bind address
 		Handler:      r,           // set the default handler
 		ErrorLog:     l.StandardLog(),
-		ReadTimeout:  5 * time.Second,   // max time to read request from the client
-		WriteTimeout: 10 * time.Second,  // max time to write response to the client
-		IdleTimeout:  120 * time.Second, // max time for connections using TCP Keep-Alive
+		ReadTimeout:  readTimeout,  // max time to read request from the client
+		WriteTimeout: writeTimeout, // max time to write response to the client
+		IdleTimeout:  idleTimeout,  // max time for connections using TCP Keep-Alive
 	}
 
 	// start the server
@@ -64,7 +70,7 @@ func main() {
 	l.Infof("Shutting down...")
 
 	// gracefully shutdown the server, waiting max 30 seconds for current operations to complete
-	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), shutdownTimeout)
 	defer cancel()
 
 	err := s.Shutdown(ctx)

@@ -8,7 +8,7 @@ import (
 	"github.com/ogniloud/madr/internal/models"
 )
 
-// SignUp is a handler for the sign-up endpoint
+// SignUp is a handler for the sign-up endpoint.
 func (e *Endpoints) SignUp(w http.ResponseWriter, r *http.Request) {
 	// We always return JSON from our API
 	w.Header().Set("Content-Type", "application/json")
