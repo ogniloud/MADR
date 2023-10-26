@@ -57,4 +57,3 @@ linters:
     - usestdlibvars
     - unparam
     - unconvert
-    - fieldalignment
