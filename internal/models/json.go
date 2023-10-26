@@ -2,6 +2,7 @@ package models
 
 import (
 	"encoding/json"
+	"fmt"
 	"io"
 )
 
@@ -9,7 +10,12 @@ import (
 func ToJSON(i interface{}, w io.Writer) error {
 	e := json.NewEncoder(w)
 
-	return e.Encode(i)
+	err := e.Encode(i)
+	if err != nil {
+		return fmt.Errorf("unable to encode JSON: %w", err)
+	}
+
+	return nil
 }
 
 // FromJSON deserializes the object from JSON string
@@ -17,5 +23,10 @@ func ToJSON(i interface{}, w io.Writer) error {
 func FromJSON(i interface{}, r io.Reader) error {
 	d := json.NewDecoder(r)
 
-	return d.Decode(i)
+	err := d.Decode(i)
+	if err != nil {
+		return fmt.Errorf("unable to decode JSON: %w", err)
+	}
+
+	return nil
 }

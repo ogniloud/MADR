@@ -48,3 +48,13 @@ linters:
     - prealloc
     - whitespace
     - wsl
+    - wrapcheck
+    - wastedassign
+    - reassign
+    - rowserrcheck
+    - mirror
+    - sqlclosecheck
+    - usestdlibvars
+    - unparam
+    - unconvert
+    - fieldalignment
