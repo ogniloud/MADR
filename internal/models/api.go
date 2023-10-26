@@ -1,5 +1,6 @@
 package models
 
+// swagger:model signUpRequest
 // SignUpRequest is a struct that defines the request body for the sign-up endpoint.
 type SignUpRequest struct {
 	Email    string `json:"email"`

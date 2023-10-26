@@ -13,6 +13,7 @@ import (
 	"github.com/charmbracelet/log"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
+	openapi "github.com/go-openapi/runtime/middleware"
 )
 
 const (
@@ -39,9 +40,19 @@ func main() {
 	// Set up endpoints
 	endpoints := handlers.NewEndpoints(dl, l)
 
+	// handlers for documentation
+	dh := openapi.Redoc(openapi.RedocOpts{
+		BasePath: "/api/",
+		SpecURL:  "/api/swagger.yaml",
+	}, nil)
+
 	// Set up routes
-	r.Post("/api/signup", endpoints.SignUp)
-	r.Post("/api/signin", endpoints.SignIn)
+	r.Route("/api", func(r chi.Router) {
+		r.Post("/signup", endpoints.SignUp)
+		r.Post("/signin", endpoints.SignIn)
+		r.Get("/swagger.yaml", http.StripPrefix("/api/", http.FileServer(http.Dir("./"))).ServeHTTP)
+		r.Get("/docs", dh.ServeHTTP)
+	})
 
 	// create a new server
 	s := http.Server{

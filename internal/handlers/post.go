@@ -8,6 +8,31 @@ import (
 	"github.com/ogniloud/madr/internal/models"
 )
 
+// swagger:route POST /api/signup signup signUp
+// Creates a new user.
+//
+// Consumes:
+// - application/json
+//
+// Produces:
+// - application/json
+//
+// Schemes: http
+//
+// Parameters:
+// + name: request
+//	 in: body
+//   description: Sign up request.
+//   required: true
+//   type: signUpRequest
+//
+//
+// Responses:
+//  201: signUpResponse
+//  400: signUpBadRequestError
+//  409: signUpConflictError
+//  500: signUpInternalServerError
+
 // SignUp is a handler for the sign-up endpoint.
 func (e *Endpoints) SignUp(w http.ResponseWriter, r *http.Request) {
 	// We always return JSON from our API
