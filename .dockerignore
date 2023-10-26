@@ -6,3 +6,4 @@ Dockerfile
 LICENSE
 Makefile
 swagger.yaml
+docker-compose.yaml
