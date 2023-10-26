@@ -28,7 +28,7 @@ import (
 //
 //
 // Responses:
-//  201: signUpResponse
+//  201: signUpCreatedResponse
 //  400: signUpBadRequestError
 //  409: signUpConflictError
 //  500: signUpInternalServerError
@@ -83,6 +83,31 @@ func (e *Endpoints) SignUp(w http.ResponseWriter, r *http.Request) {
 	// We set the status code to 201 to indicate that the resource is created
 	w.WriteHeader(http.StatusCreated)
 }
+
+// swagger:route POST /api/signin SignIn
+// Signs in a user.
+//
+// Consumes:
+// - application/json
+//
+// Produces:
+// - application/json
+//
+// Schemes: http
+//
+// Parameters:
+// + name: request
+//   in: body
+//   description: Sign in request.
+//	 required: true
+//	 type: signInRequest
+//
+//
+// Responses:
+// 200: signInOkResponse
+// 400: signInBadRequestError
+// 401: signInUnauthorizedError
+// 500: signInInternalServerError
 
 // SignIn is a handler for the sign-in endpoint.
 func (e *Endpoints) SignIn(w http.ResponseWriter, r *http.Request) {

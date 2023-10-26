@@ -16,8 +16,8 @@
 // swagger:meta
 package models
 
-// swagger:response signUpResponse
-type SwaggerSignUpResponse struct {
+// swagger:response signUpCreatedResponse
+type SwaggerSignUpCreatedResponse struct {
 	// Response with the credentials of the user.
 	// in: body
 	Body SignUpResponse
@@ -37,6 +37,31 @@ type SwaggerSignUpConflictError struct {
 
 // swagger:response signUpInternalServerError
 type SwaggerInternalServerError struct {
+	// in: body
+	Body GenericError
+}
+
+// swagger:response signInOkResponse
+type SwaggerSignInOkResponse struct {
+	// Response with the authorization token.
+	// in: body
+	Body SignInResponse
+}
+
+// swagger:response signInBadRequestError
+type SwaggerSignInBadRequestError struct {
+	// in: body
+	Body GenericError
+}
+
+// swagger:response signInUnauthorizedError
+type SwaggerSignInUnauthorizedError struct {
+	// in: body
+	Body GenericError
+}
+
+// swagger:response signInInternalServerError
+type SwaggersignInInternalServerError struct {
 	// in: body
 	Body GenericError
 }
