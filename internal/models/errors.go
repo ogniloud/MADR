@@ -16,5 +16,8 @@ var (
 
 // GenericError is a generic error message returned by a server.
 type GenericError struct {
+	// The error message.
+	//
+	// example: Very useful error message
 	Message string `json:"message"`
 }

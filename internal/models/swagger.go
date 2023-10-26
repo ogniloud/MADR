@@ -1,3 +1,19 @@
+// Package models describes models for application.
+//
+// Documentation for MADR API.
+//
+// Schemes: http
+// BasePath: /
+// Version: 0.0.1
+// Contact: Dmitriy Krasnov<dk.peyuaa@gmail.com>
+//
+// Consumes:
+// - application/json
+//
+// Produces:
+// - application/json
+//
+// swagger:meta
 package models
 
 // swagger:response signUpResponse
