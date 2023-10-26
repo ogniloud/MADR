@@ -7,14 +7,14 @@ import (
 	"github.com/ogniloud/madr/internal/models"
 )
 
-// ErrEmailExists is an error that is returned when a user with the given email already exists
-var ErrEmailExists error = fmt.Errorf("user with this email already exists")
+// ErrEmailExists is an error returned when a user with the given email already exists.
+var ErrEmailExists = fmt.Errorf("user with this email already exists")
 
-// Datalayer is a struct that helps us to interact with the data
+// Datalayer is a struct that helps us to interact with the data.
 type Datalayer struct {
 }
 
-// NewDatalayer returns a new Datalayer struct
+// NewDatalayer returns a new Datalayer struct.
 func NewDatalayer() *Datalayer {
 	return &Datalayer{}
 }
