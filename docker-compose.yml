@@ -1,0 +1,13 @@
+services:
+  madr:
+    build: .
+    ports:
+      - "8080:8080"
+    networks:
+      mynetwork:
+    environment:
+      - TZ=Europe/Moscow
+
+networks:
+  mynetwork:
+    driver: bridge
