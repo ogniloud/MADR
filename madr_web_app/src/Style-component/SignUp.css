@@ -113,12 +113,12 @@ label {
 
 input {
   width: 100%;
-  border: none; /* Remove the default input border */
-  border-bottom: 1px solid #000; /* Add a 1px solid line at the bottom */
-  height: 1px; /* Set the desired height */
-  padding: 10px; /* Adjust padding as needed */
-  outline: none;
-  transition: border-color 0.3s;
+  padding: 12px 20px;
+  margin: -3px 0;
+  display: inline-block;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
 }
 
 input:focus {
