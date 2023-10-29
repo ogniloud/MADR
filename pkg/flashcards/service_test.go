@@ -14,26 +14,28 @@ import (
 
 type LeitnerSuite struct {
 	suite.Suite
-	s flashcards.IService
+	s  flashcards.IService
+	st storage.Storage
 }
 
 func (l *LeitnerSuite) SetupTest() {
+	//s := mocks.NewStorage(l.T())
 	s := &mocks.Storage{}
+	l.st = s
 	l.s = flashcards.NewService(s, &sync.Map{})
 
 	s.On("GetDecksByUserId", 1).
-		Return(user1, nil)
+		Return(user1, nil).Once()
+	s.On("GetDecksByUserId", 1).
+		Return(nil, fmt.Errorf("db problem"))
 	s.On("GetDecksByUserId", 666).
-		Return(nil, fmt.Errorf("user not found"))
+		Return(nil, fmt.Errorf("user not found")).Once()
 }
 
 func (l *LeitnerSuite) Test_LoadDecks() {
 	decks, err := l.s.LoadDecks(1)
 	assert.Nil(l.T(), err)
 	assert.Equal(l.T(), user1, decks)
-
-	_, err = l.s.LoadDecks(666)
-	assert.Error(l.T(), err)
 
 	l.Run("cache check", func() {
 		var cachedDecks storage.Decks
@@ -44,6 +46,22 @@ func (l *LeitnerSuite) Test_LoadDecks() {
 
 		assert.Equal(l.T(), cachedDecks, user1)
 	})
+
+	l.Run("not found", func() {
+		_, err = l.s.LoadDecks(666)
+		assert.Error(l.T(), err)
+	})
+
+	// take from cache, must not panic
+	l.Run("pulling from cache", func() {
+		_, err := l.st.GetDecksByUserId(1)
+		assert.Error(l.T(), err)
+
+		decks, err := l.s.LoadDecks(1)
+		assert.Nil(l.T(), err)
+		assert.Equal(l.T(), user1, decks)
+	})
+
 }
 
 func TestSuite(t *testing.T) {
