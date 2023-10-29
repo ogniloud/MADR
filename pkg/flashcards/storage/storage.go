@@ -10,6 +10,11 @@ type (
 	FlashcardId = int
 )
 
+type UserInfo struct {
+	Id     UserId `json:"user_id"`
+	MaxBox Box    `json:"max_box"`
+}
+
 type DeckConfig struct {
 	DeckId DeckId `json:"deck_id"`
 	UserId UserId `json:"user_id"`
@@ -86,9 +91,18 @@ type Decks map[DeckId]DeckConfig
 type Storage interface {
 	GetDecksByUserId(id UserId) (Decks, error)
 	GetFlashcardsByDeckId(id DeckId) ([]Flashcard, error)
-	PutFlashcard(id DeckId, card Flashcard) error
+	GetLeitnerByUserCD(id UserId, cd CoolDown) ([]UserLeitner, error)
+	GetCardsByUserCDBox(id UserId, cd CoolDown, limits map[Box]int) ([]FlashcardId, error)
+	GetCardsByUserCDBoxDeck(id UserId, cd CoolDown, limits map[Box]int, deckId DeckId) ([]FlashcardId, error)
+	GetLeitnerByUserIdCardId(id UserId, flashcardId FlashcardId) (UserLeitner, error)
+	GetUserInfo(uid UserId) (UserInfo, error)
+
 	PutAllFlashcards(id DeckId, cards []Flashcard) error
-	DeleteFlashcardFromDeck(id DeckId, cardId FlashcardId) error
 	PutNewDeck(config DeckConfig) error
+	PutAllUserLeitner(uls []UserLeitner) error
+
+	DeleteFlashcardFromDeck(id DeckId, cardId FlashcardId) error
 	DeleteDeck(id DeckId) error
+
+	UpdateLeitner(ul UserLeitner) error
 }

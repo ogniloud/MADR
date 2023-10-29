@@ -21,11 +21,16 @@ type IService interface {
 
 	CreateNewDeck(userId storage.UserId, cfg storage.DeckConfig, flashcards []storage.Flashcard) error
 	DeleteDeck(userId storage.UserId, deckId storage.DeckId) error
+
+	GetRandom(id storage.UserId, cd storage.CoolDown, limits map[storage.Box]int) ([]storage.FlashcardId, error)
+	GetRandomDeck(id storage.UserId, cd storage.CoolDown, deckId storage.DeckId, limits map[storage.Box]int) ([]storage.FlashcardId, error)
+
+	GetUserMaxBox(uid storage.UserId) (storage.Box, error)
 	Cache() cache.Cache
 }
 
 type Service struct {
-	s storage.Storage
+	S storage.Storage
 
 	// temporary
 	c cache.Cache
@@ -33,7 +38,7 @@ type Service struct {
 
 func NewService(s storage.Storage, c cache.Cache) IService {
 	return Service{
-		s: s,
+		S: s,
 		c: c,
 	}
 }
@@ -44,7 +49,7 @@ func (s Service) LoadDecks(id storage.UserId) (storage.Decks, error) {
 		return decks, nil
 	}
 
-	decks, err := s.s.GetDecksByUserId(id)
+	decks, err := s.S.GetDecksByUserId(id)
 	if err != nil {
 		return nil, err
 	}
@@ -54,15 +59,15 @@ func (s Service) LoadDecks(id storage.UserId) (storage.Decks, error) {
 }
 
 func (s Service) GetFlashcards(id storage.DeckId) ([]storage.Flashcard, error) {
-	return s.s.GetFlashcardsByDeckId(id)
+	return s.S.GetFlashcardsByDeckId(id)
 }
 
 func (s Service) AppendFlashcard(id storage.DeckId, flashcard storage.Flashcard) error {
-	return s.s.PutFlashcard(id, flashcard)
+	return s.S.PutAllFlashcards(id, []storage.Flashcard{flashcard})
 }
 
 func (s Service) DeleteFlashcard(deckId storage.DeckId, flashcardId storage.FlashcardId) error {
-	return s.s.DeleteFlashcardFromDeck(deckId, flashcardId)
+	return s.S.DeleteFlashcardFromDeck(deckId, flashcardId)
 }
 
 func (s Service) CreateNewDeck(userId storage.UserId, cfg storage.DeckConfig, flashcards []storage.Flashcard) error {
@@ -75,11 +80,11 @@ func (s Service) CreateNewDeck(userId storage.UserId, cfg storage.DeckConfig, fl
 		return err
 	}
 
-	if err := s.s.PutNewDeck(cfg); err != nil {
+	if err := s.S.PutNewDeck(cfg); err != nil {
 		return err
 	}
 
-	if err := s.s.PutAllFlashcards(cfg.DeckId, flashcards); err != nil {
+	if err := s.S.PutAllFlashcards(cfg.DeckId, flashcards); err != nil {
 		return err
 	}
 
@@ -94,12 +99,29 @@ func (s Service) DeleteDeck(userId storage.UserId, deckId storage.DeckId) error 
 		return err
 	}
 
-	if err := s.s.DeleteDeck(deckId); err != nil {
+	if err := s.S.DeleteDeck(deckId); err != nil {
 		return err
 	}
 
 	delete(decks, deckId)
 	return nil
+}
+
+func (s Service) GetRandom(id storage.UserId, cd storage.CoolDown, limits map[storage.Box]int) ([]storage.FlashcardId, error) {
+	return s.S.GetCardsByUserCDBox(id, cd, limits)
+}
+
+func (s Service) GetRandomDeck(id storage.UserId, cd storage.CoolDown, deckId storage.DeckId, limits map[storage.Box]int) ([]storage.FlashcardId, error) {
+	return s.S.GetCardsByUserCDBoxDeck(id, cd, limits, deckId)
+}
+
+func (s Service) GetUserMaxBox(uid storage.UserId) (storage.Box, error) {
+	info, err := s.S.GetUserInfo(uid)
+	if err != nil {
+		return 0, err
+	}
+
+	return info.MaxBox, nil
 }
 
 func (s Service) Cache() cache.Cache {

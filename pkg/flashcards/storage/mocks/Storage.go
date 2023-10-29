@@ -40,6 +40,58 @@ func (_m *Storage) DeleteFlashcardFromDeck(id int, cardId int) error {
 	return r0
 }
 
+// GetCardsByUserCDBox provides a mock function with given fields: id, cd, limits
+func (_m *Storage) GetCardsByUserCDBox(id int, cd storage.CoolDown, limits map[int]int) ([]int, error) {
+	ret := _m.Called(id, cd, limits)
+
+	var r0 []int
+	var r1 error
+	if rf, ok := ret.Get(0).(func(int, storage.CoolDown, map[int]int) ([]int, error)); ok {
+		return rf(id, cd, limits)
+	}
+	if rf, ok := ret.Get(0).(func(int, storage.CoolDown, map[int]int) []int); ok {
+		r0 = rf(id, cd, limits)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).([]int)
+		}
+	}
+
+	if rf, ok := ret.Get(1).(func(int, storage.CoolDown, map[int]int) error); ok {
+		r1 = rf(id, cd, limits)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+// GetCardsByUserCDBoxDeck provides a mock function with given fields: id, cd, limits, deckId
+func (_m *Storage) GetCardsByUserCDBoxDeck(id int, cd storage.CoolDown, limits map[int]int, deckId int) ([]int, error) {
+	ret := _m.Called(id, cd, limits, deckId)
+
+	var r0 []int
+	var r1 error
+	if rf, ok := ret.Get(0).(func(int, storage.CoolDown, map[int]int, int) ([]int, error)); ok {
+		return rf(id, cd, limits, deckId)
+	}
+	if rf, ok := ret.Get(0).(func(int, storage.CoolDown, map[int]int, int) []int); ok {
+		r0 = rf(id, cd, limits, deckId)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).([]int)
+		}
+	}
+
+	if rf, ok := ret.Get(1).(func(int, storage.CoolDown, map[int]int, int) error); ok {
+		r1 = rf(id, cd, limits, deckId)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
 // GetDecksByUserId provides a mock function with given fields: id
 func (_m *Storage) GetDecksByUserId(id int) (storage.Decks, error) {
 	ret := _m.Called(id)
@@ -92,6 +144,80 @@ func (_m *Storage) GetFlashcardsByDeckId(id int) ([]storage.Flashcard, error) {
 	return r0, r1
 }
 
+// GetLeitnerByUserCD provides a mock function with given fields: id, cd
+func (_m *Storage) GetLeitnerByUserCD(id int, cd storage.CoolDown) ([]storage.UserLeitner, error) {
+	ret := _m.Called(id, cd)
+
+	var r0 []storage.UserLeitner
+	var r1 error
+	if rf, ok := ret.Get(0).(func(int, storage.CoolDown) ([]storage.UserLeitner, error)); ok {
+		return rf(id, cd)
+	}
+	if rf, ok := ret.Get(0).(func(int, storage.CoolDown) []storage.UserLeitner); ok {
+		r0 = rf(id, cd)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).([]storage.UserLeitner)
+		}
+	}
+
+	if rf, ok := ret.Get(1).(func(int, storage.CoolDown) error); ok {
+		r1 = rf(id, cd)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+// GetLeitnerByUserIdCardId provides a mock function with given fields: id, flashcardId
+func (_m *Storage) GetLeitnerByUserIdCardId(id int, flashcardId int) (storage.UserLeitner, error) {
+	ret := _m.Called(id, flashcardId)
+
+	var r0 storage.UserLeitner
+	var r1 error
+	if rf, ok := ret.Get(0).(func(int, int) (storage.UserLeitner, error)); ok {
+		return rf(id, flashcardId)
+	}
+	if rf, ok := ret.Get(0).(func(int, int) storage.UserLeitner); ok {
+		r0 = rf(id, flashcardId)
+	} else {
+		r0 = ret.Get(0).(storage.UserLeitner)
+	}
+
+	if rf, ok := ret.Get(1).(func(int, int) error); ok {
+		r1 = rf(id, flashcardId)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+// GetUserInfo provides a mock function with given fields: uid
+func (_m *Storage) GetUserInfo(uid int) (storage.UserInfo, error) {
+	ret := _m.Called(uid)
+
+	var r0 storage.UserInfo
+	var r1 error
+	if rf, ok := ret.Get(0).(func(int) (storage.UserInfo, error)); ok {
+		return rf(uid)
+	}
+	if rf, ok := ret.Get(0).(func(int) storage.UserInfo); ok {
+		r0 = rf(uid)
+	} else {
+		r0 = ret.Get(0).(storage.UserInfo)
+	}
+
+	if rf, ok := ret.Get(1).(func(int) error); ok {
+		r1 = rf(uid)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
 // PutAllFlashcards provides a mock function with given fields: id, cards
 func (_m *Storage) PutAllFlashcards(id int, cards []storage.Flashcard) error {
 	ret := _m.Called(id, cards)
@@ -106,13 +232,13 @@ func (_m *Storage) PutAllFlashcards(id int, cards []storage.Flashcard) error {
 	return r0
 }
 
-// PutFlashcard provides a mock function with given fields: id, card
-func (_m *Storage) PutFlashcard(id int, card storage.Flashcard) error {
-	ret := _m.Called(id, card)
+// PutAllUserLeitner provides a mock function with given fields: uls
+func (_m *Storage) PutAllUserLeitner(uls []storage.UserLeitner) error {
+	ret := _m.Called(uls)
 
 	var r0 error
-	if rf, ok := ret.Get(0).(func(int, storage.Flashcard) error); ok {
-		r0 = rf(id, card)
+	if rf, ok := ret.Get(0).(func([]storage.UserLeitner) error); ok {
+		r0 = rf(uls)
 	} else {
 		r0 = ret.Error(0)
 	}
@@ -127,6 +253,20 @@ func (_m *Storage) PutNewDeck(config storage.DeckConfig) error {
 	var r0 error
 	if rf, ok := ret.Get(0).(func(storage.DeckConfig) error); ok {
 		r0 = rf(config)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
+}
+
+// UpdateLeitner provides a mock function with given fields: ul
+func (_m *Storage) UpdateLeitner(ul storage.UserLeitner) error {
+	ret := _m.Called(ul)
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(storage.UserLeitner) error); ok {
+		r0 = rf(ul)
 	} else {
 		r0 = ret.Error(0)
 	}
