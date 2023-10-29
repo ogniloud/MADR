@@ -11,24 +11,6 @@ var (
 // ErrDatabaseAccess = fmt.Errorf("error when accessing db")
 )
 
-// IService must be
-type IService interface {
-	LoadDecks(id storage.UserId) (storage.Decks, error)
-	GetFlashcards(id storage.DeckId) ([]storage.Flashcard, error)
-
-	AppendFlashcard(id storage.DeckId, flashcard storage.Flashcard) error
-	DeleteFlashcard(deckId storage.DeckId, flashcardId storage.FlashcardId) error
-
-	CreateNewDeck(userId storage.UserId, cfg storage.DeckConfig, flashcards []storage.Flashcard) error
-	DeleteDeck(userId storage.UserId, deckId storage.DeckId) error
-
-	GetRandom(id storage.UserId, cd storage.CoolDown, limits map[storage.Box]int) ([]storage.FlashcardId, error)
-	GetRandomDeck(id storage.UserId, cd storage.CoolDown, deckId storage.DeckId, limits map[storage.Box]int) ([]storage.FlashcardId, error)
-
-	GetUserMaxBox(uid storage.UserId) (storage.Box, error)
-	Cache() cache.Cache
-}
-
 type Service struct {
 	S storage.Storage
 
@@ -36,7 +18,7 @@ type Service struct {
 	c cache.Cache
 }
 
-func NewService(s storage.Storage, c cache.Cache) IService {
+func NewService(s storage.Storage, c cache.Cache) Service {
 	return Service{
 		S: s,
 		c: c,

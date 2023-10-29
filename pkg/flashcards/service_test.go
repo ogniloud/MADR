@@ -15,7 +15,7 @@ import (
 
 type LeitnerSuite struct {
 	suite.Suite
-	s        flashcards.IService
+	s        flashcards.Service
 	st       *mocks.Storage
 	userData storage.Decks
 }
