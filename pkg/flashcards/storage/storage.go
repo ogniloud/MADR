@@ -54,10 +54,6 @@ type CoolDown struct {
 	State time.Time `json:"state"`
 }
 
-func NewCoolDown(startState time.Time) CoolDown {
-	return CoolDown{State: startState}
-}
-
 func (cd CoolDown) String() string {
 	return cd.State.String()
 }
