@@ -34,6 +34,16 @@ func (l *LeitnerSuite) Test_LoadDecks() {
 
 	_, err = l.s.LoadDecks(666)
 	assert.Error(l.T(), err)
+
+	l.Run("cache check", func() {
+		var cachedDecks storage.Decks
+
+		cd, ok := l.s.Cache().Load(1)
+		assert.True(l.T(), ok)
+		cachedDecks = cd.(storage.Decks)
+
+		assert.Equal(l.T(), cachedDecks, user1)
+	})
 }
 
 func TestSuite(t *testing.T) {
@@ -42,15 +52,18 @@ func TestSuite(t *testing.T) {
 
 var user1 = storage.Decks{
 	1: storage.DeckConfig{
-		Id:   1,
-		Name: "Deck1",
+		DeckId: 1,
+		UserId: 1,
+		Name:   "Deck1",
 	},
 	2: storage.DeckConfig{
-		Id:   2,
-		Name: "Deck2",
+		DeckId: 2,
+		UserId: 1,
+		Name:   "Deck2",
 	},
 	4: storage.DeckConfig{
-		Id:   4,
-		Name: "Deck4",
+		DeckId: 4,
+		UserId: 1,
+		Name:   "Deck4",
 	},
 }

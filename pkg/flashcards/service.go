@@ -19,6 +19,7 @@ type IService interface {
 
 	CreateNewDeck(userId storage.UserId, cfg storage.DeckConfig, flashcards []storage.Flashcard) error
 	DeleteDeck(userId storage.UserId, deckId storage.DeckId) error
+	Cache() cache.Cache
 }
 
 type Service struct {
@@ -72,11 +73,11 @@ func (s Service) CreateNewDeck(userId storage.UserId, cfg storage.DeckConfig, fl
 		return err
 	}
 
-	if err := s.s.PutAllFlashcards(cfg.Id, flashcards); err != nil {
+	if err := s.s.PutAllFlashcards(cfg.DeckId, flashcards); err != nil {
 		return err
 	}
 
-	decks[cfg.Id] = cfg // maybe critical section!
+	decks[cfg.DeckId] = cfg // maybe critical section!
 
 	return nil
 }
@@ -93,4 +94,8 @@ func (s Service) DeleteDeck(userId storage.UserId, deckId storage.DeckId) error 
 
 	delete(decks, deckId)
 	return nil
+}
+
+func (s Service) Cache() cache.Cache {
+	return s.c
 }

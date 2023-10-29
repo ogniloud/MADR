@@ -11,8 +11,9 @@ type (
 )
 
 type DeckConfig struct {
-	Id   DeckId `json:"id"`
-	Name string `json:"name"`
+	DeckId DeckId `json:"deck_id"`
+	UserId UserId `json:"user_id"`
+	Name   string `json:"name"`
 }
 
 type (
