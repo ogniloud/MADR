@@ -1,6 +1,8 @@
 package flashcards
 
 import (
+	"fmt"
+
 	"github.com/ogniloud/madr/pkg/flashcards/cache"
 	"github.com/ogniloud/madr/pkg/flashcards/storage"
 )
@@ -64,6 +66,10 @@ func (s Service) DeleteFlashcard(deckId storage.DeckId, flashcardId storage.Flas
 }
 
 func (s Service) CreateNewDeck(userId storage.UserId, cfg storage.DeckConfig, flashcards []storage.Flashcard) error {
+	if len(flashcards) == 0 {
+		return fmt.Errorf("empty deck")
+	}
+
 	decks, err := s.LoadDecks(userId)
 	if err != nil {
 		return err
