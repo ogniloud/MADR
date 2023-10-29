@@ -62,6 +62,17 @@ func (l *LeitnerSuite) Test_LoadDecks() {
 		if assert.NoError(l.T(), err) {
 			assert.Equal(l.T(), user1, decks)
 		}
+
+		l.Run("cache check", func() {
+			var cachedDecks storage.Decks
+
+			cd, ok := l.s.Cache().Load(1)
+			if assert.True(l.T(), ok) {
+				cachedDecks = cd.(storage.Decks)
+			}
+
+			assert.Equal(l.T(), cachedDecks, user1)
+		})
 	})
 
 	l.Run("load #2", func() {
@@ -69,17 +80,6 @@ func (l *LeitnerSuite) Test_LoadDecks() {
 		if assert.NoError(l.T(), err) {
 			assert.Equal(l.T(), user1, decks)
 		}
-	})
-
-	l.Run("cache check", func() {
-		var cachedDecks storage.Decks
-
-		cd, ok := l.s.Cache().Load(1)
-		if assert.True(l.T(), ok) {
-			cachedDecks = cd.(storage.Decks)
-		}
-
-		assert.Equal(l.T(), cachedDecks, user1)
 	})
 
 	l.Run("not found", func() {
