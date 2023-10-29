@@ -14,7 +14,6 @@ type IService interface {
 	LoadDecks(id storage.UserId) ([]storage.DeckConfig, error)
 	GetFlashcards(id storage.DeckId) ([]storage.Flashcard, error)
 
-	/* decks can be changed only if they are not public */
 	AppendFlashcard(id storage.DeckId, flashcard storage.Flashcard) error
 	DeleteFlashcard(deckId storage.DeckId, flashcardId storage.FlashcardId) error
 

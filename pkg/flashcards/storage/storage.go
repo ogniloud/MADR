@@ -4,17 +4,21 @@ import (
 	"time"
 )
 
-type DeckId = int
-type UserId = int
-type FlashcardId = int
+type (
+	DeckId      = int
+	UserId      = int
+	FlashcardId = int
+)
 
 type DeckConfig struct {
 	Id   DeckId `json:"id"`
 	Name string `json:"name"`
 }
 
-type Word = string
-type BacksideType int
+type (
+	Word         = string
+	BacksideType int
+)
 
 // Backside is an abstract type for representation an answer
 // of describing the Word. That can be just a string (translation, definition)
@@ -31,19 +35,20 @@ type Flashcard struct {
 	DeckId DeckId      `json:"deck_id"`
 }
 
-type LeitnerId = int
-type Level = int
+type (
+	LeitnerId = int
+	Box       = int
+)
 
 // CoolDown describes the timestamp.
 // If the current time is less than the CoolDown state,
 // the flashcard will not be shown for study.
 type CoolDown struct {
-
 	// the current simulation time.
 	State time.Time `json:"state"`
 }
 
-func NewCoolDown(startState time.Time, f func(l Level) time.Duration) CoolDown {
+func NewCoolDown(startState time.Time) CoolDown {
 	return CoolDown{State: startState}
 }
 
@@ -51,9 +56,9 @@ func (cd CoolDown) String() string {
 	return cd.State.String()
 }
 
-// NextState updates the state of CoolDown relatively time.Now
-func (cd CoolDown) NextState(l Level, f func(l Level) time.Duration) {
-	cd.State = time.Now().Add(f(l))
+// NextState updates the state of CoolDown relatively f
+func (cd CoolDown) NextState(b Box, f func(Box) time.Time) {
+	cd.State = f(b)
 }
 
 // IsPassedNow returns true if state of CoolDown is not less than time.Now
@@ -70,12 +75,13 @@ type UserLeitner struct {
 	Id          LeitnerId   `json:"id"`
 	UserId      UserId      `json:"user_id"`
 	FlashcardId FlashcardId `json:"card_id"`
-	Level       Level       `json:"level"`
+	Box         Box         `json:"level"`
 	CoolDown    CoolDown    `json:"cooldown"`
 }
 
 type Decks map[DeckId]DeckConfig
 
+//go:generate go run github.com/vektra/mockery/v2@v2.36.0 --name Storage
 type Storage interface {
 	GetDecksByUserId(id UserId) (Decks, error)
 	GetFlashcardsByDeckId(id DeckId) ([]Flashcard, error)

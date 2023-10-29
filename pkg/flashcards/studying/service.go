@@ -1,8 +1,9 @@
 package studying
 
 import (
-	"github.com/ogniloud/madr/pkg/flashcards/storage"
 	"io"
+
+	"github.com/ogniloud/madr/pkg/flashcards/storage"
 )
 
 type Mark int
@@ -24,11 +25,9 @@ type StudyService interface {
 	Rate(id storage.FlashcardId, mark Mark) error
 }
 
-type Matching struct {
-}
+type Matching struct{}
 
-type Sentence struct {
-}
+type Sentence struct{}
 
 type ExerciseService interface {
 	MakeMatching() Matching
