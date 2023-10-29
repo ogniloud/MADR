@@ -11,14 +11,14 @@ var (
 
 // IService must be
 type IService interface {
-	LoadDecks(id storage.UserId) ([]storage.DeckConfig, error)
+	LoadDecks(id storage.UserId) (storage.Decks, error)
 	GetFlashcards(id storage.DeckId) ([]storage.Flashcard, error)
 
 	AppendFlashcard(id storage.DeckId, flashcard storage.Flashcard) error
 	DeleteFlashcard(deckId storage.DeckId, flashcardId storage.FlashcardId) error
 
 	CreateNewDeck(userId storage.UserId, cfg storage.DeckConfig, flashcards []storage.Flashcard) error
-	DeleteDeck(id storage.DeckId) error
+	DeleteDeck(userId storage.UserId, deckId storage.DeckId) error
 }
 
 type Service struct {
@@ -26,6 +26,13 @@ type Service struct {
 
 	// temporary
 	c cache.Cache
+}
+
+func NewService(s storage.Storage, c cache.Cache) IService {
+	return Service{
+		s: s,
+		c: c,
+	}
 }
 
 func (s Service) LoadDecks(id storage.UserId) (storage.Decks, error) {
