@@ -85,20 +85,41 @@ type Decks map[DeckId]DeckConfig
 
 //go:generate go run github.com/vektra/mockery/v2@v2.36.0 --name Storage
 type Storage interface {
+	// GetDecksByUserId возвращает все колоды, имеющиеся у пользователя.
 	GetDecksByUserId(id UserId) (Decks, error)
+
+	// GetFlashcardsByDeckId возращает карточки в колоде.
 	GetFlashcardsByDeckId(id DeckId) ([]Flashcard, error)
+
+	GetFlashcardById(id FlashcardId) (Flashcard, error)
+
+	// GetLeitnerByUserCD возвращает все UserLeitner пользователя с истёкшим CoolDown.
 	GetLeitnerByUserCD(id UserId, cd CoolDown) ([]UserLeitner, error)
+
+	// GetCardsByUserCDBox возвращает id все карточек с истёкшим CoolDown,
+	// а также удовлетворяющих пределам по количеству по Box'ам.
+	//
+	// Например, если limits = {1:5, 2:7}, будет возвращено не более 5 карт с Box == 1
+	// и не более 7 карт с Box == 2.
 	GetCardsByUserCDBox(id UserId, cd CoolDown, limits map[Box]int) ([]FlashcardId, error)
+
+	// GetCardsByUserCDBoxDeck возвращает те же id карт, что и GetCardsByUserCDBox, но внутри колоды.
 	GetCardsByUserCDBoxDeck(id UserId, cd CoolDown, limits map[Box]int, deckId DeckId) ([]FlashcardId, error)
+
 	GetLeitnerByUserIdCardId(id UserId, flashcardId FlashcardId) (UserLeitner, error)
+
 	GetUserInfo(uid UserId) (UserInfo, error)
 
 	PutAllFlashcards(id DeckId, cards []Flashcard) error
+
 	PutNewDeck(config DeckConfig) error
+
 	PutAllUserLeitner(uls []UserLeitner) error
 
 	DeleteFlashcardFromDeck(id DeckId, cardId FlashcardId) error
+
 	DeleteDeck(id DeckId) error
 
+	// UpdateLeitner обновляет запись в базе данным при совпадении LeitnerId
 	UpdateLeitner(ul UserLeitner) error
 }

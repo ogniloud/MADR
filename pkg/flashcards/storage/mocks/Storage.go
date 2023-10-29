@@ -118,6 +118,30 @@ func (_m *Storage) GetDecksByUserId(id int) (storage.Decks, error) {
 	return r0, r1
 }
 
+// GetFlashcardById provides a mock function with given fields: id
+func (_m *Storage) GetFlashcardById(id int) (storage.Flashcard, error) {
+	ret := _m.Called(id)
+
+	var r0 storage.Flashcard
+	var r1 error
+	if rf, ok := ret.Get(0).(func(int) (storage.Flashcard, error)); ok {
+		return rf(id)
+	}
+	if rf, ok := ret.Get(0).(func(int) storage.Flashcard); ok {
+		r0 = rf(id)
+	} else {
+		r0 = ret.Get(0).(storage.Flashcard)
+	}
+
+	if rf, ok := ret.Get(1).(func(int) error); ok {
+		r1 = rf(id)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
 // GetFlashcardsByDeckId provides a mock function with given fields: id
 func (_m *Storage) GetFlashcardsByDeckId(id int) ([]storage.Flashcard, error) {
 	ret := _m.Called(id)

@@ -39,7 +39,7 @@ func (l *LeitnerSuite) SetupTest() {
 		},
 	}
 
-	//s := mocks.NewStorage(l.T())
+	// s := mocks.NewStorage(l.T())
 	s := &mocks.Storage{}
 	l.st = s
 	l.s = flashcards.NewService(s, &sync.Map{})
