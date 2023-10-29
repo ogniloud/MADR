@@ -15,12 +15,13 @@ import (
 
 type LeitnerSuite struct {
 	suite.Suite
-	s  flashcards.IService
-	st *mocks.Storage
+	s        flashcards.IService
+	st       *mocks.Storage
+	userData storage.Decks
 }
 
 func (l *LeitnerSuite) SetupTest() {
-	user1 = storage.Decks{
+	l.userData = storage.Decks{
 		1: storage.DeckConfig{
 			DeckId: 1,
 			UserId: 1,
@@ -44,7 +45,7 @@ func (l *LeitnerSuite) SetupTest() {
 	l.s = flashcards.NewService(s, &sync.Map{})
 
 	s.On("GetDecksByUserId", 1).
-		Return(user1, nil).Once()
+		Return(l.userData, nil).Once()
 	s.On("GetDecksByUserId", 1).
 		Return(nil, fmt.Errorf("db problem"))
 }
@@ -53,14 +54,14 @@ func (l *LeitnerSuite) Test_LoadDecks() {
 	s := l.st
 
 	s.On("GetDecksByUserId", 2).
-		Return(user1, nil).Once()
+		Return(l.userData, nil).Once()
 	s.On("GetDecksByUserId", 666).
 		Return(nil, fmt.Errorf("user not found")).Once()
 
 	l.Run("load #1", func() {
 		decks, err := l.s.LoadDecks(1)
 		if assert.NoError(l.T(), err) {
-			assert.Equal(l.T(), user1, decks)
+			assert.Equal(l.T(), l.userData, decks)
 		}
 
 		l.Run("cache check", func() {
@@ -71,14 +72,14 @@ func (l *LeitnerSuite) Test_LoadDecks() {
 				cachedDecks = cd.(storage.Decks)
 			}
 
-			assert.Equal(l.T(), cachedDecks, user1)
+			assert.Equal(l.T(), cachedDecks, l.userData)
 		})
 	})
 
 	l.Run("load #2", func() {
 		decks, err := l.s.LoadDecks(2)
 		if assert.NoError(l.T(), err) {
-			assert.Equal(l.T(), user1, decks)
+			assert.Equal(l.T(), l.userData, decks)
 		}
 	})
 
@@ -94,7 +95,7 @@ func (l *LeitnerSuite) Test_LoadDecks() {
 
 		decks, err := l.s.LoadDecks(1)
 		if assert.NoError(l.T(), err) {
-			assert.Equal(l.T(), user1, decks)
+			assert.Equal(l.T(), l.userData, decks)
 		}
 	})
 }
@@ -109,14 +110,14 @@ func (l *LeitnerSuite) Test_CreateNewDeck() {
 		Return(nil).Once()
 
 	s.On("GetDecksByUserId", 1).
-		Return(user1, nil).Once()
+		Return(l.userData, nil).Once()
 
 	cfg := storage.DeckConfig{
 		DeckId: 10,
 		UserId: 1,
 		Name:   "Deck10",
 	}
-	user1[10] = cfg
+	l.userData[10] = cfg
 
 	cards := []storage.Flashcard{
 		{
@@ -138,7 +139,7 @@ func (l *LeitnerSuite) Test_CreateNewDeck() {
 
 	decks, err := l.s.LoadDecks(1)
 	if assert.NoError(l.T(), err) {
-		assert.Equal(l.T(), user1, decks)
+		assert.Equal(l.T(), l.userData, decks)
 	}
 }
 
@@ -159,12 +160,12 @@ func (l *LeitnerSuite) Test_DeleteDeck() {
 		assert.Error(l.T(), l.s.DeleteDeck(3, 1))
 	})
 
-	delete(user1, 4)
+	delete(l.userData, 4)
 	l.Run("success delete", func() {
 		assert.NoError(l.T(), l.s.DeleteDeck(1, 4))
 		decks, err := l.s.LoadDecks(1)
 		if assert.NoError(l.T(), err) {
-			assert.Equal(l.T(), user1, decks)
+			assert.Equal(l.T(), l.userData, decks)
 		}
 	})
 }
@@ -172,5 +173,3 @@ func (l *LeitnerSuite) Test_DeleteDeck() {
 func TestSuite(t *testing.T) {
 	suite.Run(t, new(LeitnerSuite))
 }
-
-var user1 storage.Decks

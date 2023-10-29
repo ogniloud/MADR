@@ -48,7 +48,7 @@ func (s Service) LoadDecks(id storage.UserId) (storage.Decks, error) {
 	if err != nil {
 		return nil, err
 	}
-	go s.c.Store(id, decks)
+	s.c.Store(id, decks)
 
 	return decks, nil
 }
