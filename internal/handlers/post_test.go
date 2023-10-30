@@ -1,7 +1,6 @@
 package handlers
 
 import (
-	"bytes"
 	"net/http"
 	"net/http/httptest"
 	"os"
@@ -26,8 +25,8 @@ func getEndpoints() *Endpoints {
 }
 
 func TestEndpoints_SignUp(t *testing.T) {
-	jsonBody := []byte(`{"email":"blabla@gmail.com","password":"123"}`)
-	bodyReader := bytes.NewReader(jsonBody)
+	jsonBody := `{"email":"blabla@gmail.com","password":"123"}`
+	bodyReader := strings.NewReader(jsonBody)
 
 	request, err := http.NewRequest(http.MethodPost, "/api/signup", bodyReader)
 	if err != nil {
@@ -56,8 +55,8 @@ func TestEndpoints_SignUp(t *testing.T) {
 }
 
 func TestEndpoints_SignUpExisting(t *testing.T) {
-	jsonBody := []byte(`{"email":"blabla@gmail.com","password":"123"}`)
-	firstBodyReader := bytes.NewReader(jsonBody)
+	jsonBody := `{"email":"blabla@gmail.com","password":"123"}`
+	firstBodyReader := strings.NewReader(jsonBody)
 
 	firstRequest, err := http.NewRequest(http.MethodPost, "/api/signup", firstBodyReader)
 	if err != nil {
@@ -71,7 +70,7 @@ func TestEndpoints_SignUpExisting(t *testing.T) {
 	// Create a user with the email blabla@gmail
 	s.SignUp(firstResponse, firstRequest)
 
-	secondBodyReader := bytes.NewReader(jsonBody)
+	secondBodyReader := strings.NewReader(jsonBody)
 
 	secondRequest, err := http.NewRequest(http.MethodPost, "/api/signup", secondBodyReader)
 	if err != nil {
@@ -99,8 +98,8 @@ func TestEndpoints_SignUpExisting(t *testing.T) {
 }
 
 func TestEndpoints_SignUpBadRequest(t *testing.T) {
-	jsonBody := []byte(`what am I doing with that body oh`)
-	bodyReader := bytes.NewReader(jsonBody)
+	jsonBody := `what am I doing with that body oh`
+	bodyReader := strings.NewReader(jsonBody)
 
 	request, err := http.NewRequest(http.MethodPost, "/api/signup", bodyReader)
 	if err != nil {
@@ -130,8 +129,8 @@ func TestEndpoints_SignUpBadRequest(t *testing.T) {
 
 func TestEndpoints_SignIn(t *testing.T) {
 	// create user
-	jsonBody := []byte(`{"email":"blabla@gmail.com","password":"123"}`)
-	bodyReader := bytes.NewReader(jsonBody)
+	jsonBody := `{"email":"blabla@gmail.com","password":"123"}`
+	bodyReader := strings.NewReader(jsonBody)
 
 	signUpRequest, err := http.NewRequest(http.MethodPost, "/api/signup", bodyReader)
 	if err != nil {
@@ -145,7 +144,7 @@ func TestEndpoints_SignIn(t *testing.T) {
 	s.SignUp(response, signUpRequest)
 
 	// sign in
-	bodyReader = bytes.NewReader(jsonBody)
+	bodyReader = strings.NewReader(jsonBody)
 
 	signInRequest, err := http.NewRequest(http.MethodPost, "/api/sigin", bodyReader)
 	if err != nil {
