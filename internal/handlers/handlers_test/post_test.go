@@ -1,4 +1,4 @@
-package handlers
+package handlers_test
 
 import (
 	"net/http"
@@ -8,25 +8,29 @@ import (
 	"testing"
 
 	"github.com/ogniloud/madr/internal/data"
+	"github.com/ogniloud/madr/internal/handlers"
 
 	"github.com/charmbracelet/log"
 )
 
-func getEndpoints() *Endpoints {
+const (
+	jsonCredentials = `{"email":"blabla@gmail.com","password":"123"}`
+)
+
+func getEndpoints() *handlers.Endpoints {
 	dl := data.New()
 	l := log.NewWithOptions(os.Stderr, log.Options{
 		ReportCaller:    true,
 		ReportTimestamp: true,
 	})
 
-	endpoints := New(dl, l)
+	endpoints := handlers.New(dl, l)
 
 	return endpoints
 }
 
 func TestEndpoints_SignUp(t *testing.T) {
-	jsonBody := `{"email":"blabla@gmail.com","password":"123"}`
-	bodyReader := strings.NewReader(jsonBody)
+	bodyReader := strings.NewReader(jsonCredentials)
 
 	request, err := http.NewRequest(http.MethodPost, "/api/signup", bodyReader)
 	if err != nil {
@@ -55,8 +59,7 @@ func TestEndpoints_SignUp(t *testing.T) {
 }
 
 func TestEndpoints_SignUpExisting(t *testing.T) {
-	jsonBody := `{"email":"blabla@gmail.com","password":"123"}`
-	firstBodyReader := strings.NewReader(jsonBody)
+	firstBodyReader := strings.NewReader(jsonCredentials)
 
 	firstRequest, err := http.NewRequest(http.MethodPost, "/api/signup", firstBodyReader)
 	if err != nil {
@@ -70,7 +73,7 @@ func TestEndpoints_SignUpExisting(t *testing.T) {
 	// Create a user with the email blabla@gmail
 	s.SignUp(firstResponse, firstRequest)
 
-	secondBodyReader := strings.NewReader(jsonBody)
+	secondBodyReader := strings.NewReader(jsonCredentials)
 
 	secondRequest, err := http.NewRequest(http.MethodPost, "/api/signup", secondBodyReader)
 	if err != nil {
@@ -129,8 +132,7 @@ func TestEndpoints_SignUpBadRequest(t *testing.T) {
 
 func TestEndpoints_SignIn(t *testing.T) {
 	// create user
-	jsonBody := `{"email":"blabla@gmail.com","password":"123"}`
-	bodyReader := strings.NewReader(jsonBody)
+	bodyReader := strings.NewReader(jsonCredentials)
 
 	signUpRequest, err := http.NewRequest(http.MethodPost, "/api/signup", bodyReader)
 	if err != nil {
@@ -144,7 +146,7 @@ func TestEndpoints_SignIn(t *testing.T) {
 	s.SignUp(response, signUpRequest)
 
 	// sign in
-	bodyReader = strings.NewReader(jsonBody)
+	bodyReader = strings.NewReader(jsonCredentials)
 
 	signInRequest, err := http.NewRequest(http.MethodPost, "/api/sigin", bodyReader)
 	if err != nil {
@@ -199,8 +201,7 @@ func TestEndpoints_SignInBadRequest(t *testing.T) {
 }
 
 func TestEndpoints_SignInUnauthorized(t *testing.T) {
-	jsonBody := `{"email":"blabla@gmail.com","password":"123"}`
-	bodyReader := strings.NewReader(jsonBody)
+	bodyReader := strings.NewReader(jsonCredentials)
 
 	signInRequest, err := http.NewRequest(http.MethodPost, "/api/sigin", bodyReader)
 	if err != nil {
