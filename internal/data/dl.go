@@ -13,8 +13,8 @@ var ErrEmailExists = fmt.Errorf("user with this email already exists")
 // Datalayer is a struct that helps us to interact with the data.
 type Datalayer struct{}
 
-// NewDatalayer returns a new Datalayer struct.
-func NewDatalayer() *Datalayer {
+// New returns a new Datalayer struct.
+func New() *Datalayer {
 	return &Datalayer{}
 }
 
