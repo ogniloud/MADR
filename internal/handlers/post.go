@@ -69,6 +69,9 @@ func (e *Endpoints) SignUp(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// We set the status code to 201 to indicate that the resource is created
+	w.WriteHeader(http.StatusCreated)
+
 	err = models.ToJSON(models.SignUpResponse{
 		ID:    user.ID,
 		Email: user.Email,
@@ -79,9 +82,6 @@ func (e *Endpoints) SignUp(w http.ResponseWriter, r *http.Request) {
 
 		return
 	}
-
-	// We set the status code to 201 to indicate that the resource is created
-	w.WriteHeader(http.StatusCreated)
 }
 
 // swagger:route POST /api/signin SignIn
