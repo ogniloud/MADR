@@ -11,21 +11,21 @@ import (
 var ErrEmailExists = fmt.Errorf("user with this email already exists")
 
 // Datalayer is a struct that helps us to interact with the data.
-type Datalayer struct{}
+type Datalayer struct {
+	// users is a slice of models.User
+	// This is our in-memory database. We will replace this with a real database later.
+	users models.Users
+}
 
 // New returns a new Datalayer struct.
 func New() *Datalayer {
 	return &Datalayer{}
 }
 
-// users is a slice of models.User
-// This is our in-memory database. We will replace this with a real database later.
-var users models.Users
-
 // isEmailExists is a helper function to check if a user with the given email already exists.
 // Returns true if the user exists, false otherwise.
 func (d *Datalayer) isEmailExists(email string) bool {
-	for _, user := range users {
+	for _, user := range d.users {
 		if user.Email == email {
 			return true
 		}
@@ -36,7 +36,7 @@ func (d *Datalayer) isEmailExists(email string) bool {
 
 // isPasswordCorrect is a helper function to check if the given password is correct for the given email.
 func (d *Datalayer) isPasswordCorrect(email, password string) bool {
-	for _, user := range users {
+	for _, user := range d.users {
 		if user.Email == email && user.Password == password {
 			return true
 		}
@@ -51,13 +51,13 @@ func (d *Datalayer) CreateUser(_ context.Context, user models.User) (models.User
 		return models.User{}, ErrEmailExists
 	}
 
-	if len(users) == 0 {
+	if len(d.users) == 0 {
 		user.ID = 1
 	} else {
-		user.ID = users[len(users)-1].ID + 1
+		user.ID = d.users[len(d.users)-1].ID + 1
 	}
 
-	users = append(users, user)
+	d.users = append(d.users, user)
 
 	return user, nil
 }
