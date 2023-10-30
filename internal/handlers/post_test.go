@@ -198,3 +198,32 @@ func TestEndpoints_SignInBadRequest(t *testing.T) {
 		t.Errorf("got %d, want %d", response.Code, wantStatus)
 	}
 }
+
+func TestEndpoints_SignInUnauthorized(t *testing.T) {
+	jsonBody := `{"email":"blabla@gmail.com","password":"123"}`
+	bodyReader := strings.NewReader(jsonBody)
+
+	signInRequest, err := http.NewRequest(http.MethodPost, "/api/sigin", bodyReader)
+	if err != nil {
+		t.Errorf("failed to create signInRequest: %v", err)
+	}
+
+	response := httptest.NewRecorder()
+
+	s := getEndpoints()
+
+	s.SignIn(response, signInRequest)
+
+	got := response.Body.String()
+	want := `{"message":"invalid credentials"}
+`
+	wantStatus := http.StatusUnauthorized
+
+	if got != want {
+		t.Errorf("got %q, want %q", got, want)
+	}
+
+	if response.Code != wantStatus {
+		t.Errorf("got %d, want %d", response.Code, wantStatus)
+	}
+}
