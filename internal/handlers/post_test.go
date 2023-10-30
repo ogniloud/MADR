@@ -88,3 +88,31 @@ func TestEndpoints_SignUpExisting(t *testing.T) {
 		t.Errorf("got %q, want %q", got, want)
 	}
 }
+
+func TestEndpoints_SignUpBadRequest(t *testing.T) {
+	jsonBody := []byte(`what am I doing with that body oh`)
+	bodyReader := bytes.NewReader(jsonBody)
+
+	request, err := http.NewRequest(http.MethodPost, "/api/signup", bodyReader)
+	if err != nil {
+		t.Errorf("failed to create request: %v", err)
+	}
+
+	response := httptest.NewRecorder()
+
+	s := getEndpoints()
+
+	s.SignUp(response, request)
+
+	got := response.Body.String()
+	want := `{"message":"Unable to unmarshal JSON"}
+`
+
+	if got != want {
+		t.Errorf("got %q, want %q", got, want)
+	}
+
+	if response.Code != http.StatusBadRequest {
+		t.Errorf("got %d, want %d", response.Code, http.StatusCreated)
+	}
+}
