@@ -118,6 +118,7 @@ func (e *Endpoints) SignIn(w http.ResponseWriter, r *http.Request) {
 	err := models.FromJSON(&request, r.Body)
 	if err != nil {
 		e.writeGenericError(w, http.StatusBadRequest, "Unable to unmarshal JSON")
+		return
 	}
 
 	authToken, err := e.data.SignInUser(r.Context(), request.Email, request.Password)
