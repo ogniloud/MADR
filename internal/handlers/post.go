@@ -144,6 +144,4 @@ func (e *Endpoints) SignIn(w http.ResponseWriter, r *http.Request) {
 
 		return
 	}
-
-	w.WriteHeader(http.StatusOK)
 }
