@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"os"
+	"strings"
 	"testing"
 
 	"github.com/ogniloud/madr/internal/data"
@@ -159,6 +160,35 @@ func TestEndpoints_SignIn(t *testing.T) {
 	want := `{"authorization":"Bearer blablablaIMATOKENyouAREpoorBASTARD"}
 `
 	wantStatus := http.StatusOK
+
+	if got != want {
+		t.Errorf("got %q, want %q", got, want)
+	}
+
+	if response.Code != wantStatus {
+		t.Errorf("got %d, want %d", response.Code, wantStatus)
+	}
+}
+
+func TestEndpoints_SignInBadRequest(t *testing.T) {
+	jsonBody := `I don't care about you`
+	bodyReader := strings.NewReader(jsonBody)
+
+	request, err := http.NewRequest(http.MethodPost, "/api/signin", bodyReader)
+	if err != nil {
+		t.Errorf("failed to create signInRequest: %v", err)
+	}
+
+	response := httptest.NewRecorder()
+
+	s := getEndpoints()
+
+	s.SignIn(response, request)
+
+	got := response.Body.String()
+	want := `{"message":"Unable to unmarshal JSON"}
+`
+	wantStatus := http.StatusBadRequest
 
 	if got != want {
 		t.Errorf("got %q, want %q", got, want)
