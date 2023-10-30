@@ -43,12 +43,14 @@ func TestEndpoints_SignUp(t *testing.T) {
 	want := `{"id":1,"email":"blabla@gmail.com"}
 `
 
+	wantStatus := http.StatusCreated
+
 	if got != want {
 		t.Errorf("got %q, want %q", got, want)
 	}
 
-	if response.Code != http.StatusCreated {
-		t.Errorf("got %d, want %d", response.Code, http.StatusCreated)
+	if response.Code != wantStatus {
+		t.Errorf("got %d, want %d", response.Code, wantStatus)
 	}
 }
 
@@ -84,8 +86,14 @@ func TestEndpoints_SignUpExisting(t *testing.T) {
 	want := `{"message":"user with this email already exists"}
 `
 
+	wantStatus := http.StatusConflict
+
 	if got != want {
 		t.Errorf("got %q, want %q", got, want)
+	}
+
+	if secondResponse.Code != wantStatus {
+		t.Errorf("got %d, want %d", secondResponse.Code, wantStatus)
 	}
 }
 
@@ -108,11 +116,13 @@ func TestEndpoints_SignUpBadRequest(t *testing.T) {
 	want := `{"message":"Unable to unmarshal JSON"}
 `
 
+	wantStatus := http.StatusBadRequest
+
 	if got != want {
 		t.Errorf("got %q, want %q", got, want)
 	}
 
-	if response.Code != http.StatusBadRequest {
-		t.Errorf("got %d, want %d", response.Code, http.StatusCreated)
+	if response.Code != wantStatus {
+		t.Errorf("got %d, want %d", response.Code, wantStatus)
 	}
 }
