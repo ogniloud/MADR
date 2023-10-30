@@ -126,3 +126,45 @@ func TestEndpoints_SignUpBadRequest(t *testing.T) {
 		t.Errorf("got %d, want %d", response.Code, wantStatus)
 	}
 }
+
+func TestEndpoints_SignIn(t *testing.T) {
+	// create user
+	jsonBody := []byte(`{"email":"blabla@gmail.com","password":"123"}`)
+	bodyReader := bytes.NewReader(jsonBody)
+
+	signUpRequest, err := http.NewRequest(http.MethodPost, "/api/signup", bodyReader)
+	if err != nil {
+		t.Errorf("failed to create signUpRequest: %v", err)
+	}
+
+	response := httptest.NewRecorder()
+
+	s := getEndpoints()
+
+	s.SignUp(response, signUpRequest)
+
+	// sign in
+	bodyReader = bytes.NewReader(jsonBody)
+
+	signInRequest, err := http.NewRequest(http.MethodPost, "/api/sigin", bodyReader)
+	if err != nil {
+		t.Errorf("failed to create signInRequest: %v", err)
+	}
+
+	response = httptest.NewRecorder()
+
+	s.SignIn(response, signInRequest)
+
+	got := response.Body.String()
+	want := `{"authorization":"Bearer blablablaIMATOKENyouAREpoorBASTARD"}
+`
+	wantStatus := http.StatusOK
+
+	if got != want {
+		t.Errorf("got %q, want %q", got, want)
+	}
+
+	if response.Code != wantStatus {
+		t.Errorf("got %d, want %d", response.Code, wantStatus)
+	}
+}
