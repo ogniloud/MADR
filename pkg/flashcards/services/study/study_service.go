@@ -1,12 +1,9 @@
 package study
 
 import (
-	"fmt"
 	"math"
 	"math/rand"
-	"time"
 
-	"github.com/ogniloud/madr/pkg/flashcards/cache"
 	"github.com/ogniloud/madr/pkg/flashcards/models"
 	"github.com/ogniloud/madr/pkg/flashcards/services/deck"
 )
@@ -17,6 +14,8 @@ const (
 	Bad = Mark(iota)
 	Satisfactory
 	Excellent
+
+	CacheRandomLoadSize = 50
 )
 
 type IStudyService interface {
@@ -40,52 +39,12 @@ func NewStudy(s *deck.Service, maxBox models.Box) *StudyService {
 	return &StudyService{fserv: s, p: p}
 }
 
-func (s *StudyService) GetRandom(uid models.UserId, n int) (models.FlashcardId, error) {
-	d, ok := s.fserv.Cache().Load(fmt.Sprintf("k%d", uid))
-	decks := d.(cache.CachedRandom)
-
-	if !ok || len(decks) == 0 {
-		m := map[models.Box]int{}
-
-		for i := 0; i < n; i++ {
-			m[s.box()]++
-		}
-
-		err := s.fserv.Random(uid, models.CoolDown{State: time.Now()}, m)
-		if err != nil {
-			return -1, err
-		}
-	}
-	defer func() {
-		decks = decks[1:]
-		s.fserv.Cache().Store(fmt.Sprintf("k%d", uid), decks)
-	}()
-
-	return decks[0], nil
+func (s *StudyService) GetNextRandom(uid models.UserId, n int) (models.FlashcardId, error) {
+	return 0, nil
 }
 
-func (s *StudyService) GetRandomDeck(uid models.UserId, n int, id models.DeckId) (models.FlashcardId, error) {
-	d, ok := s.fserv.Cache().Load(fmt.Sprintf("%dk%d", id, uid))
-	decks := d.(cache.CachedRandom)
-
-	if !ok || len(decks) == 0 {
-		m := map[models.Box]int{}
-
-		for i := 0; i < n; i++ {
-			m[s.box()]++
-		}
-
-		err := s.fserv.RandomDeck(uid, models.CoolDown{State: time.Now()}, id, m)
-		if err != nil {
-			return -1, err
-		}
-	}
-	defer func() {
-		decks = decks[1:]
-		s.fserv.Cache().Store(fmt.Sprintf("%dk%d", id, uid), decks)
-	}()
-
-	return decks[0], nil
+func (s *StudyService) GetNextRandomDeck(uid models.UserId, n int, id models.DeckId) (models.FlashcardId, error) {
+	return 0, nil
 }
 
 func (s *StudyService) Rate(uid models.UserId, id models.FlashcardId, mark Mark) error {

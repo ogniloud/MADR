@@ -8,6 +8,7 @@ import (
 	"github.com/ogniloud/madr/pkg/flashcards/services/deck"
 	"github.com/ogniloud/madr/pkg/flashcards/services/study"
 	"github.com/ogniloud/madr/pkg/flashcards/storage/mocks"
+	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/suite"
 )
@@ -24,44 +25,33 @@ func (t *testingSuite) SetupTest() {
 	t.s = study.NewStudy(&serv, 5)
 }
 
-var flashcards = []models.Flashcard{
-	{
-		Id: 1,
-		W:  "Aboba1",
-		B: models.Backside{
-			1, "Абоба1",
-		},
-		DeckId: 2,
-	},
-	{
-		Id: 2,
-		W:  "Aboba2",
-		B: models.Backside{
-			1, "Абоба2",
-		},
-		DeckId: 2,
-	},
-	{
-		Id: 3,
-		W:  "Aboba3",
-		B: models.Backside{
-			1, "Абоба3",
-		},
-		DeckId: 5,
-	},
-	{
-		Id: 4,
-		W:  "Aboba4",
-		B: models.Backside{
-			1, "Абоба4",
-		},
-		DeckId: 3,
-	},
+var ids = map[models.FlashcardId]struct{}{
+	1: {}, 2: {}, 3: {}, 4: {},
 }
+var flashcards = []models.FlashcardId{1, 2, 3, 4}
 
 func (t *testingSuite) Test_GetNRandom() {
 	t.m.On("GetCardsByUserCDBox", mock.Anything, mock.Anything, mock.Anything).
-		Return(flashcards, nil).Once()
+		Return(nil, nil).Once()
+
+	var cards map[models.FlashcardId]struct{}
+
+	t.Run("getting cards", func() {
+		for i := 0; i < 4; i++ {
+			card, err := t.s.GetRandom(1, 1)
+			assert.NoError(t.T(), err)
+			cards[card] = struct{}{}
+		}
+	})
+
+	t.Run("empty cache", func() {
+		_, err := t.s.GetRandom(1, 1)
+		assert.Error(t.T(), err)
+	})
+
+	t.Run("equal", func() {
+		assert.Equal(t.T(), cards, ids)
+	})
 }
 
 func TestSuite(t *testing.T) {

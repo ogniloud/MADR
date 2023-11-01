@@ -2,7 +2,6 @@ package deck
 
 import (
 	"fmt"
-	"slices"
 
 	"github.com/ogniloud/madr/pkg/flashcards/cache"
 	"github.com/ogniloud/madr/pkg/flashcards/models"
@@ -68,7 +67,7 @@ func (s *Service) CreateNewDeck(userId models.UserId, cfg models.DeckConfig, fla
 	return nil
 }
 
-func (s *Service) RemoveDeckFromUser(userId models.UserId, deckId models.DeckId) error {
+func (s *Service) LoadRandomsDeckCache(userId models.UserId, deckId models.DeckId) error {
 	decks, err := s.LoadDecks(userId)
 	if err != nil {
 		return err
@@ -79,48 +78,6 @@ func (s *Service) RemoveDeckFromUser(userId models.UserId, deckId models.DeckId)
 	}
 
 	delete(decks, deckId)
-	return nil
-}
-
-func (s *Service) Random(id models.UserId, cd models.CoolDown, limits map[models.Box]int) error {
-	cards, err := s.GetCardsByUserCDBox(id, cd, limits)
-	if err != nil {
-		return err
-	}
-
-	if len(cards) == 0 {
-		return ErrEmptyFlashcardsSlice
-	}
-
-	cachedCardsTmp, _ := s.c.Load(fmt.Sprintf(keyRandomCardFmt, id))
-	cachedCards := cachedCardsTmp.(cache.CachedRandom)
-
-	cachedCards = append(cachedCards, cards...)
-	cachedCards = slices.Clip(cachedCards)
-
-	s.c.Store(fmt.Sprintf(keyRandomCardFmt, id), cachedCards)
-
-	return nil
-}
-
-func (s *Service) RandomDeck(id models.UserId, cd models.CoolDown, deckId models.DeckId, limits map[models.Box]int) error {
-	cards, err := s.GetCardsByUserCDBoxDeck(id, cd, limits, deckId)
-	if err != nil {
-		return err
-	}
-
-	if len(cards) == 0 {
-		return ErrEmptyFlashcardsSlice
-	}
-
-	cachedCardsTmp, _ := s.c.Load(fmt.Sprintf(keyRandomCardDeckFmt, deckId, id))
-	cachedCards := cachedCardsTmp.(cache.CachedRandom)
-
-	cachedCards = append(cachedCards, cards...)
-	cachedCards = slices.Clip(cachedCards)
-
-	s.c.Store(fmt.Sprintf(keyRandomCardDeckFmt, deckId, id), cachedCards)
-
 	return nil
 }
 
