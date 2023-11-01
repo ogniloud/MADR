@@ -89,3 +89,12 @@ func (d Decks) Keys() []DeckId {
 
 	return ids
 }
+
+func (d Decks) Values() []DeckConfig {
+	ids := make([]DeckConfig, 0, len(d))
+	for _, v := range d {
+		ids = append(ids, v)
+	}
+
+	return ids
+}
