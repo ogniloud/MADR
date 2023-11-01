@@ -92,6 +92,32 @@ func (_m *Storage) GetCardsByUserCDBoxDeck(id int, cd models.CoolDown, limits ma
 	return r0, r1
 }
 
+// GetCardsByUserCDDeck provides a mock function with given fields: id, cd, deckId
+func (_m *Storage) GetCardsByUserCDDeck(id int, cd models.CoolDown, deckId int) ([]int, error) {
+	ret := _m.Called(id, cd, deckId)
+
+	var r0 []int
+	var r1 error
+	if rf, ok := ret.Get(0).(func(int, models.CoolDown, int) ([]int, error)); ok {
+		return rf(id, cd, deckId)
+	}
+	if rf, ok := ret.Get(0).(func(int, models.CoolDown, int) []int); ok {
+		r0 = rf(id, cd, deckId)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).([]int)
+		}
+	}
+
+	if rf, ok := ret.Get(1).(func(int, models.CoolDown, int) error); ok {
+		r1 = rf(id, cd, deckId)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
 // GetDecksByUserId provides a mock function with given fields: id
 func (_m *Storage) GetDecksByUserId(id int) (models.Decks, error) {
 	ret := _m.Called(id)
@@ -142,20 +168,20 @@ func (_m *Storage) GetFlashcardById(id int) (models.Flashcard, error) {
 	return r0, r1
 }
 
-// GetFlashcardsByDeckId provides a mock function with given fields: id
-func (_m *Storage) GetFlashcardsByDeckId(id int) ([]models.Flashcard, error) {
+// GetFlashcardsIdByDeckId provides a mock function with given fields: id
+func (_m *Storage) GetFlashcardsIdByDeckId(id int) ([]int, error) {
 	ret := _m.Called(id)
 
-	var r0 []models.Flashcard
+	var r0 []int
 	var r1 error
-	if rf, ok := ret.Get(0).(func(int) ([]models.Flashcard, error)); ok {
+	if rf, ok := ret.Get(0).(func(int) ([]int, error)); ok {
 		return rf(id)
 	}
-	if rf, ok := ret.Get(0).(func(int) []models.Flashcard); ok {
+	if rf, ok := ret.Get(0).(func(int) []int); ok {
 		r0 = rf(id)
 	} else {
 		if ret.Get(0) != nil {
-			r0 = ret.Get(0).([]models.Flashcard)
+			r0 = ret.Get(0).([]int)
 		}
 	}
 

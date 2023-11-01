@@ -63,12 +63,12 @@ func (cd CoolDown) NextState(b Box, f func(Box) time.Time) {
 
 // IsPassedNow returns true if state of CoolDown is not less than time.Now
 func (cd CoolDown) IsPassedNow() bool {
-	return cd.IsPassed(time.Now())
+	return cd.IsPassed(CoolDown{State: time.Now()})
 }
 
 // IsPassed returns true if state of CoolDown is not less than t
-func (cd CoolDown) IsPassed(t time.Time) bool {
-	return cd.State.Compare(t) != -1
+func (cd CoolDown) IsPassed(t CoolDown) bool {
+	return cd.State.Compare(t.State) == -1
 }
 
 type UserLeitner struct {
@@ -80,3 +80,12 @@ type UserLeitner struct {
 }
 
 type Decks map[DeckId]DeckConfig
+
+func (d Decks) Keys() []DeckId {
+	ids := make([]DeckId, 0, len(d))
+	for k := range d {
+		ids = append(ids, k)
+	}
+
+	return ids
+}

@@ -1,8 +1,10 @@
 package study
 
 import (
+	"fmt"
 	"math"
 	"math/rand"
+	"slices"
 
 	"github.com/ogniloud/madr/pkg/flashcards/models"
 	"github.com/ogniloud/madr/pkg/flashcards/services/deck"
@@ -39,12 +41,63 @@ func NewStudy(s *deck.Service, maxBox models.Box) *StudyService {
 	return &StudyService{fserv: s, p: p}
 }
 
-func (s *StudyService) GetNextRandom(uid models.UserId, n int) (models.FlashcardId, error) {
-	return 0, nil
+func (s *StudyService) GetNextRandom(uid models.UserId, down models.CoolDown) (models.FlashcardId, error) {
+	decks, err := s.fserv.LoadDecks(uid)
+	if err != nil {
+		return 0, err
+	}
+
+	keys := decks.Keys()
+	rand.Shuffle(len(keys), func(i, j int) {
+		keys[i], keys[j] = keys[j], keys[i]
+	})
+
+	for i := 0; i < len(keys); i++ {
+		card, err := s.GetNextRandomDeck(uid, keys[i], down)
+		if err == nil {
+			return card, nil
+		}
+	}
+
+	return 0, fmt.Errorf("no cards")
 }
 
-func (s *StudyService) GetNextRandomDeck(uid models.UserId, n int, id models.DeckId) (models.FlashcardId, error) {
-	return 0, nil
+func (s *StudyService) GetNextRandomDeck(uid models.UserId, id models.DeckId, down models.CoolDown) (models.FlashcardId, error) {
+	ids, err := s.fserv.GetFlashcardsIdByDeckId(id)
+	if err != nil {
+		return 0, err
+	}
+	ltns := make([]models.UserLeitner, 0, len(ids))
+
+	for _, id := range ids {
+		ltn, err := s.fserv.GetLeitnerByUserIdCardId(uid, id)
+		if err != nil {
+			return 0, err
+		}
+
+		ltns = append(ltns, ltn)
+	}
+
+	ltns = slices.DeleteFunc(ltns, func(leitner models.UserLeitner) bool {
+		return !leitner.CoolDown.IsPassed(down)
+	})
+
+	if len(ltns) == 0 {
+		return 0, fmt.Errorf("no cards")
+	}
+
+	// shuffle and choose next card
+	rand.Shuffle(len(ltns), func(i, j int) {
+		ltns[i], ltns[j] = ltns[j], ltns[i]
+	})
+	b := s.box()
+
+	for _, v := range ltns {
+		if v.Box == b {
+			return v.FlashcardId, nil
+		}
+	}
+	return ltns[rand.Intn(len(ltns))].FlashcardId, nil
 }
 
 func (s *StudyService) Rate(uid models.UserId, id models.FlashcardId, mark Mark) error {

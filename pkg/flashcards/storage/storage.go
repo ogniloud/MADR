@@ -9,8 +9,8 @@ type Storage interface {
 	// GetDecksByUserId возвращает все колоды, имеющиеся у пользователя.
 	GetDecksByUserId(id models.UserId) (models.Decks, error)
 
-	// GetFlashcardsByDeckId возращает карточки в колоде.
-	GetFlashcardsByDeckId(id models.DeckId) ([]models.Flashcard, error)
+	// GetFlashcardsIdByDeckId возращает id-карточки в колоде.
+	GetFlashcardsIdByDeckId(id models.DeckId) ([]models.FlashcardId, error)
 
 	GetFlashcardById(id models.FlashcardId) (models.Flashcard, error)
 
@@ -23,6 +23,8 @@ type Storage interface {
 
 	// GetCardsByUserCDBoxDeck возвращает те же id карт, что и GetCardsByUserCDBox, но внутри колоды.
 	GetCardsByUserCDBoxDeck(id models.UserId, cd models.CoolDown, limits map[models.Box]int, deckId models.DeckId) ([]models.FlashcardId, error)
+
+	GetCardsByUserCDDeck(id models.UserId, cd models.CoolDown, deckId models.DeckId) ([]models.FlashcardId, error)
 
 	GetLeitnerByUserIdCardId(id models.UserId, flashcardId models.FlashcardId) (models.UserLeitner, error)
 
