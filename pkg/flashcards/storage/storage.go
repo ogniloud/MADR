@@ -1,125 +1,45 @@
 package storage
 
 import (
-	"time"
+	"github.com/ogniloud/madr/pkg/flashcards/models"
 )
-
-type (
-	DeckId      = int
-	UserId      = int
-	FlashcardId = int
-)
-
-type UserInfo struct {
-	Id     UserId `json:"user_id"`
-	MaxBox Box    `json:"max_box"`
-}
-
-type DeckConfig struct {
-	DeckId DeckId `json:"deck_id"`
-	UserId UserId `json:"user_id"`
-	Name   string `json:"name"`
-}
-
-type (
-	Word         = string
-	BacksideType int
-)
-
-// Backside is an abstract type for representation an answer
-// of describing the Word. That can be just a string (translation, definition)
-// or image, or sound - everything depends on Answer method.
-type Backside struct {
-	Type  BacksideType `json:"type"`
-	Value string       `json:"value"`
-}
-
-type Flashcard struct {
-	Id     FlashcardId `json:"id"`
-	W      Word        `json:"word"`
-	B      Backside    `json:"backside"`
-	DeckId DeckId      `json:"deck_id"`
-}
-
-type (
-	LeitnerId = int
-	Box       = int
-)
-
-// CoolDown describes the timestamp.
-// If the current time is less than the CoolDown state,
-// the flashcard will not be shown for study.
-type CoolDown struct {
-	// the current simulation time.
-	State time.Time `json:"state"`
-}
-
-func (cd CoolDown) String() string {
-	return cd.State.String()
-}
-
-// NextState updates the state of CoolDown relatively f
-func (cd CoolDown) NextState(b Box, f func(Box) time.Time) {
-	cd.State = f(b)
-}
-
-// IsPassedNow returns true if state of CoolDown is not less than time.Now
-func (cd CoolDown) IsPassedNow() bool {
-	return cd.IsPassed(time.Now())
-}
-
-// IsPassed returns true if state of CoolDown is not less than t
-func (cd CoolDown) IsPassed(t time.Time) bool {
-	return cd.State.Compare(t) != -1
-}
-
-type UserLeitner struct {
-	Id          LeitnerId   `json:"id"`
-	UserId      UserId      `json:"user_id"`
-	FlashcardId FlashcardId `json:"card_id"`
-	Box         Box         `json:"level"`
-	CoolDown    CoolDown    `json:"cooldown"`
-}
-
-type Decks map[DeckId]DeckConfig
 
 //go:generate go run github.com/vektra/mockery/v2@v2.36.0 --name Storage
 type Storage interface {
 	// GetDecksByUserId возвращает все колоды, имеющиеся у пользователя.
-	GetDecksByUserId(id UserId) (Decks, error)
+	GetDecksByUserId(id models.UserId) (models.Decks, error)
 
 	// GetFlashcardsByDeckId возращает карточки в колоде.
-	GetFlashcardsByDeckId(id DeckId) ([]Flashcard, error)
+	GetFlashcardsByDeckId(id models.DeckId) ([]models.Flashcard, error)
 
-	GetFlashcardById(id FlashcardId) (Flashcard, error)
-
-	// GetLeitnerByUserCD возвращает все UserLeitner пользователя с истёкшим CoolDown.
-	GetLeitnerByUserCD(id UserId, cd CoolDown) ([]UserLeitner, error)
+	GetFlashcardById(id models.FlashcardId) (models.Flashcard, error)
 
 	// GetCardsByUserCDBox возвращает id все карточек с истёкшим CoolDown,
 	// а также удовлетворяющих пределам по количеству по Box'ам.
 	//
 	// Например, если limits = {1:5, 2:7}, будет возвращено не более 5 карт с Box == 1
 	// и не более 7 карт с Box == 2.
-	GetCardsByUserCDBox(id UserId, cd CoolDown, limits map[Box]int) ([]FlashcardId, error)
+	GetCardsByUserCDBox(id models.UserId, cd models.CoolDown, limits map[models.Box]int) ([]models.FlashcardId, error)
 
 	// GetCardsByUserCDBoxDeck возвращает те же id карт, что и GetCardsByUserCDBox, но внутри колоды.
-	GetCardsByUserCDBoxDeck(id UserId, cd CoolDown, limits map[Box]int, deckId DeckId) ([]FlashcardId, error)
+	GetCardsByUserCDBoxDeck(id models.UserId, cd models.CoolDown, limits map[models.Box]int, deckId models.DeckId) ([]models.FlashcardId, error)
 
-	GetLeitnerByUserIdCardId(id UserId, flashcardId FlashcardId) (UserLeitner, error)
+	GetLeitnerByUserIdCardId(id models.UserId, flashcardId models.FlashcardId) (models.UserLeitner, error)
 
-	GetUserInfo(uid UserId) (UserInfo, error)
+	GetUserInfo(uid models.UserId) (models.UserInfo, error)
 
-	PutAllFlashcards(id DeckId, cards []Flashcard) error
+	PutAllFlashcards(id models.DeckId, cards []models.Flashcard) error
 
-	PutNewDeck(config DeckConfig) error
+	PutNewDeck(config models.DeckConfig) error
 
-	PutAllUserLeitner(uls []UserLeitner) error
+	PutAllUserLeitner(uls []models.UserLeitner) error
 
-	DeleteFlashcardFromDeck(id DeckId, cardId FlashcardId) error
+	DeleteFlashcardFromDeck(id models.DeckId, cardId models.FlashcardId) error
 
-	DeleteDeck(id DeckId) error
+	// DeleteUserDeck удаляет запись из models.DeckConfig о том, что пользователь userId
+	// имеет колоду id
+	DeleteUserDeck(userId models.UserId, id models.DeckId) error
 
 	// UpdateLeitner обновляет запись в базе данным при совпадении LeitnerId
-	UpdateLeitner(ul UserLeitner) error
+	UpdateLeitner(ul models.UserLeitner) error
 }

@@ -1,6 +1,6 @@
-package studying
+package study
 
-import "github.com/ogniloud/madr/pkg/flashcards"
+import "github.com/ogniloud/madr/pkg/flashcards/services/deck"
 
 type Matching struct{}
 
@@ -12,10 +12,10 @@ type IExerciseService interface {
 }
 
 type ExerciseService struct {
-	s *flashcards.Service
+	s *deck.Service
 }
 
-func NewExerciseService(s *flashcards.Service) ExerciseService {
+func NewExerciseService(s *deck.Service) ExerciseService {
 	return ExerciseService{s: s}
 }
 

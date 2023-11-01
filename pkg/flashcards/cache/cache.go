@@ -1,5 +1,11 @@
 package cache
 
-import "sync"
+import (
+	"sync"
+
+	"github.com/ogniloud/madr/pkg/flashcards/models"
+)
 
 type Cache = *sync.Map
+
+type CachedRandom []models.FlashcardId
