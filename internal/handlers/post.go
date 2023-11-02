@@ -53,7 +53,7 @@ func (e *Endpoints) SignUp(w http.ResponseWriter, r *http.Request) {
 	// users. This is a good practice to follow.
 	// And also in case we want to change the datalayer models or the
 	// API request models, we can do it without affecting the other.
-	user, err := e.data.CreateUser(r.Context(), models.User{
+	err = e.data.CreateUser(r.Context(), models.User{
 		Email:    request.Email,
 		Password: request.Password,
 	})
@@ -71,17 +71,6 @@ func (e *Endpoints) SignUp(w http.ResponseWriter, r *http.Request) {
 
 	// We set the status code to 201 to indicate that the resource is created
 	w.WriteHeader(http.StatusCreated)
-
-	err = models.ToJSON(models.SignUpResponse{
-		ID:    user.ID,
-		Email: user.Email,
-	}, w)
-	if err != nil {
-		e.logger.Error("Unable to write JSON response", "error", err)
-		e.writeGenericError(w, http.StatusInternalServerError, models.ErrInternalServer.Error())
-
-		return
-	}
 }
 
 // swagger:route POST /api/signin SignIn

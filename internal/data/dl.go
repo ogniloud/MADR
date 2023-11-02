@@ -46,9 +46,9 @@ func (d *Datalayer) isPasswordCorrect(email, password string) bool {
 }
 
 // CreateUser is a function to create a new user.
-func (d *Datalayer) CreateUser(_ context.Context, user models.User) (models.User, error) {
+func (d *Datalayer) CreateUser(_ context.Context, user models.User) error {
 	if d.isEmailExists(user.Email) {
-		return models.User{}, ErrEmailExists
+		return ErrEmailExists
 	}
 
 	if len(d.users) == 0 {
@@ -59,7 +59,7 @@ func (d *Datalayer) CreateUser(_ context.Context, user models.User) (models.User
 
 	d.users = append(d.users, user)
 
-	return user, nil
+	return nil
 }
 
 // SignInUser is a function to sign in a user.

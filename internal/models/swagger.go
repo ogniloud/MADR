@@ -17,11 +17,7 @@
 package models
 
 // swagger:response signUpCreatedResponse
-type SwaggerSignUpCreatedResponse struct {
-	// Response with the credentials of the user.
-	// in: body
-	Body SignUpResponse
-}
+type SwaggerSignUpCreatedResponse struct{}
 
 // swagger:response signUpBadRequestError
 type SwaggerSignUpBadRequestError struct {
