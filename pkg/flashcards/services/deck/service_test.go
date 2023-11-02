@@ -133,8 +133,8 @@ func (l *LeitnerSuite) Test_CreateNewDeck() {
 			DeckId: 10,
 		},
 	}
-	assert.Error(l.T(), l.s.CreateNewDeck(1, models.DeckConfig{}, []models.Flashcard{}))
 
+	assert.Error(l.T(), l.s.CreateNewDeck(1, models.DeckConfig{}, []models.Flashcard{}))
 	assert.Nil(l.T(), l.s.CreateNewDeck(1, cfg, cards))
 
 	decks, err := l.s.LoadDecks(1)

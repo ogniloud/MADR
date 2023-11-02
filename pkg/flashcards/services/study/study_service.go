@@ -32,6 +32,7 @@ type StudyService struct {
 func NewStudy(s *deck.Service, maxBox models.Box) *StudyService {
 	p := make([]float32, maxBox)
 	p[0] = 1
+
 	for i := range p[1:] {
 		p[i+1] = p[i] + float32(math.Pow(.5, float64(i+1)))
 	}
@@ -67,6 +68,7 @@ func (s *StudyService) GetNextRandomDeck(uid models.UserId, id models.DeckId, do
 	if err != nil {
 		return 0, err
 	}
+
 	ltns := make([]models.UserLeitner, 0, len(ids))
 
 	for _, id := range ids {
@@ -90,6 +92,7 @@ func (s *StudyService) GetNextRandomDeck(uid models.UserId, id models.DeckId, do
 	rand.Shuffle(len(ltns), func(i, j int) {
 		ltns[i], ltns[j] = ltns[j], ltns[i]
 	})
+
 	b := s.box()
 
 	for _, v := range ltns {
@@ -97,6 +100,7 @@ func (s *StudyService) GetNextRandomDeck(uid models.UserId, id models.DeckId, do
 			return v.FlashcardId, nil
 		}
 	}
+
 	return ltns[rand.Intn(len(ltns))].FlashcardId, nil
 }
 
@@ -129,7 +133,7 @@ func (s *StudyService) Rate(uid models.UserId, id models.FlashcardId, mark Mark)
 
 // let p = [.5 .7 .8 .9 .95] and r is a random float
 // returned Box is the minimum index i such that r >= p[i]
-// so, for each i => 0 <= p[i] < 1
+// so, for each i => 0 <= p[i] < 1.
 func (s *StudyService) box() models.Box {
 	r := rand.Float32()
 	for i, v := range s.p {
@@ -137,5 +141,6 @@ func (s *StudyService) box() models.Box {
 			return i
 		}
 	}
+
 	return len(s.p)
 }

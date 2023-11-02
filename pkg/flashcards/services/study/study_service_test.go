@@ -94,7 +94,7 @@ func (t *testingSuite) Test_GetNextRandomDeck() {
 		})
 
 	cards := make([]models.FlashcardId, 0, 5)
-	for i := 0; i < 5; i++ {
+	for i := 0; i < len(flashcard); i++ {
 		t.Run(strconv.Itoa(i), func() {
 			id, err := t.s.GetNextRandomDeck(1, 1, models.CoolDown{State: time.Time{}.Add(time.Second)})
 			if assert.NoError(t.T(), err) {

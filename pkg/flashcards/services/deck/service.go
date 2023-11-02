@@ -35,6 +35,7 @@ func (s *Service) LoadDecks(id models.UserId) (models.Decks, error) {
 	if err != nil {
 		return nil, err
 	}
+
 	s.c.Store(id, decks)
 
 	return decks, nil
@@ -78,6 +79,7 @@ func (s *Service) DeleteDeck(userId models.UserId, deckId models.DeckId) error {
 
 	delete(decks, deckId)
 	s.Cache().Store(userId, decks)
+
 	return nil
 }
 
