@@ -16,8 +16,6 @@ const (
 	Bad = Mark(iota)
 	Satisfactory
 	Excellent
-
-	CacheRandomLoadSize = 50
 )
 
 type IStudyService interface {

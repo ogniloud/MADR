@@ -56,17 +56,17 @@ func (cd CoolDown) String() string {
 	return cd.State.String()
 }
 
-// NextState updates the state of CoolDown relatively f
+// NextState updates the state of cd relatively f.
 func (cd CoolDown) NextState(b Box, f func(Box) time.Time) {
 	cd.State = f(b)
 }
 
-// IsPassedNow returns true if state of CoolDown is not less than time.Now
+// IsPassedNow returns true if state of CoolDown is not less than time.Now.
 func (cd CoolDown) IsPassedNow() bool {
 	return cd.IsPassed(CoolDown{State: time.Now()})
 }
 
-// IsPassed returns true if state of CoolDown is not less than t
+// IsPassed returns true if state of cd is not less than t.
 func (cd CoolDown) IsPassed(t CoolDown) bool {
 	return cd.State.Compare(t.State) == -1
 }

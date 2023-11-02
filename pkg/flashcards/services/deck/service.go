@@ -8,9 +8,7 @@ import (
 	"github.com/ogniloud/madr/pkg/flashcards/storage"
 )
 
-var (
-	ErrEmptyFlashcardsSlice = fmt.Errorf("empty flashcards slice")
-)
+var ErrEmptyFlashcardsSlice = fmt.Errorf("empty flashcards slice")
 
 type Service struct {
 	storage.Storage
@@ -67,9 +65,8 @@ func (s *Service) CreateNewDeck(userId models.UserId, cfg models.DeckConfig, fla
 	return nil
 }
 
-// LoadRandomsDeck берёт случайную карту с истёкшим CoolDown из колоды,
-// причём шанс взять горячую карту выше, чем холодную.
-func (s *Service) LoadRandomsDeck(userId models.UserId, deckId models.DeckId) error {
+// DeleteDeck удаляет колоду у пользователя.
+func (s *Service) DeleteDeck(userId models.UserId, deckId models.DeckId) error {
 	decks, err := s.LoadDecks(userId)
 	if err != nil {
 		return err

@@ -28,45 +28,47 @@ func (t *testingSuite) SetupTest() {
 	t.s = study.NewStudy(&serv, 5)
 }
 
-var flashcard = []models.FlashcardId{1, 2, 3, 4, 5}
-var flashcardCalled = make([]bool, 5)
-var leitners = []models.UserLeitner{
-	models.UserLeitner{
-		Id:          1,
-		UserId:      1,
-		FlashcardId: 1,
-		Box:         0,
-		CoolDown:    models.CoolDown{State: time.Time{}},
-	},
-	models.UserLeitner{
-		Id:          2,
-		UserId:      1,
-		FlashcardId: 2,
-		Box:         0,
-		CoolDown:    models.CoolDown{},
-	},
-	models.UserLeitner{
-		Id:          3,
-		UserId:      1,
-		FlashcardId: 3,
-		Box:         1,
-		CoolDown:    models.CoolDown{},
-	},
-	models.UserLeitner{
-		Id:          4,
-		UserId:      1,
-		FlashcardId: 4,
-		Box:         2,
-		CoolDown:    models.CoolDown{},
-	},
-	models.UserLeitner{
-		Id:          5,
-		UserId:      1,
-		FlashcardId: 5,
-		Box:         2,
-		CoolDown:    models.CoolDown{},
-	},
-}
+var (
+	flashcard       = []models.FlashcardId{1, 2, 3, 4, 5}
+	flashcardCalled = make([]bool, 5)
+	leitners        = []models.UserLeitner{
+		{
+			Id:          1,
+			UserId:      1,
+			FlashcardId: 1,
+			Box:         0,
+			CoolDown:    models.CoolDown{State: time.Time{}},
+		},
+		{
+			Id:          2,
+			UserId:      1,
+			FlashcardId: 2,
+			Box:         0,
+			CoolDown:    models.CoolDown{},
+		},
+		{
+			Id:          3,
+			UserId:      1,
+			FlashcardId: 3,
+			Box:         1,
+			CoolDown:    models.CoolDown{},
+		},
+		{
+			Id:          4,
+			UserId:      1,
+			FlashcardId: 4,
+			Box:         2,
+			CoolDown:    models.CoolDown{},
+		},
+		{
+			Id:          5,
+			UserId:      1,
+			FlashcardId: 5,
+			Box:         2,
+			CoolDown:    models.CoolDown{},
+		},
+	}
+)
 
 func (t *testingSuite) Test_GetNextRandomDeck() {
 	t.m.On("GetUserInfo", 1).
@@ -112,56 +114,56 @@ func (t *testingSuite) Test_GetNextRandomDeck() {
 }
 
 var leitners2 = []models.UserLeitner{
-	models.UserLeitner{
+	{
 		Id:          1,
 		UserId:      1,
 		FlashcardId: 1,
 		Box:         0,
 		CoolDown:    models.CoolDown{State: time.Time{}},
 	},
-	models.UserLeitner{
+	{
 		Id:          2,
 		UserId:      1,
 		FlashcardId: 2,
 		Box:         0,
 		CoolDown:    models.CoolDown{},
 	},
-	models.UserLeitner{
+	{
 		Id:          3,
 		UserId:      1,
 		FlashcardId: 3,
 		Box:         1,
 		CoolDown:    models.CoolDown{},
 	},
-	models.UserLeitner{
+	{
 		Id:          4,
 		UserId:      1,
 		FlashcardId: 4,
 		Box:         2,
 		CoolDown:    models.CoolDown{},
 	},
-	models.UserLeitner{
+	{
 		Id:          5,
 		UserId:      1,
 		FlashcardId: 5,
 		Box:         2,
 		CoolDown:    models.CoolDown{},
 	},
-	models.UserLeitner{
+	{
 		Id:          6,
 		UserId:      1,
 		FlashcardId: 6,
 		Box:         1,
 		CoolDown:    models.CoolDown{},
 	},
-	models.UserLeitner{
+	{
 		Id:          7,
 		UserId:      1,
 		FlashcardId: 7,
 		Box:         2,
 		CoolDown:    models.CoolDown{},
 	},
-	models.UserLeitner{
+	{
 		Id:          8,
 		UserId:      1,
 		FlashcardId: 8,
@@ -170,8 +172,10 @@ var leitners2 = []models.UserLeitner{
 	},
 }
 
-var flashcard2 = []models.FlashcardId{6, 7, 8}
-var flashcard2Called = [8]bool{}
+var (
+	flashcard2       = []models.FlashcardId{6, 7, 8}
+	flashcard2Called = [8]bool{}
+)
 
 const length = 8
 

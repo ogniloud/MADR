@@ -20,11 +20,11 @@ func NewExerciseService(s *deck.Service) ExerciseService {
 }
 
 func (e ExerciseService) MakeMatching() Matching {
-	//TODO implement me
+	// TODO implement me
 	panic("implement me")
 }
 
 func (e ExerciseService) MakeSentence() Sentence {
-	//TODO implement me
+	// TODO implement me
 	panic("implement me")
 }
