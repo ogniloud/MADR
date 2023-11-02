@@ -10,9 +10,6 @@ import (
 
 var (
 	ErrEmptyFlashcardsSlice = fmt.Errorf("empty flashcards slice")
-
-	keyRandomCardFmt     = "k%d"
-	keyRandomCardDeckFmt = "%dk%d"
 )
 
 type Service struct {
@@ -29,6 +26,7 @@ func NewService(s storage.Storage, c cache.Cache) Service {
 	}
 }
 
+// LoadDecks загружает колоды пользователя в кэш и возвращает.
 func (s *Service) LoadDecks(id models.UserId) (models.Decks, error) {
 	if decksAny, ok := s.c.Load(id); ok {
 		decks := decksAny.(models.Decks)
@@ -44,6 +42,7 @@ func (s *Service) LoadDecks(id models.UserId) (models.Decks, error) {
 	return decks, nil
 }
 
+// CreateNewDeck Создаёт новую колоду и вставляет туда карточки.
 func (s *Service) CreateNewDeck(userId models.UserId, cfg models.DeckConfig, flashcards []models.Flashcard) error {
 	if len(flashcards) == 0 {
 		return ErrEmptyFlashcardsSlice
@@ -63,11 +62,14 @@ func (s *Service) CreateNewDeck(userId models.UserId, cfg models.DeckConfig, fla
 	}
 
 	decks[cfg.DeckId] = cfg // maybe critical section!
+	s.Cache().Store(userId, decks)
 
 	return nil
 }
 
-func (s *Service) LoadRandomsDeckCache(userId models.UserId, deckId models.DeckId) error {
+// LoadRandomsDeck берёт случайную карту с истёкшим CoolDown из колоды,
+// причём шанс взять горячую карту выше, чем холодную.
+func (s *Service) LoadRandomsDeck(userId models.UserId, deckId models.DeckId) error {
 	decks, err := s.LoadDecks(userId)
 	if err != nil {
 		return err
@@ -78,9 +80,11 @@ func (s *Service) LoadRandomsDeckCache(userId models.UserId, deckId models.DeckI
 	}
 
 	delete(decks, deckId)
+	s.Cache().Store(userId, decks)
 	return nil
 }
 
+// UserMaxBox возвращает максимальное количество Box'ов у пользователя.
 func (s *Service) UserMaxBox(uid models.UserId) (models.Box, error) {
 	info, err := s.GetUserInfo(uid)
 	if err != nil {

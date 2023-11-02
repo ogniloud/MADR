@@ -9,7 +9,7 @@ type Storage interface {
 	// GetDecksByUserId возвращает все колоды, имеющиеся у пользователя.
 	GetDecksByUserId(id models.UserId) (models.Decks, error)
 
-	// GetFlashcardsIdByDeckId возращает id-карточки в колоде.
+	// GetFlashcardsIdByDeckId возращает id карточкек в колоде.
 	GetFlashcardsIdByDeckId(id models.DeckId) ([]models.FlashcardId, error)
 
 	GetFlashcardById(id models.FlashcardId) (models.Flashcard, error)
@@ -24,8 +24,10 @@ type Storage interface {
 	// GetCardsByUserCDBoxDeck возвращает те же id карт, что и GetCardsByUserCDBox, но внутри колоды.
 	GetCardsByUserCDBoxDeck(id models.UserId, cd models.CoolDown, limits map[models.Box]int, deckId models.DeckId) ([]models.FlashcardId, error)
 
+	// GetCardsByUserCDDeck возвращает все карты пользоваателя с прошедшим CoolDown в колоде.
 	GetCardsByUserCDDeck(id models.UserId, cd models.CoolDown, deckId models.DeckId) ([]models.FlashcardId, error)
 
+	// GetLeitnerByUserIdCardId по пользователю и карточке возвращает models.UserLeitner.
 	GetLeitnerByUserIdCardId(id models.UserId, flashcardId models.FlashcardId) (models.UserLeitner, error)
 
 	GetUserInfo(uid models.UserId) (models.UserInfo, error)
@@ -39,9 +41,9 @@ type Storage interface {
 	DeleteFlashcardFromDeck(id models.DeckId, cardId models.FlashcardId) error
 
 	// DeleteUserDeck удаляет запись из models.DeckConfig о том, что пользователь userId
-	// имеет колоду id
+	// имеет колоду id.
 	DeleteUserDeck(userId models.UserId, id models.DeckId) error
 
-	// UpdateLeitner обновляет запись в базе данным при совпадении LeitnerId
+	// UpdateLeitner обновляет запись в базе данным при совпадении LeitnerId.
 	UpdateLeitner(ul models.UserLeitner) error
 }

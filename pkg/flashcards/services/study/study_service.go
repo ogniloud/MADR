@@ -41,6 +41,7 @@ func NewStudy(s *deck.Service, maxBox models.Box) *StudyService {
 	return &StudyService{fserv: s, p: p}
 }
 
+// GetNextRandom возвращает случаёную карточку из всего набора карточек пользователя с истёкшим CoolDown.
 func (s *StudyService) GetNextRandom(uid models.UserId, down models.CoolDown) (models.FlashcardId, error) {
 	decks, err := s.fserv.LoadDecks(uid)
 	if err != nil {
@@ -62,6 +63,7 @@ func (s *StudyService) GetNextRandom(uid models.UserId, down models.CoolDown) (m
 	return 0, fmt.Errorf("no cards")
 }
 
+// GetNextRandomDeck возвращает случайную карточку из колоды пользователя с истёкшим CoolDown.
 func (s *StudyService) GetNextRandomDeck(uid models.UserId, id models.DeckId, down models.CoolDown) (models.FlashcardId, error) {
 	ids, err := s.fserv.GetFlashcardsIdByDeckId(id)
 	if err != nil {
@@ -100,6 +102,7 @@ func (s *StudyService) GetNextRandomDeck(uid models.UserId, id models.DeckId, do
 	return ltns[rand.Intn(len(ltns))].FlashcardId, nil
 }
 
+// Rate перемещает карточку в бокс относительно оценки.
 func (s *StudyService) Rate(uid models.UserId, id models.FlashcardId, mark Mark) error {
 	l, err := s.fserv.GetLeitnerByUserIdCardId(uid, id)
 	if err != nil {
