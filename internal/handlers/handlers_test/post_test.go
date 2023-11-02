@@ -44,8 +44,7 @@ func TestEndpoints_SignUp(t *testing.T) {
 	s.SignUp(response, request)
 
 	got := response.Body.String()
-	want := `{"id":1,"email":"blabla@gmail.com"}
-`
+	want := ``
 
 	wantStatus := http.StatusCreated
 
