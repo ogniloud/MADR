@@ -53,7 +53,7 @@ func (e *Endpoints) SignUp(w http.ResponseWriter, r *http.Request) {
 	// users. This is a good practice to follow.
 	// And also in case we want to change the datalayer models or the
 	// API request models, we can do it without affecting the other.
-	user, err := e.data.CreateUser(r.Context(), models.User{
+	err = e.data.CreateUser(r.Context(), models.User{
 		Email:    request.Email,
 		Password: request.Password,
 	})
@@ -64,17 +64,6 @@ func (e *Endpoints) SignUp(w http.ResponseWriter, r *http.Request) {
 		}
 
 		e.logger.Error("Unable to create user", "error", err)
-		e.writeGenericError(w, http.StatusInternalServerError, models.ErrInternalServer.Error())
-
-		return
-	}
-
-	err = models.ToJSON(models.SignUpResponse{
-		ID:    user.ID,
-		Email: user.Email,
-	}, w)
-	if err != nil {
-		e.logger.Error("Unable to write JSON response", "error", err)
 		e.writeGenericError(w, http.StatusInternalServerError, models.ErrInternalServer.Error())
 
 		return
@@ -118,6 +107,7 @@ func (e *Endpoints) SignIn(w http.ResponseWriter, r *http.Request) {
 	err := models.FromJSON(&request, r.Body)
 	if err != nil {
 		e.writeGenericError(w, http.StatusBadRequest, "Unable to unmarshal JSON")
+		return
 	}
 
 	authToken, err := e.data.SignInUser(r.Context(), request.Email, request.Password)
@@ -144,6 +134,4 @@ func (e *Endpoints) SignIn(w http.ResponseWriter, r *http.Request) {
 
 		return
 	}
-
-	w.WriteHeader(http.StatusOK)
 }

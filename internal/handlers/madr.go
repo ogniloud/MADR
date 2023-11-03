@@ -12,8 +12,8 @@ type Endpoints struct {
 	logger *log.Logger
 }
 
-// NewEndpoints is a constructor for the Endpoints struct.
-func NewEndpoints(data *data.Datalayer, logger *log.Logger) *Endpoints {
+// New is a constructor for the Endpoints struct.
+func New(data *data.Datalayer, logger *log.Logger) *Endpoints {
 	return &Endpoints{
 		data:   data,
 		logger: logger,
