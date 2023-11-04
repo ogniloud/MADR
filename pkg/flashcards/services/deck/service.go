@@ -10,21 +10,42 @@ import (
 
 var ErrEmptyFlashcardsSlice = fmt.Errorf("empty flashcards slice")
 
+// IService is a service for configuration user decks and flashcards.
+type IService interface {
+	// Storage is embedded to IService for accessing to db methods.
+	// temporary solution.
+	storage.Storage
+
+	// LoadDecks loads user's decks in memory if needed and returns the decks.
+	LoadDecks(id models.UserId) (models.Decks, error)
+
+	// NewDeckWithFlashcards creates a new deck and puts all the flashcards there.
+	NewDeckWithFlashcards(userId models.UserId, cfg models.DeckConfig, flashcards []models.Flashcard) error
+
+	// DeleteDeck deletes the whole deck from user. It doesn't remove flashcards from the deck.
+	DeleteDeck(userId models.UserId, deckId models.DeckId) error
+
+	// UserMaxBox returns the maximum amount of boxes from the user.
+	UserMaxBox(uid models.UserId) (models.Box, error)
+	Cache() cache.Cache
+}
+
+// Service is an IService implementation.
 type Service struct {
 	storage.Storage
 
-	// temporary
 	c cache.Cache
 }
 
-func NewService(s storage.Storage, c cache.Cache) Service {
-	return Service{
+// NewService creates a new IService creature.
+func NewService(s storage.Storage, c cache.Cache) IService {
+	return &Service{
 		Storage: s,
 		c:       c,
 	}
 }
 
-// LoadDecks загружает колоды пользователя в кэш и возвращает.
+// LoadDecks loads user's decks in memory if needed and returns the decks.
 func (s *Service) LoadDecks(id models.UserId) (models.Decks, error) {
 	if decksAny, ok := s.c.Load(id); ok {
 		decks := decksAny.(models.Decks)
@@ -41,8 +62,8 @@ func (s *Service) LoadDecks(id models.UserId) (models.Decks, error) {
 	return decks, nil
 }
 
-// CreateNewDeck Создаёт новую колоду и вставляет туда карточки.
-func (s *Service) CreateNewDeck(userId models.UserId, cfg models.DeckConfig, flashcards []models.Flashcard) error {
+// NewDeckWithFlashcards creates a new deck and puts all the flashcards there.
+func (s *Service) NewDeckWithFlashcards(userId models.UserId, cfg models.DeckConfig, flashcards []models.Flashcard) error {
 	if len(flashcards) == 0 {
 		return ErrEmptyFlashcardsSlice
 	}
@@ -66,7 +87,7 @@ func (s *Service) CreateNewDeck(userId models.UserId, cfg models.DeckConfig, fla
 	return nil
 }
 
-// DeleteDeck удаляет колоду у пользователя.
+// DeleteDeck deletes the whole deck from user. It doesn't remove flashcards from the deck.
 func (s *Service) DeleteDeck(userId models.UserId, deckId models.DeckId) error {
 	decks, err := s.LoadDecks(userId)
 	if err != nil {
@@ -83,7 +104,7 @@ func (s *Service) DeleteDeck(userId models.UserId, deckId models.DeckId) error {
 	return nil
 }
 
-// UserMaxBox возвращает максимальное количество Box'ов у пользователя.
+// UserMaxBox returns the maximum amount of boxes from the user.
 func (s *Service) UserMaxBox(uid models.UserId) (models.Box, error) {
 	info, err := s.GetUserInfo(uid)
 	if err != nil {

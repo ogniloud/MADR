@@ -2,9 +2,9 @@ package deck_test
 
 import (
 	"fmt"
-	"sync"
 	"testing"
 
+	"github.com/ogniloud/madr/pkg/flashcards/cache"
 	"github.com/ogniloud/madr/pkg/flashcards/models"
 	"github.com/ogniloud/madr/pkg/flashcards/services/deck"
 	"github.com/ogniloud/madr/pkg/flashcards/storage/mocks"
@@ -15,7 +15,7 @@ import (
 
 type LeitnerSuite struct {
 	suite.Suite
-	s        deck.Service
+	s        deck.IService
 	st       *mocks.Storage
 	userData models.Decks
 }
@@ -42,7 +42,7 @@ func (l *LeitnerSuite) SetupTest() {
 	// s := mocks.NewStorage(l.T())
 	s := &mocks.Storage{}
 	l.st = s
-	l.s = deck.NewService(s, &sync.Map{})
+	l.s = deck.NewService(s, cache.New())
 
 	s.On("GetDecksByUserId", 1).
 		Return(l.userData, nil).Once()
@@ -134,8 +134,8 @@ func (l *LeitnerSuite) Test_CreateNewDeck() {
 		},
 	}
 
-	assert.Error(l.T(), l.s.CreateNewDeck(1, models.DeckConfig{}, []models.Flashcard{}))
-	assert.Nil(l.T(), l.s.CreateNewDeck(1, cfg, cards))
+	assert.Error(l.T(), l.s.NewDeckWithFlashcards(1, models.DeckConfig{}, []models.Flashcard{}))
+	assert.Nil(l.T(), l.s.NewDeckWithFlashcards(1, cfg, cards))
 
 	decks, err := l.s.LoadDecks(1)
 	if assert.NoError(l.T(), err) {

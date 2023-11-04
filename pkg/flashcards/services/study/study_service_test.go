@@ -3,10 +3,10 @@ package study_test
 import (
 	"slices"
 	"strconv"
-	"sync"
 	"testing"
 	"time"
 
+	"github.com/ogniloud/madr/pkg/flashcards/cache"
 	"github.com/ogniloud/madr/pkg/flashcards/models"
 	"github.com/ogniloud/madr/pkg/flashcards/services/deck"
 	"github.com/ogniloud/madr/pkg/flashcards/services/study"
@@ -18,14 +18,14 @@ import (
 
 type testingSuite struct {
 	suite.Suite
-	s *study.StudyService
+	s study.IStudyService
 	m *mocks.Storage
 }
 
 func (t *testingSuite) SetupTest() {
 	t.m = &mocks.Storage{}
-	serv := deck.NewService(t.m, &sync.Map{})
-	t.s = study.NewStudy(&serv, 5)
+	serv := deck.NewService(t.m, cache.New())
+	t.s = study.NewService(serv, 5)
 }
 
 var (
@@ -73,7 +73,7 @@ var (
 func (t *testingSuite) Test_GetNextRandomDeck() {
 	t.m.On("GetUserInfo", 1).
 		Return(models.UserInfo{
-			Id:     1,
+			UserId: 1,
 			MaxBox: 3,
 		}, nil)
 	t.m.On("GetFlashcardsIdByDeckId", 1).
@@ -183,7 +183,7 @@ func (t *testingSuite) Test_GetNextRandom() {
 	t.m.On("GetDecksByUserId", 1).Return(models.Decks{1: {}, 2: {}}, nil)
 	t.m.On("GetUserInfo", 1).
 		Return(models.UserInfo{
-			Id:     1,
+			UserId: 1,
 			MaxBox: 3,
 		}, nil)
 	t.m.On("GetFlashcardsIdByDeckId", 1).

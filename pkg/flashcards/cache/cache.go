@@ -1,11 +1,16 @@
+// Package cache provides simple access to in-memory cache.
+// The major thing for using this is accessing user's decks
 package cache
 
 import (
 	"sync"
-
-	"github.com/ogniloud/madr/pkg/flashcards/models"
 )
 
-type Cache = *sync.Map
+// Cache implements thread-safe Load, Store and Delete functions.
+type Cache struct {
+	*sync.Map
+}
 
-type CachedRandom []models.FlashcardId
+func New() Cache {
+	return Cache{&sync.Map{}}
+}

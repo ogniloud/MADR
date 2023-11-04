@@ -12,13 +12,13 @@ type Storage struct {
 	mock.Mock
 }
 
-// DeleteFlashcardFromDeck provides a mock function with given fields: id, cardId
-func (_m *Storage) DeleteFlashcardFromDeck(id int, cardId int) error {
-	ret := _m.Called(id, cardId)
+// DeleteFlashcardFromDeck provides a mock function with given fields: cardId
+func (_m *Storage) DeleteFlashcardFromDeck(cardId int) error {
+	ret := _m.Called(cardId)
 
 	var r0 error
-	if rf, ok := ret.Get(0).(func(int, int) error); ok {
-		r0 = rf(id, cardId)
+	if rf, ok := ret.Get(0).(func(int) error); ok {
+		r0 = rf(cardId)
 	} else {
 		r0 = ret.Error(0)
 	}
@@ -38,84 +38,6 @@ func (_m *Storage) DeleteUserDeck(userId int, id int) error {
 	}
 
 	return r0
-}
-
-// GetCardsByUserCDBox provides a mock function with given fields: id, cd, limits
-func (_m *Storage) GetCardsByUserCDBox(id int, cd models.CoolDown, limits map[int]int) ([]int, error) {
-	ret := _m.Called(id, cd, limits)
-
-	var r0 []int
-	var r1 error
-	if rf, ok := ret.Get(0).(func(int, models.CoolDown, map[int]int) ([]int, error)); ok {
-		return rf(id, cd, limits)
-	}
-	if rf, ok := ret.Get(0).(func(int, models.CoolDown, map[int]int) []int); ok {
-		r0 = rf(id, cd, limits)
-	} else {
-		if ret.Get(0) != nil {
-			r0 = ret.Get(0).([]int)
-		}
-	}
-
-	if rf, ok := ret.Get(1).(func(int, models.CoolDown, map[int]int) error); ok {
-		r1 = rf(id, cd, limits)
-	} else {
-		r1 = ret.Error(1)
-	}
-
-	return r0, r1
-}
-
-// GetCardsByUserCDBoxDeck provides a mock function with given fields: id, cd, limits, deckId
-func (_m *Storage) GetCardsByUserCDBoxDeck(id int, cd models.CoolDown, limits map[int]int, deckId int) ([]int, error) {
-	ret := _m.Called(id, cd, limits, deckId)
-
-	var r0 []int
-	var r1 error
-	if rf, ok := ret.Get(0).(func(int, models.CoolDown, map[int]int, int) ([]int, error)); ok {
-		return rf(id, cd, limits, deckId)
-	}
-	if rf, ok := ret.Get(0).(func(int, models.CoolDown, map[int]int, int) []int); ok {
-		r0 = rf(id, cd, limits, deckId)
-	} else {
-		if ret.Get(0) != nil {
-			r0 = ret.Get(0).([]int)
-		}
-	}
-
-	if rf, ok := ret.Get(1).(func(int, models.CoolDown, map[int]int, int) error); ok {
-		r1 = rf(id, cd, limits, deckId)
-	} else {
-		r1 = ret.Error(1)
-	}
-
-	return r0, r1
-}
-
-// GetCardsByUserCDDeck provides a mock function with given fields: id, cd, deckId
-func (_m *Storage) GetCardsByUserCDDeck(id int, cd models.CoolDown, deckId int) ([]int, error) {
-	ret := _m.Called(id, cd, deckId)
-
-	var r0 []int
-	var r1 error
-	if rf, ok := ret.Get(0).(func(int, models.CoolDown, int) ([]int, error)); ok {
-		return rf(id, cd, deckId)
-	}
-	if rf, ok := ret.Get(0).(func(int, models.CoolDown, int) []int); ok {
-		r0 = rf(id, cd, deckId)
-	} else {
-		if ret.Get(0) != nil {
-			r0 = ret.Get(0).([]int)
-		}
-	}
-
-	if rf, ok := ret.Get(1).(func(int, models.CoolDown, int) error); ok {
-		r1 = rf(id, cd, deckId)
-	} else {
-		r1 = ret.Error(1)
-	}
-
-	return r0, r1
 }
 
 // GetDecksByUserId provides a mock function with given fields: id

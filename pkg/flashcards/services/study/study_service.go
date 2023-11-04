@@ -10,6 +10,7 @@ import (
 	"github.com/ogniloud/madr/pkg/flashcards/services/deck"
 )
 
+// Mark is a type of rating marks of flashcards in Leitner's system.
 type Mark int
 
 const (
@@ -19,30 +20,45 @@ const (
 )
 
 type IStudyService interface {
-	GetNRandom(uid models.UserId, n int) ([]models.FlashcardId, error) // n > 0
-	GetNRandomDeck(uid models.UserId, n int, id models.DeckId) ([]models.FlashcardId, error)
-	Rate(id models.FlashcardId, mark Mark) error
+	// GetNextRandom returns a random card from the entire set of user cards with expired CoolDown.
+	GetNextRandom(uid models.UserId, down models.CoolDown) (models.FlashcardId, error)
+
+	// GetNextRandomDeck returns a random card from the user's deck whose CoolDown has expired.
+	GetNextRandomDeck(uid models.UserId, id models.DeckId, down models.CoolDown) (models.FlashcardId, error)
+
+	// Rate moves the card into the box relative to the mark.
+	Rate(uid models.UserId, id models.FlashcardId, mark Mark) error
 }
 
-type StudyService struct {
-	fserv *deck.Service
-	p     []float32 // for each i => 0 <= p[i] < 1
+type Service struct {
+	// dsrv stands for deck.Service
+	dsrv deck.IService
+
+	// p is a probability distribution for card selection functions,
+	// the list must be equal to the maximum number of boxes the user has.
+	p []float32 // for each i: 0 <= p[i] < 1
+	// Example: Let p = [0, 0,5, 0.9] - three boxes: 0, 1, 2.
+	// |____________<_______<__)
+	// 0           0.5     0.9 1
+	//
+	// r = 0.6
+	// Since p[1] <= r < p[2], we choose the flashcard from the box 1.
 }
 
-func NewStudy(s *deck.Service, maxBox models.Box) *StudyService {
+func NewService(s deck.IService, maxBox models.Box) IStudyService {
 	p := make([]float32, maxBox)
-	p[0] = 1
+	p[0] = 0
 
 	for i := range p[1:] {
 		p[i+1] = p[i] + float32(math.Pow(.5, float64(i+1)))
 	}
 
-	return &StudyService{fserv: s, p: p}
+	return &Service{dsrv: s, p: p}
 }
 
-// GetNextRandom возвращает случаёную карточку из всего набора карточек пользователя с истёкшим CoolDown.
-func (s *StudyService) GetNextRandom(uid models.UserId, down models.CoolDown) (models.FlashcardId, error) {
-	decks, err := s.fserv.LoadDecks(uid)
+// GetNextRandom returns a random card from the entire set of user cards with expired CoolDown.
+func (s *Service) GetNextRandom(uid models.UserId, down models.CoolDown) (models.FlashcardId, error) {
+	decks, err := s.dsrv.LoadDecks(uid)
 	if err != nil {
 		return 0, err
 	}
@@ -62,9 +78,9 @@ func (s *StudyService) GetNextRandom(uid models.UserId, down models.CoolDown) (m
 	return 0, fmt.Errorf("no cards")
 }
 
-// GetNextRandomDeck возвращает случайную карточку из колоды пользователя с истёкшим CoolDown.
-func (s *StudyService) GetNextRandomDeck(uid models.UserId, id models.DeckId, down models.CoolDown) (models.FlashcardId, error) {
-	ids, err := s.fserv.GetFlashcardsIdByDeckId(id)
+// GetNextRandomDeck returns a random card from the user's deck whose CoolDown has expired.
+func (s *Service) GetNextRandomDeck(uid models.UserId, id models.DeckId, down models.CoolDown) (models.FlashcardId, error) {
+	ids, err := s.dsrv.GetFlashcardsIdByDeckId(id)
 	if err != nil {
 		return 0, err
 	}
@@ -72,7 +88,7 @@ func (s *StudyService) GetNextRandomDeck(uid models.UserId, id models.DeckId, do
 	ltns := make([]models.UserLeitner, 0, len(ids))
 
 	for _, id := range ids {
-		ltn, err := s.fserv.GetLeitnerByUserIdCardId(uid, id)
+		ltn, err := s.dsrv.GetLeitnerByUserIdCardId(uid, id)
 		if err != nil {
 			return 0, err
 		}
@@ -104,14 +120,14 @@ func (s *StudyService) GetNextRandomDeck(uid models.UserId, id models.DeckId, do
 	return ltns[rand.Intn(len(ltns))].FlashcardId, nil
 }
 
-// Rate перемещает карточку в бокс относительно оценки.
-func (s *StudyService) Rate(uid models.UserId, id models.FlashcardId, mark Mark) error {
-	l, err := s.fserv.GetLeitnerByUserIdCardId(uid, id)
+// Rate moves the card into the box relative to the mark.
+func (s *Service) Rate(uid models.UserId, id models.FlashcardId, mark Mark) error {
+	l, err := s.dsrv.GetLeitnerByUserIdCardId(uid, id)
 	if err != nil {
 		return err
 	}
 
-	box, err := s.fserv.UserMaxBox(uid)
+	box, err := s.dsrv.UserMaxBox(uid)
 	if err != nil {
 		return err
 	}
@@ -128,13 +144,13 @@ func (s *StudyService) Rate(uid models.UserId, id models.FlashcardId, mark Mark)
 		}
 	}
 
-	return s.fserv.UpdateLeitner(l)
+	return s.dsrv.UpdateLeitner(l)
 }
 
 // let p = [.5 .7 .8 .9 .95] and r is a random float
 // returned Box is the minimum index i such that r >= p[i]
 // so, for each i => 0 <= p[i] < 1.
-func (s *StudyService) box() models.Box {
+func (s *Service) box() models.Box {
 	r := rand.Float32()
 	for i, v := range s.p {
 		if r >= v && (i == len(s.p)-1 || s.p[i+1] > r) {

@@ -8,15 +8,24 @@ type (
 	FlashcardId = int
 )
 
+// DeckConfig contains information about a particular deck.
+// DeckId is not a primary key, for each user a configuration can be different.
 type DeckConfig struct {
 	DeckId DeckId `json:"deck_id"`
+
+	// UserId means that a user with UserId has the deck with id DeckId.
 	UserId UserId `json:"user_id"`
-	Name   string `json:"name"`
+
+	// Name is a name of the deck which the user assigned to it.
+	Name string `json:"name"`
 }
 
+// UserInfo contains information about the user.
 type UserInfo struct {
-	Id     UserId `json:"user_id"`
-	MaxBox Box    `json:"max_box"`
+	UserId UserId `json:"user_id"` // primary
+
+	// MaxBox is a maximal amount of boxes in Leitner's system.
+	MaxBox Box `json:"max_box"`
 }
 
 type (
@@ -32,11 +41,15 @@ type Backside struct {
 	Value string       `json:"value"`
 }
 
+// Flashcard is a model of real flashcards with front side with word
+// and back side containing some information that describes a word.
 type Flashcard struct {
-	Id     FlashcardId `json:"id"`
-	W      Word        `json:"word"`
-	B      Backside    `json:"backside"`
-	DeckId DeckId      `json:"deck_id"`
+	Id FlashcardId `json:"id"`
+	W  Word        `json:"word"`
+	B  Backside    `json:"backside"`
+
+	// DeckId shows which deck the flashcard belongs to.
+	DeckId DeckId `json:"deck_id"`
 }
 
 type (
@@ -71,14 +84,21 @@ func (cd *CoolDown) IsPassed(t CoolDown) bool {
 	return cd.State.Compare(t.State) == -1
 }
 
+// UserLeitner is a configuration of Leitner's system for each user.
+//
+// For each user the structure contains a FlashcardId with its Box and CoolDown.
+// CoolDown is a timestamp after which the card can be examined again.
+//
+// There is a bijection between (UserId, FlashcardId) and UserLeitner.
 type UserLeitner struct {
-	Id          LeitnerId   `json:"id"`
+	Id          LeitnerId   `json:"id"` // primary
 	UserId      UserId      `json:"user_id"`
 	FlashcardId FlashcardId `json:"card_id"`
 	Box         Box         `json:"level"`
 	CoolDown    CoolDown    `json:"cooldown"`
 }
 
+// Decks is a map of decks which config can be got by id.
 type Decks map[DeckId]DeckConfig
 
 func (d Decks) Keys() []DeckId {
