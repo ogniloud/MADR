@@ -11,6 +11,7 @@ import (
 	"github.com/ogniloud/madr/pkg/flashcards/services/deck"
 	"github.com/ogniloud/madr/pkg/flashcards/services/study"
 	"github.com/ogniloud/madr/pkg/flashcards/storage/mocks"
+
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/suite"
