@@ -10,6 +10,8 @@ import (
 	"github.com/ogniloud/madr/pkg/flashcards/services/deck"
 )
 
+var ErrNoCards = fmt.Errorf("no cards")
+
 // Mark is a type of rating marks of flashcards in Leitner's system.
 type Mark int
 
@@ -75,7 +77,7 @@ func (s *Service) GetNextRandom(uid models.UserId, down models.CoolDown) (models
 		}
 	}
 
-	return 0, fmt.Errorf("no cards")
+	return 0, ErrNoCards
 }
 
 // GetNextRandomDeck returns a random card from the user's deck whose CoolDown has expired.
@@ -101,7 +103,7 @@ func (s *Service) GetNextRandomDeck(uid models.UserId, id models.DeckId, down mo
 	})
 
 	if len(ltns) == 0 {
-		return 0, fmt.Errorf("no cards")
+		return 0, ErrNoCards
 	}
 
 	// shuffle and choose next card
