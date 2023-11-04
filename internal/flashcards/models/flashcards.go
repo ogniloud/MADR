@@ -94,8 +94,14 @@ type UserLeitner struct {
 	Id          LeitnerId   `json:"id"` // primary
 	UserId      UserId      `json:"user_id"`
 	FlashcardId FlashcardId `json:"card_id"`
-	Box         Box         `json:"level"`
-	CoolDown    CoolDown    `json:"cooldown"`
+
+	// Box is an item in Leitner's system showing frequency
+	// of studying flashcards. The higher box, the more cool down.
+	Box Box `json:"box"`
+
+	// CoolDown is a timestamp showing when the flashcard will be ready
+	// to be examined.
+	CoolDown CoolDown `json:"cool_down"`
 }
 
 // Decks is a map of decks which config can be got by id.
