@@ -3,7 +3,7 @@
 package mocks
 
 import (
-	models "github.com/ogniloud/madr/pkg/flashcards/models"
+	"github.com/ogniloud/madr/internal/flashcards/models"
 	mock "github.com/stretchr/testify/mock"
 )
 

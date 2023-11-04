@@ -3,7 +3,7 @@ package study
 import (
 	"io"
 
-	"github.com/ogniloud/madr/pkg/flashcards/models"
+	"github.com/ogniloud/madr/internal/flashcards/models"
 )
 
 type ITextService interface {

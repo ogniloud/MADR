@@ -1,6 +1,8 @@
 package study
 
-import "github.com/ogniloud/madr/pkg/flashcards/services/deck"
+import (
+	"github.com/ogniloud/madr/internal/flashcards/services/deck"
+)
 
 type Matching struct{}
 

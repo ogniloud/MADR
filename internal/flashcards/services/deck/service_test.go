@@ -4,11 +4,10 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/ogniloud/madr/pkg/flashcards/cache"
-	"github.com/ogniloud/madr/pkg/flashcards/models"
-	"github.com/ogniloud/madr/pkg/flashcards/services/deck"
-	"github.com/ogniloud/madr/pkg/flashcards/storage/mocks"
-
+	"github.com/ogniloud/madr/internal/flashcards/cache"
+	"github.com/ogniloud/madr/internal/flashcards/models"
+	"github.com/ogniloud/madr/internal/flashcards/services/deck"
+	"github.com/ogniloud/madr/internal/flashcards/storage/mocks"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/suite"

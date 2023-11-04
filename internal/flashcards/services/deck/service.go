@@ -3,9 +3,9 @@ package deck
 import (
 	"fmt"
 
-	"github.com/ogniloud/madr/pkg/flashcards/cache"
-	"github.com/ogniloud/madr/pkg/flashcards/models"
-	"github.com/ogniloud/madr/pkg/flashcards/storage"
+	"github.com/ogniloud/madr/internal/flashcards/cache"
+	"github.com/ogniloud/madr/internal/flashcards/models"
+	"github.com/ogniloud/madr/internal/flashcards/storage"
 )
 
 var ErrEmptyFlashcardsSlice = fmt.Errorf("empty flashcards slice")

@@ -1,7 +1,7 @@
 package storage
 
 import (
-	"github.com/ogniloud/madr/pkg/flashcards/models"
+	"github.com/ogniloud/madr/internal/flashcards/models"
 )
 
 // Storage is an interface for accessing to database.

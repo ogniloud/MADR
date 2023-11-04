@@ -6,8 +6,8 @@ import (
 	"math/rand"
 	"slices"
 
-	"github.com/ogniloud/madr/pkg/flashcards/models"
-	"github.com/ogniloud/madr/pkg/flashcards/services/deck"
+	"github.com/ogniloud/madr/internal/flashcards/models"
+	"github.com/ogniloud/madr/internal/flashcards/services/deck"
 )
 
 var ErrNoCards = fmt.Errorf("no cards")
