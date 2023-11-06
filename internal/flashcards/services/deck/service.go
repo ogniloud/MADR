@@ -3,6 +3,7 @@ package deck
 import (
 	"fmt"
 
+	"github.com/charmbracelet/log"
 	"github.com/ogniloud/madr/internal/flashcards/cache"
 	"github.com/ogniloud/madr/internal/flashcards/models"
 	"github.com/ogniloud/madr/internal/flashcards/storage"
@@ -27,20 +28,22 @@ type IService interface {
 
 	// UserMaxBox returns the maximum amount of boxes from the user.
 	UserMaxBox(uid models.UserId) (models.Box, error)
-	Cache() *cache.Cache
+	Cache() cache.Cache
 }
 
 // Service is an IService implementation.
 type Service struct {
 	storage.Storage
-	c *cache.Cache
+	c      cache.Cache
+	logger *log.Logger
 }
 
 // NewService creates a new IService creature.
-func NewService(s storage.Storage, c *cache.Cache) IService {
+func NewService(s storage.Storage, c cache.Cache, logger *log.Logger) IService {
 	return &Service{
 		Storage: s,
 		c:       c,
+		logger:  logger,
 	}
 }
 
@@ -58,7 +61,7 @@ func (s *Service) LoadDecks(id models.UserId) (models.Decks, error) {
 	}
 
 	if err := s.c.Store(id, decks); err != nil {
-		// todo: log
+		s.logger.Errorf("cache store failed: %v", err)
 	}
 
 	return decks, nil
@@ -85,7 +88,7 @@ func (s *Service) NewDeckWithFlashcards(userId models.UserId, cfg models.DeckCon
 
 	decks[cfg.DeckId] = cfg // maybe critical section!
 	if err := s.Cache().Store(userId, decks); err != nil {
-		// todo: log
+		s.logger.Errorf("cache store failed: %v", err)
 	}
 
 	return nil
@@ -104,7 +107,7 @@ func (s *Service) DeleteDeck(userId models.UserId, deckId models.DeckId) error {
 
 	delete(decks, deckId)
 	if err := s.Cache().Store(userId, decks); err != nil {
-		// todo: log
+		s.logger.Errorf("cache store failed: %v", err)
 	}
 
 	return nil
@@ -120,6 +123,6 @@ func (s *Service) UserMaxBox(uid models.UserId) (models.Box, error) {
 	return info.MaxBox, nil
 }
 
-func (s *Service) Cache() *cache.Cache {
+func (s *Service) Cache() cache.Cache {
 	return s.c
 }

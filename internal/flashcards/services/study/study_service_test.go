@@ -1,11 +1,13 @@
 package study_test
 
 import (
+	"io"
 	"slices"
 	"strconv"
 	"testing"
 	"time"
 
+	"github.com/charmbracelet/log"
 	"github.com/ogniloud/madr/internal/flashcards/cache"
 	"github.com/ogniloud/madr/internal/flashcards/models"
 	"github.com/ogniloud/madr/internal/flashcards/services/deck"
@@ -24,7 +26,7 @@ type testingSuite struct {
 
 func (t *testingSuite) SetupTest() {
 	t.m = &mocks.Storage{}
-	serv := deck.NewService(t.m, cache.New())
+	serv := deck.NewService(t.m, cache.New(), log.New(io.Discard))
 	t.s = study.NewService(serv, 5)
 }
 

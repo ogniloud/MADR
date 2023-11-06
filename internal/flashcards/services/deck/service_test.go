@@ -2,8 +2,10 @@ package deck_test
 
 import (
 	"fmt"
+	"io"
 	"testing"
 
+	"github.com/charmbracelet/log"
 	"github.com/ogniloud/madr/internal/flashcards/cache"
 	"github.com/ogniloud/madr/internal/flashcards/models"
 	"github.com/ogniloud/madr/internal/flashcards/services/deck"
@@ -42,7 +44,7 @@ func (l *LeitnerSuite) SetupTest() {
 	// s := mocks.NewStorage(l.T())
 	s := &mocks.Storage{}
 	l.st = s
-	l.s = deck.NewService(s, cache.New())
+	l.s = deck.NewService(s, cache.New(), log.New(io.Discard))
 
 	s.On("GetDecksByUserId", 1).
 		Return(l.userData, nil).Once()
