@@ -14,12 +14,12 @@ type Cache struct {
 	m *sync.Map
 }
 
-func New() Cache {
-	return Cache{&sync.Map{}}
+func New() *Cache {
+	return &Cache{&sync.Map{}}
 }
 
 // Load returns a value if stored in cache.
-func (c Cache) Load(k any) (any, error) {
+func (c *Cache) Load(k any) (any, error) {
 	v, ok := c.m.Load(k)
 	if !ok {
 		return nil, ErrNotFound
@@ -29,7 +29,7 @@ func (c Cache) Load(k any) (any, error) {
 }
 
 // Store puts the value v with key k.
-func (c Cache) Store(k, v any) error {
+func (c *Cache) Store(k, v any) error {
 	c.m.Store(k, v)
 	return nil
 }

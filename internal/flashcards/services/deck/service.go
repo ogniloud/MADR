@@ -27,17 +27,17 @@ type IService interface {
 
 	// UserMaxBox returns the maximum amount of boxes from the user.
 	UserMaxBox(uid models.UserId) (models.Box, error)
-	Cache() cache.Cache
+	Cache() *cache.Cache
 }
 
 // Service is an IService implementation.
 type Service struct {
 	storage.Storage
-	c cache.Cache
+	c *cache.Cache
 }
 
 // NewService creates a new IService creature.
-func NewService(s storage.Storage, c cache.Cache) IService {
+func NewService(s storage.Storage, c *cache.Cache) IService {
 	return &Service{
 		Storage: s,
 		c:       c,
@@ -120,6 +120,6 @@ func (s *Service) UserMaxBox(uid models.UserId) (models.Box, error) {
 	return info.MaxBox, nil
 }
 
-func (s *Service) Cache() cache.Cache {
+func (s *Service) Cache() *cache.Cache {
 	return s.c
 }
