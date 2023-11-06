@@ -9,7 +9,7 @@ import (
 
 var ErrNotFound = fmt.Errorf("value not found")
 
-// Cache implements thread-safe Load, Store and Delete functions.
+// Cache implements thread-safe Load, Store functions.
 type Cache struct {
 	m *sync.Map
 }
@@ -31,12 +31,5 @@ func (c Cache) Load(k any) (any, error) {
 // Store puts the value v with key k.
 func (c Cache) Store(k, v any) error {
 	c.m.Store(k, v)
-	return nil
-}
-
-// Delete removes a value with key k. Returns nil even
-// key doesn't exist.
-func (c Cache) Delete(k any) error {
-	c.m.Delete(k)
 	return nil
 }
