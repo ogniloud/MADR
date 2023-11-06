@@ -67,8 +67,8 @@ func (l *LeitnerSuite) Test_LoadDecks() {
 		l.Run("cache check", func() {
 			var cachedDecks models.Decks
 
-			cd, ok := l.s.Cache().Load(1)
-			if assert.True(l.T(), ok) {
+			cd, err := l.s.Cache().Load(1)
+			if assert.NoError(l.T(), err) {
 				cachedDecks = cd.(models.Decks)
 			}
 

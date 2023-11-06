@@ -33,7 +33,6 @@ type IService interface {
 // Service is an IService implementation.
 type Service struct {
 	storage.Storage
-
 	c cache.Cache
 }
 
@@ -47,9 +46,10 @@ func NewService(s storage.Storage, c cache.Cache) IService {
 
 // LoadDecks loads user's decks in memory if needed and returns the decks.
 func (s *Service) LoadDecks(id models.UserId) (models.Decks, error) {
-	if decksAny, ok := s.c.Load(id); ok {
-		decks := decksAny.(models.Decks)
-		return decks, nil
+	if decksAny, err := s.c.Load(id); err == nil {
+		if decks, ok := decksAny.(models.Decks); ok {
+			return decks, nil
+		}
 	}
 
 	decks, err := s.GetDecksByUserId(id)
@@ -57,7 +57,9 @@ func (s *Service) LoadDecks(id models.UserId) (models.Decks, error) {
 		return nil, err
 	}
 
-	s.c.Store(id, decks)
+	if err := s.c.Store(id, decks); err != nil {
+		// todo: log
+	}
 
 	return decks, nil
 }
@@ -82,7 +84,9 @@ func (s *Service) NewDeckWithFlashcards(userId models.UserId, cfg models.DeckCon
 	}
 
 	decks[cfg.DeckId] = cfg // maybe critical section!
-	s.Cache().Store(userId, decks)
+	if err := s.Cache().Store(userId, decks); err != nil {
+		// todo: log
+	}
 
 	return nil
 }
@@ -99,7 +103,9 @@ func (s *Service) DeleteDeck(userId models.UserId, deckId models.DeckId) error {
 	}
 
 	delete(decks, deckId)
-	s.Cache().Store(userId, decks)
+	if err := s.Cache().Store(userId, decks); err != nil {
+		// todo: log
+	}
 
 	return nil
 }
