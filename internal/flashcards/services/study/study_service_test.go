@@ -7,12 +7,13 @@ import (
 	"testing"
 	"time"
 
-	"github.com/charmbracelet/log"
 	"github.com/ogniloud/madr/internal/flashcards/cache"
 	"github.com/ogniloud/madr/internal/flashcards/models"
 	"github.com/ogniloud/madr/internal/flashcards/services/deck"
 	"github.com/ogniloud/madr/internal/flashcards/services/study"
 	"github.com/ogniloud/madr/internal/flashcards/storage/mocks"
+
+	"github.com/charmbracelet/log"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/suite"

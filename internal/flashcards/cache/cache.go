@@ -33,3 +33,8 @@ func (c Cache) Store(k, v any) error {
 	c.m.Store(k, v)
 	return nil
 }
+
+func (c Cache) Delete(k any) error {
+	c.m.Delete(k)
+	return nil
+}

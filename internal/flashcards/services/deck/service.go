@@ -3,10 +3,11 @@ package deck
 import (
 	"fmt"
 
-	"github.com/charmbracelet/log"
 	"github.com/ogniloud/madr/internal/flashcards/cache"
 	"github.com/ogniloud/madr/internal/flashcards/models"
 	"github.com/ogniloud/madr/internal/flashcards/storage"
+
+	"github.com/charmbracelet/log"
 )
 
 var ErrEmptyFlashcardsSlice = fmt.Errorf("empty flashcards slice")
@@ -51,7 +52,7 @@ func NewService(s storage.Storage, c cache.Cache, logger *log.Logger) IService {
 func (s *Service) LoadDecks(id models.UserId) (models.Decks, error) {
 	if decksAny, err := s.c.Load(id); err == nil {
 		if decks, ok := decksAny.(models.Decks); ok {
-			return decks, nil
+			return decks, nil // returned from cache
 		}
 	}
 
@@ -60,7 +61,7 @@ func (s *Service) LoadDecks(id models.UserId) (models.Decks, error) {
 		return nil, err
 	}
 
-	if err := s.c.Store(id, decks); err != nil {
+	if err := s.Cache().Store(id, decks); err != nil {
 		s.logger.Errorf("cache store failed: %v", err)
 	}
 
@@ -89,6 +90,7 @@ func (s *Service) NewDeckWithFlashcards(userId models.UserId, cfg models.DeckCon
 	decks[cfg.DeckId] = cfg // maybe critical section!
 	if err := s.Cache().Store(userId, decks); err != nil {
 		s.logger.Errorf("cache store failed: %v", err)
+		_ = s.Cache().Delete(userId) // non-consistent cache
 	}
 
 	return nil
@@ -108,6 +110,7 @@ func (s *Service) DeleteDeck(userId models.UserId, deckId models.DeckId) error {
 	delete(decks, deckId)
 	if err := s.Cache().Store(userId, decks); err != nil {
 		s.logger.Errorf("cache store failed: %v", err)
+		_ = s.Cache().Delete(userId) // non-consistent cache
 	}
 
 	return nil
