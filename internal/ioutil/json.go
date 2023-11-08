@@ -5,11 +5,15 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+
+	"github.com/charmbracelet/log"
 )
 
 // JSONErrorWriter interpreters an error in json format
 // and write to http.ResponseWriter.
-type JSONErrorWriter struct{}
+type JSONErrorWriter struct {
+	Logger *log.Logger
+}
 
 // Error is a helper function to write a generic error
 // to the response writer with the given status code and message.
@@ -19,9 +23,12 @@ func (ew JSONErrorWriter) Error(w http.ResponseWriter, message string, status in
 
 	// write json response
 	// strings never returns error on marshal
-	_ = ToJSON(GenericError{
+	err := ToJSON(GenericError{
 		Message: message,
 	}, w)
+	if err != nil {
+		ew.Logger.Error("Unable to write JSON response", "error", err)
+	}
 }
 
 // ToJSON serializes the given interface into a string-based JSON format.

@@ -18,7 +18,7 @@ type Endpoints struct {
 func New(data *data.Datalayer, logger *log.Logger) *Endpoints {
 	return &Endpoints{
 		data:   data,
-		ew:     ioutil.JSONErrorWriter{},
+		ew:     ioutil.JSONErrorWriter{Logger: logger},
 		logger: logger,
 	}
 }
