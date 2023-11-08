@@ -1,10 +1,28 @@
-package models
+package ioutil
 
 import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"net/http"
 )
+
+// JSONErrorWriter interpreters an error in json format
+// and write to http.ResponseWriter.
+type JSONErrorWriter struct{}
+
+// Error is a helper function to write a generic error
+// to the response writer with the given status code and message.
+func (ew JSONErrorWriter) Error(w http.ResponseWriter, message string, status int) {
+	// write http status code
+	w.WriteHeader(status)
+
+	// write json response
+	// strings never returns error on marshal
+	_ = ToJSON(GenericError{
+		Message: message,
+	}, w)
+}
 
 // ToJSON serializes the given interface into a string-based JSON format.
 func ToJSON(i interface{}, w io.Writer) error {
