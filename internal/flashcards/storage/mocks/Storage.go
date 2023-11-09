@@ -3,7 +3,7 @@
 package mocks
 
 import (
-	"github.com/ogniloud/madr/internal/flashcards/models"
+	models "github.com/ogniloud/madr/internal/flashcards/models"
 	mock "github.com/stretchr/testify/mock"
 )
 
@@ -165,45 +165,79 @@ func (_m *Storage) GetUserInfo(uid int) (models.UserInfo, error) {
 }
 
 // PutAllFlashcards provides a mock function with given fields: id, cards
-func (_m *Storage) PutAllFlashcards(id int, cards []models.Flashcard) error {
+func (_m *Storage) PutAllFlashcards(id int, cards []models.Flashcard) ([]int, error) {
 	ret := _m.Called(id, cards)
 
-	var r0 error
-	if rf, ok := ret.Get(0).(func(int, []models.Flashcard) error); ok {
+	var r0 []int
+	var r1 error
+	if rf, ok := ret.Get(0).(func(int, []models.Flashcard) ([]int, error)); ok {
+		return rf(id, cards)
+	}
+	if rf, ok := ret.Get(0).(func(int, []models.Flashcard) []int); ok {
 		r0 = rf(id, cards)
 	} else {
-		r0 = ret.Error(0)
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).([]int)
+		}
 	}
 
-	return r0
+	if rf, ok := ret.Get(1).(func(int, []models.Flashcard) error); ok {
+		r1 = rf(id, cards)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
 }
 
 // PutAllUserLeitner provides a mock function with given fields: uls
-func (_m *Storage) PutAllUserLeitner(uls []models.UserLeitner) error {
+func (_m *Storage) PutAllUserLeitner(uls []models.UserLeitner) ([]int, error) {
 	ret := _m.Called(uls)
 
-	var r0 error
-	if rf, ok := ret.Get(0).(func([]models.UserLeitner) error); ok {
+	var r0 []int
+	var r1 error
+	if rf, ok := ret.Get(0).(func([]models.UserLeitner) ([]int, error)); ok {
+		return rf(uls)
+	}
+	if rf, ok := ret.Get(0).(func([]models.UserLeitner) []int); ok {
 		r0 = rf(uls)
 	} else {
-		r0 = ret.Error(0)
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).([]int)
+		}
 	}
 
-	return r0
+	if rf, ok := ret.Get(1).(func([]models.UserLeitner) error); ok {
+		r1 = rf(uls)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
 }
 
 // PutNewDeck provides a mock function with given fields: config
-func (_m *Storage) PutNewDeck(config models.DeckConfig) error {
+func (_m *Storage) PutNewDeck(config models.DeckConfig) (int, error) {
 	ret := _m.Called(config)
 
-	var r0 error
-	if rf, ok := ret.Get(0).(func(models.DeckConfig) error); ok {
+	var r0 int
+	var r1 error
+	if rf, ok := ret.Get(0).(func(models.DeckConfig) (int, error)); ok {
+		return rf(config)
+	}
+	if rf, ok := ret.Get(0).(func(models.DeckConfig) int); ok {
 		r0 = rf(config)
 	} else {
-		r0 = ret.Error(0)
+		r0 = ret.Get(0).(int)
 	}
 
-	return r0
+	if rf, ok := ret.Get(1).(func(models.DeckConfig) error); ok {
+		r1 = rf(config)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
 }
 
 // UpdateLeitner provides a mock function with given fields: ul

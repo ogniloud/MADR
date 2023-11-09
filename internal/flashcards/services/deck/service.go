@@ -22,7 +22,8 @@ type IService interface {
 	LoadDecks(id models.UserId) (models.Decks, error)
 
 	// NewDeckWithFlashcards creates a new deck and puts all the flashcards there.
-	NewDeckWithFlashcards(userId models.UserId, cfg models.DeckConfig, flashcards []models.Flashcard) error
+	// Returns id of the new deck if there's no error.
+	NewDeckWithFlashcards(userId models.UserId, cfg models.DeckConfig, flashcards []models.Flashcard) (models.DeckId, error)
 
 	// DeleteDeck deletes the whole deck from user. It doesn't remove flashcards from the deck.
 	DeleteDeck(userId models.UserId, deckId models.DeckId) error
@@ -69,22 +70,23 @@ func (s *Service) LoadDecks(id models.UserId) (models.Decks, error) {
 }
 
 // NewDeckWithFlashcards creates a new deck and puts all the flashcards there.
-func (s *Service) NewDeckWithFlashcards(userId models.UserId, cfg models.DeckConfig, flashcards []models.Flashcard) error {
+func (s *Service) NewDeckWithFlashcards(userId models.UserId, cfg models.DeckConfig, flashcards []models.Flashcard) (models.DeckId, error) {
 	if len(flashcards) == 0 {
-		return ErrEmptyFlashcardsSlice
+		return 0, ErrEmptyFlashcardsSlice
 	}
 
 	decks, err := s.LoadDecks(userId)
 	if err != nil {
-		return err
+		return 0, err
 	}
 
-	if err := s.PutNewDeck(cfg); err != nil {
-		return err
+	var id models.DeckId
+	if id, err = s.PutNewDeck(cfg); err != nil {
+		return 0, err
 	}
 
-	if err := s.PutAllFlashcards(cfg.DeckId, flashcards); err != nil {
-		return err
+	if _, err := s.PutAllFlashcards(cfg.DeckId, flashcards); err != nil {
+		return 0, err
 	}
 
 	decks[cfg.DeckId] = cfg // maybe critical section!
@@ -93,7 +95,7 @@ func (s *Service) NewDeckWithFlashcards(userId models.UserId, cfg models.DeckCon
 		_ = s.Cache().Delete(userId) // non-consistent cache
 	}
 
-	return nil
+	return id, nil
 }
 
 // DeleteDeck deletes the whole deck from user. It doesn't remove flashcards from the deck.

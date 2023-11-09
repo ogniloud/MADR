@@ -24,13 +24,14 @@ type Storage interface {
 	GetUserInfo(uid models.UserId) (models.UserInfo, error)
 
 	// PutAllFlashcards appends flashcards to the deck by appending new rows in models.Flashcard storage.
-	PutAllFlashcards(id models.DeckId, cards []models.Flashcard) error
+	PutAllFlashcards(id models.DeckId, cards []models.Flashcard) ([]models.FlashcardId, error)
 
 	// PutNewDeck appends a new deck configuration.
-	PutNewDeck(config models.DeckConfig) error
+	PutNewDeck(config models.DeckConfig) (models.DeckId, error)
 
 	// PutAllUserLeitner appends all the models.UserLeitner in storage.
-	PutAllUserLeitner(uls []models.UserLeitner) error
+	// Returns a slice of ids in order of the slice of models.UserLeitner.
+	PutAllUserLeitner(uls []models.UserLeitner) ([]models.LeitnerId, error)
 
 	// DeleteFlashcardFromDeck deletes a record from models.Flashcard storage about flashcard.
 	DeleteFlashcardFromDeck(cardId models.FlashcardId) error
