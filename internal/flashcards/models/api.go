@@ -27,7 +27,6 @@ type AddFlashcardToDeckResponse struct{}
 type DeleteFlashcardFromDeckRequest struct {
 	UserId      UserId      `json:"user_id"`
 	FlashcardId FlashcardId `json:"flashcard_id"`
-	DeckId      DeckId      `json:"deck_id"`
 }
 
 type DeleteFlashcardFromDeckResponse struct{}

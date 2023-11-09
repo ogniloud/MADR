@@ -17,6 +17,11 @@ type Deck struct {
 }
 
 func (d Deck) LoadDecks(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		d.ew.Error(w, "method not allowed", http.StatusBadRequest)
+		return
+	}
+
 	reqBody := models.LoadDecksRequest{}
 	respBody := models.LoadDecksResponse{}
 
@@ -42,6 +47,11 @@ func (d Deck) LoadDecks(w http.ResponseWriter, r *http.Request) {
 }
 
 func (d Deck) GetFlashcardsByDeckId(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		d.ew.Error(w, "method not allowed", http.StatusBadRequest)
+		return
+	}
+
 	reqBody := models.GetFlashcardsByDeckIdRequest{}
 	respBody := models.GetFlashcardsByDeckIdResponse{}
 
@@ -78,6 +88,11 @@ func (d Deck) GetFlashcardsByDeckId(w http.ResponseWriter, r *http.Request) {
 }
 
 func (d Deck) AddFlashcardToDeck(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPut {
+		d.ew.Error(w, "method not allowed", http.StatusBadRequest)
+		return
+	}
+
 	var err error
 	reqBody := models.AddFlashcardToDeckRequest{}
 
@@ -131,7 +146,15 @@ func (d Deck) DeleteFlashcardFromDeck(w http.ResponseWriter, r *http.Request) {
 }
 
 func (d Deck) NewDeckWithFlashcards(w http.ResponseWriter, r *http.Request) {
-
+	if r.Method != http.MethodPut {
+		d.ew.Error(w, "method not allowed", http.StatusBadRequest)
+		return
+	}
 }
 
-func (d Deck) DeleteDeck(w http.ResponseWriter, r *http.Request) {}
+func (d Deck) DeleteDeck(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodDelete {
+		d.ew.Error(w, "method not allowed", http.StatusBadRequest)
+		return
+	}
+}
