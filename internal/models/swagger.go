@@ -16,25 +16,27 @@
 // swagger:meta
 package models
 
+import "github.com/ogniloud/madr/internal/ioutil"
+
 // swagger:response signUpCreatedResponse
 type SwaggerSignUpCreatedResponse struct{}
 
 // swagger:response signUpBadRequestError
 type SwaggerSignUpBadRequestError struct {
 	// in: body
-	Body GenericError
+	Body ioutil.GenericError
 }
 
 // swagger:response signUpConflictError
 type SwaggerSignUpConflictError struct {
 	// in: body
-	Body GenericError
+	Body ioutil.GenericError
 }
 
 // swagger:response signUpInternalServerError
 type SwaggerInternalServerError struct {
 	// in: body
-	Body GenericError
+	Body ioutil.GenericError
 }
 
 // swagger:response signInOkResponse
@@ -47,17 +49,17 @@ type SwaggerSignInOkResponse struct {
 // swagger:response signInBadRequestError
 type SwaggerSignInBadRequestError struct {
 	// in: body
-	Body GenericError
+	Body ioutil.GenericError
 }
 
 // swagger:response signInUnauthorizedError
 type SwaggerSignInUnauthorizedError struct {
 	// in: body
-	Body GenericError
+	Body ioutil.GenericError
 }
 
 // swagger:response signInInternalServerError
 type SwaggersignInInternalServerError struct {
 	// in: body
-	Body GenericError
+	Body ioutil.GenericError
 }

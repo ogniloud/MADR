@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/ogniloud/madr/internal/data"
+	"github.com/ogniloud/madr/internal/ioutil"
 	"github.com/ogniloud/madr/internal/models"
 )
 
@@ -42,9 +43,9 @@ func (e *Endpoints) SignUp(w http.ResponseWriter, r *http.Request) {
 
 	// We use the FromJSON function to deserialize the request body
 	// because it is faster than using the json.Unmarshal function
-	err := models.FromJSON(&request, r.Body)
+	err := ioutil.FromJSON(&request, r.Body)
 	if err != nil {
-		e.writeGenericError(w, http.StatusBadRequest, "Unable to unmarshal JSON")
+		e.ew.Error(w, "Unable to unmarshal JSON", http.StatusBadRequest)
 		return
 	}
 
@@ -59,12 +60,12 @@ func (e *Endpoints) SignUp(w http.ResponseWriter, r *http.Request) {
 	})
 	if err != nil {
 		if errors.Is(err, data.ErrEmailExists) {
-			e.writeGenericError(w, http.StatusConflict, data.ErrEmailExists.Error())
+			e.ew.Error(w, data.ErrEmailExists.Error(), http.StatusConflict)
 			return
 		}
 
 		e.logger.Error("Unable to create user", "error", err)
-		e.writeGenericError(w, http.StatusInternalServerError, models.ErrInternalServer.Error())
+		e.ew.Error(w, models.ErrInternalServer.Error(), http.StatusInternalServerError)
 
 		return
 	}
@@ -104,33 +105,33 @@ func (e *Endpoints) SignIn(w http.ResponseWriter, r *http.Request) {
 
 	var request models.SignInRequest
 
-	err := models.FromJSON(&request, r.Body)
+	err := ioutil.FromJSON(&request, r.Body)
 	if err != nil {
-		e.writeGenericError(w, http.StatusBadRequest, "Unable to unmarshal JSON")
+		e.ew.Error(w, "Unable to unmarshal JSON", http.StatusBadRequest)
 		return
 	}
 
 	authToken, err := e.data.SignInUser(r.Context(), request.Email, request.Password)
 	if err != nil {
 		if errors.Is(err, models.ErrUnauthorized) {
-			e.writeGenericError(w, http.StatusUnauthorized, models.ErrUnauthorized.Error())
+			e.ew.Error(w, models.ErrUnauthorized.Error(), http.StatusUnauthorized)
 			return
 		}
 
 		e.logger.Error("Unable to get Bearer token", "error", err)
-		e.writeGenericError(w, http.StatusInternalServerError, models.ErrInternalServer.Error())
+		e.ew.Error(w, models.ErrInternalServer.Error(), http.StatusInternalServerError)
 
 		return
 	}
 
-	err = models.ToJSON(models.SignInResponse{
+	err = ioutil.ToJSON(models.SignInResponse{
 		Authorization: authToken,
 	}, w)
 	if err != nil {
 		// log the error to debug it
 		e.logger.Error("Unable to write JSON response", "error", err)
 		// write a generic error to the response writer, so we don't expose the actual error
-		e.writeGenericError(w, http.StatusInternalServerError, models.ErrInternalServer.Error())
+		e.ew.Error(w, models.ErrInternalServer.Error(), http.StatusInternalServerError)
 
 		return
 	}
