@@ -86,20 +86,26 @@ func (d Deck) AddFlashcardToDeck(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// PUT A NEW FLASHCARD INTO DB
-	err = d.s.PutAllFlashcards(reqBody.DeckId, []models.Flashcard{reqBody.Flashcard})
+	id, err := d.s.PutAllFlashcards(reqBody.DeckId, []models.Flashcard{reqBody.Flashcard})
 	if err != nil {
 		d.logger.Errorf("error while putting a card: %v", err)
 		d.ew.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	d.s.PutAllUserLeitner([]models.UserLeitner{{
+	_, err = d.s.PutAllUserLeitner([]models.UserLeitner{{
 		UserId:      reqBody.UserId,
-		FlashcardId: 0, // HOW TO GET ID ???
+		FlashcardId: id[0],
 		Box:         0,
 		CoolDown:    models.CoolDown{State: time.Now()},
 	}})
+	if err != nil {
+		d.logger.Errorf("error while creating leitner: %v", err)
+		d.ew.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.WriteHeader(http.StatusNoContent)
 }
 
 func (d Deck) DeleteFlashcardFromDeck(w http.ResponseWriter, r *http.Request) {}
