@@ -105,11 +105,11 @@ func (l *LeitnerSuite) Test_LoadDecks() {
 func (l *LeitnerSuite) Test_CreateNewDeck() {
 	s := l.st
 	s.On("PutNewDeck", mock.AnythingOfType("models.DeckConfig")).
-		Return(nil).Once()
+		Return(0, nil).Once()
 	s.On("PutAllFlashcards",
 		mock.AnythingOfType("int"),
 		mock.AnythingOfType("[]models.Flashcard")).
-		Return(nil).Once()
+		Return(nil, nil).Once()
 
 	s.On("GetDecksByUserId", 1).
 		Return(l.userData, nil).Once()
@@ -136,8 +136,10 @@ func (l *LeitnerSuite) Test_CreateNewDeck() {
 		},
 	}
 
-	assert.Error(l.T(), l.s.NewDeckWithFlashcards(1, models.DeckConfig{}, []models.Flashcard{}))
-	assert.Nil(l.T(), l.s.NewDeckWithFlashcards(1, cfg, cards))
+	_, err := l.s.NewDeckWithFlashcards(1, models.DeckConfig{}, []models.Flashcard{})
+	assert.Error(l.T(), err)
+	_, err = l.s.NewDeckWithFlashcards(1, cfg, cards)
+	assert.Nil(l.T(), err)
 
 	decks, err := l.s.LoadDecks(1)
 	if assert.NoError(l.T(), err) {
