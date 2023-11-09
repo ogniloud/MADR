@@ -172,4 +172,19 @@ func (d Deck) DeleteDeck(w http.ResponseWriter, r *http.Request) {
 		d.ew.Error(w, "method not allowed", http.StatusBadRequest)
 		return
 	}
+
+	reqBody := models.DeleteDeckRequest{}
+	if err := ioutil.FromJSON(&reqBody, r.Body); err != nil {
+		d.ew.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	err := d.s.DeleteDeck(reqBody.UserId, reqBody.DeckId)
+	if err != nil {
+		d.logger.Errorf("error while deleting a deck: %v", err)
+		d.ew.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.WriteHeader(http.StatusNoContent)
 }
