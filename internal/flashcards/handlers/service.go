@@ -36,7 +36,7 @@ type Endpoint struct {
 //
 //
 // Responses:
-// 201: loadDecksOkResponse
+// 200: loadDecksOkResponse
 // 400: loadDecksBadRequestError
 // 500: loadDecksInternalServerError
 

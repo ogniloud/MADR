@@ -55,10 +55,7 @@ type SwaggerGetFlashcardsByDeckIdInternalServerError struct {
 }
 
 // swagger:response addFlashcardToDeckCreatedResponse
-type SwaggerAddFlashcardToDeckCreatedResponse struct {
-	// in: body
-	Body AddFlashcardToDeckResponse
-}
+type SwaggerAddFlashcardToDeckCreatedResponse struct{}
 
 // swagger:response addFlashcardToDeckBadRequestError
 type SwaggerAddFlashcardToDeckBadRequestError struct {
@@ -73,10 +70,7 @@ type SwaggerAddFlashcardToDeckInternalServerError struct {
 }
 
 // swagger:response deleteFlashcardFromDeckNoContentResponse
-type SwaggerDeleteFlashcardFromDeckNoContentResponse struct {
-	// in: body
-	Body DeleteFlashcardFromDeckResponse
-}
+type SwaggerDeleteFlashcardFromDeckNoContentResponse struct{}
 
 // swagger:response deleteFlashcardFromDeckBadRequestError
 type SwaggerDeleteFlashcardFromDeckBadRequestError struct {
@@ -91,10 +85,7 @@ type SwaggerDeleteFlashcardFromDeckInternalServerError struct {
 }
 
 // swagger:response newDeckWithFlashcardsCreatedResponse
-type SwaggerNewDeckWithFlashcardsNoContentResponse struct {
-	// in: body
-	Body NewDeckWithFlashcardsResponse
-}
+type SwaggerNewDeckWithFlashcardsNoContentResponse struct{}
 
 // swagger:response newDeckWithFlashcardsBadRequestError
 type SwaggerNewDeckWithFlashcardsBadRequestError struct {
@@ -109,10 +100,7 @@ type SwaggerNewDeckWithFlashcardsInternalServerError struct {
 }
 
 // swagger:response deleteDeckNoContentResponse
-type SwaggerDeleteDeckNoContentResponse struct {
-	// in: body
-	Body DeleteDeckResponse
-}
+type SwaggerDeleteDeckNoContentResponse struct{}
 
 // swagger:response deleteDeckBadRequestError
 type SwaggerDeleteDeckBadRequestError struct {

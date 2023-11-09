@@ -16,6 +16,17 @@ type LoadDecksRequest struct {
 // loading deck handler.
 type LoadDecksResponse struct {
 	// Decks is a slice of deck with their configs.
+	//
+	// Extensions:
+	// ---
+	// x-property-value: value
+	// x-property-array:
+	//   - value1
+	//   - value2
+	// x-property-array-obj:
+	//   - name: obj
+	//     value: field
+	// ---
 	Decks []DeckConfig `json:"decks"`
 }
 
@@ -35,6 +46,17 @@ type GetFlashcardsByDeckIdRequest struct {
 // loading cards from the deck handler.
 type GetFlashcardsByDeckIdResponse struct {
 	// Flashcards is a slice of flashcards that is returned to the client.
+	//
+	// Extensions:
+	// ---
+	// x-property-value: value
+	// x-property-array:
+	//   - value1
+	//   - value2
+	// x-property-array-obj:
+	//   - name: obj
+	//     value: field
+	// ---
 	Flashcards []Flashcard `json:"flashcards"`
 }
 
@@ -58,7 +80,7 @@ type AddFlashcardToDeckRequest struct {
 	// Word is a head side of the card.
 	//
 	// required: true
-	// example: "Aboba"
+	// example: Aboba
 	Word Word `json:"word"`
 
 	// Backside is a back side of the card.
@@ -108,10 +130,21 @@ type NewDeckWithFlashcardsRequest struct {
 	// Name is a name of the deck
 	//
 	// required: true
-	// example: "Aboba123"
+	// example: Aboba123
 	Name string `json:"name"`
 
 	// Flashcards is a slice of flashcards that will be added.
+	//
+	// Extensions:
+	// ---
+	// x-property-value: value
+	// x-property-array:
+	//   - value1
+	//   - value2
+	// x-property-array-obj:
+	//   - name: obj
+	//     value: field
+	// ---
 	Flashcards []Flashcard `json:"flashcards"`
 }
 
