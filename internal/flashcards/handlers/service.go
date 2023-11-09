@@ -108,7 +108,27 @@ func (d Deck) AddFlashcardToDeck(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNoContent)
 }
 
-func (d Deck) DeleteFlashcardFromDeck(w http.ResponseWriter, r *http.Request) {}
+func (d Deck) DeleteFlashcardFromDeck(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodDelete {
+		d.ew.Error(w, "method not allowed", http.StatusBadRequest)
+		return
+	}
+
+	reqBody := models.DeleteFlashcardFromDeckRequest{}
+	if err := ioutil.FromJSON(&reqBody, r.Body); err != nil {
+		d.ew.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	err := d.s.DeleteFlashcardFromDeck(reqBody.FlashcardId)
+	if err != nil {
+		d.logger.Errorf("error while deleting flashcard: %v", err)
+		d.ew.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.WriteHeader(http.StatusNoContent)
+}
 
 func (d Deck) NewDeckWithFlashcards(w http.ResponseWriter, r *http.Request) {
 
