@@ -10,13 +10,38 @@ import (
 	"github.com/ogniloud/madr/internal/ioutil"
 )
 
-type Deck struct {
+type Endpoint struct {
 	s      deck.IService
 	ew     ioutil.ErrorWriter
 	logger *log.Logger
 }
 
-func (d Deck) LoadDecks(w http.ResponseWriter, r *http.Request) {
+// swagger:route POST /api/flashcards/load
+// Loads decks that the user has.
+//
+// Consumes:
+// - application/json
+//
+// Produces:
+// - application/json
+//
+// Schemes: http
+//
+// Parameters:
+//   - name: request
+//     in: body
+//     description: Load decks request.
+//     required: true
+//     type: loadDecksRequest
+//
+// Responses:
+//
+//	201: loadDecksCreatedResponse
+//	400: loadDecksBadRequestError
+//	500: signDecksInternalServerError
+
+// LoadDecks is a handler for the loading decks Endpoint.
+func (d Endpoint) LoadDecks(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		d.ew.Error(w, "method not allowed", http.StatusBadRequest)
 		return
@@ -46,7 +71,32 @@ func (d Deck) LoadDecks(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (d Deck) GetFlashcardsByDeckId(w http.ResponseWriter, r *http.Request) {
+// swagger:route POST /api/flashcards/cards
+// Returns flashcards containing in the deck.
+//
+// Consumes:
+// - application/json
+//
+// Produces:
+// - application/json
+//
+// Schemes: http
+//
+// Parameters:
+//   - name: request
+//     in: body
+//     description: Get flashcards by deck id request.
+//     required: true
+//     type: getFlashcardsByDeckIdRequest
+//
+// Responses:
+//
+//	200: getFlashcardsByDeckIdOKResponse
+//	400: getFlashcardsByDeckIdBadRequestError
+//	500: getFlashcardsByDeckIdInternalServerError
+
+// GetFlashcardsByDeckId is a handler for the getting cards Endpoint.
+func (d Endpoint) GetFlashcardsByDeckId(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		d.ew.Error(w, "method not allowed", http.StatusBadRequest)
 		return
@@ -87,7 +137,32 @@ func (d Deck) GetFlashcardsByDeckId(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (d Deck) AddFlashcardToDeck(w http.ResponseWriter, r *http.Request) {
+// swagger:route PUT /api/flashcards/add_card
+// Puts a card to the deck.
+//
+// Consumes:
+// - application/json
+//
+// Produces:
+// - application/json
+//
+// Schemes: http
+//
+// Parameters:
+//   - name: request
+//     in: body
+//     description: Add flashcard to the deck request.
+//     required: true
+//     type: addFlashcardToDeckRequest
+//
+// Responses:
+//
+//	201: addFlashcardToDeckCreatedResponse
+//	400: addFlashcardToDeckBadRequestError
+//	500: addFlashcardToDeckInternalServerError
+
+// AddFlashcardToDeck is a handler for the adding a card Endpoint.
+func (d Endpoint) AddFlashcardToDeck(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPut {
 		d.ew.Error(w, "method not allowed", http.StatusBadRequest)
 		return
@@ -101,7 +176,11 @@ func (d Deck) AddFlashcardToDeck(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	id, err := d.s.PutAllFlashcards(reqBody.DeckId, []models.Flashcard{reqBody.Flashcard})
+	id, err := d.s.PutAllFlashcards(reqBody.DeckId, []models.Flashcard{{
+		W:      reqBody.Word,
+		B:      reqBody.Backside,
+		DeckId: reqBody.DeckId,
+	}})
 	if err != nil {
 		d.logger.Errorf("error while putting a card: %v", err)
 		d.ew.Error(w, err.Error(), http.StatusInternalServerError)
@@ -120,10 +199,35 @@ func (d Deck) AddFlashcardToDeck(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	w.WriteHeader(http.StatusNoContent)
+	w.WriteHeader(http.StatusCreated)
 }
 
-func (d Deck) DeleteFlashcardFromDeck(w http.ResponseWriter, r *http.Request) {
+// swagger:route DELETE /api/flashcards/delete_card
+// Deletes a card from the deck.
+//
+// Consumes:
+// - application/json
+//
+// Produces:
+// - application/json
+//
+// Schemes: http
+//
+// Parameters:
+//   - name: request
+//     in: body
+//     description: Delete card from deck request.
+//     required: true
+//     type: deleteFlashcardFromDeck
+//
+// Responses:
+//
+//	204: deleteFlashcardFromDeckNoContentResponse
+//	400: deleteFlashcardFromDeckBadRequestError
+//	500: deleteFlashcardFromDeckInternalServerError
+
+// DeleteFlashcardFromDeck is a handler for the deleting a card Endpoint.
+func (d Endpoint) DeleteFlashcardFromDeck(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodDelete {
 		d.ew.Error(w, "method not allowed", http.StatusBadRequest)
 		return
@@ -145,7 +249,32 @@ func (d Deck) DeleteFlashcardFromDeck(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNoContent)
 }
 
-func (d Deck) NewDeckWithFlashcards(w http.ResponseWriter, r *http.Request) {
+// swagger:route PUT /api/flashcards/new_deck
+// Creates a new deck with flashcards.
+//
+// Consumes:
+// - application/json
+//
+// Produces:
+// - application/json
+//
+// Schemes: http
+//
+// Parameters:
+//   - name: request
+//     in: body
+//     description: New deck with flashcards request.
+//     required: true
+//     type: newDeckWithFlashcards
+//
+// Responses:
+//
+//	201: newDeckWithFlashcardsCreatedResponse
+//	400: newDeckWithFlashcardsBadRequestError
+//	500: newDeckWithFlashcardsInternalServerError
+
+// NewDeckWithFlashcards is a handler for the creating a new deck Endpoint.
+func (d Endpoint) NewDeckWithFlashcards(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPut {
 		d.ew.Error(w, "method not allowed", http.StatusBadRequest)
 		return
@@ -157,17 +286,49 @@ func (d Deck) NewDeckWithFlashcards(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	_, err := d.s.NewDeckWithFlashcards(reqBody.UserId, reqBody.DeckConfig, reqBody.Flashcards)
+	_, err := d.s.NewDeckWithFlashcards(
+		reqBody.UserId,
+		models.DeckConfig{
+			UserId: reqBody.UserId,
+			Name:   reqBody.Name,
+		},
+		reqBody.Flashcards,
+	)
 	if err != nil {
 		d.logger.Errorf("error while creating a deck: %v", err)
 		d.ew.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	w.WriteHeader(http.StatusNoContent)
+	w.WriteHeader(http.StatusCreated)
 }
 
-func (d Deck) DeleteDeck(w http.ResponseWriter, r *http.Request) {
+// swagger:route DELETE /api/flashcards/delete_deck
+// Deletes a deck from user's collection.
+//
+// Consumes:
+// - application/json
+//
+// Produces:
+// - application/json
+//
+// Schemes: http
+//
+// Parameters:
+//   - name: request
+//     in: body
+//     description: Delete deck request.
+//     required: true
+//     type: deleteDeck
+//
+// Responses:
+//
+//	204: deleteDeckNoContentResponse
+//	400: deleteDeckBadRequestError
+//	500: deleteDeckInternalServerError
+
+// DeleteDeck is a handler for the deleting a deck from user's collection Endpoint.
+func (d Endpoint) DeleteDeck(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodDelete {
 		d.ew.Error(w, "method not allowed", http.StatusBadRequest)
 		return
