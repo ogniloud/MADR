@@ -28,17 +28,17 @@ type Endpoint struct {
 // Schemes: http
 //
 // Parameters:
-//   - name: request
-//     in: body
-//     description: Load decks request.
-//     required: true
-//     type: loadDecksRequest
+// + name: request
+//   in: body
+//   description: Load decks request.
+//   required: true
+//   type: loadDecksRequest
+//
 //
 // Responses:
-//
-//	201: loadDecksOkResponse
-//	400: loadDecksBadRequestError
-//	500: loadDecksInternalServerError
+// 201: loadDecksOkResponse
+// 400: loadDecksBadRequestError
+// 500: loadDecksInternalServerError
 
 // LoadDecks is a handler for the loading decks Endpoint.
 func (d Endpoint) LoadDecks(w http.ResponseWriter, r *http.Request) {
@@ -83,17 +83,17 @@ func (d Endpoint) LoadDecks(w http.ResponseWriter, r *http.Request) {
 // Schemes: http
 //
 // Parameters:
-//   - name: request
-//     in: body
-//     description: Get flashcards by deck id request.
-//     required: true
-//     type: getFlashcardsByDeckIdRequest
+// + name: request
+//   in: body
+//   description: Get flashcards by deck id request.
+//   required: true
+//   type: getFlashcardsByDeckIdRequest
+//
 //
 // Responses:
-//
-//	200: getFlashcardsByDeckIdOkResponse
-//	400: getFlashcardsByDeckIdBadRequestError
-//	500: getFlashcardsByDeckIdInternalServerError
+// 200: getFlashcardsByDeckIdOkResponse
+// 400: getFlashcardsByDeckIdBadRequestError
+// 500: getFlashcardsByDeckIdInternalServerError
 
 // GetFlashcardsByDeckId is a handler for the getting cards Endpoint.
 func (d Endpoint) GetFlashcardsByDeckId(w http.ResponseWriter, r *http.Request) {
@@ -149,17 +149,17 @@ func (d Endpoint) GetFlashcardsByDeckId(w http.ResponseWriter, r *http.Request) 
 // Schemes: http
 //
 // Parameters:
-//   - name: request
-//     in: body
-//     description: Add flashcard to the deck request.
-//     required: true
-//     type: addFlashcardToDeckRequest
+// + name: request
+//   in: body
+//   description: Add flashcard to the deck request.
+//   required: true
+//   type: addFlashcardToDeckRequest
+//
 //
 // Responses:
-//
-//	201: addFlashcardToDeckCreatedResponse
-//	400: addFlashcardToDeckBadRequestError
-//	500: addFlashcardToDeckInternalServerError
+// 201: addFlashcardToDeckCreatedResponse
+// 400: addFlashcardToDeckBadRequestError
+// 500: addFlashcardToDeckInternalServerError
 
 // AddFlashcardToDeck is a handler for the adding a card Endpoint.
 func (d Endpoint) AddFlashcardToDeck(w http.ResponseWriter, r *http.Request) {
@@ -214,17 +214,17 @@ func (d Endpoint) AddFlashcardToDeck(w http.ResponseWriter, r *http.Request) {
 // Schemes: http
 //
 // Parameters:
-//   - name: request
-//     in: body
-//     description: Delete card from deck request.
-//     required: true
-//     type: deleteFlashcardFromDeck
+// + name: request
+//   in: body
+//   description: Delete card from deck request.
+//   required: true
+//   type: deleteFlashcardFromDeck
+//
 //
 // Responses:
-//
-//	204: deleteFlashcardFromDeckNoContentResponse
-//	400: deleteFlashcardFromDeckBadRequestError
-//	500: deleteFlashcardFromDeckInternalServerError
+// 204: deleteFlashcardFromDeckNoContentResponse
+// 400: deleteFlashcardFromDeckBadRequestError
+// 500: deleteFlashcardFromDeckInternalServerError
 
 // DeleteFlashcardFromDeck is a handler for the deleting a card Endpoint.
 func (d Endpoint) DeleteFlashcardFromDeck(w http.ResponseWriter, r *http.Request) {
@@ -261,17 +261,17 @@ func (d Endpoint) DeleteFlashcardFromDeck(w http.ResponseWriter, r *http.Request
 // Schemes: http
 //
 // Parameters:
-//   - name: request
-//     in: body
-//     description: New deck with flashcards request.
-//     required: true
-//     type: newDeckWithFlashcards
+// + name: request
+//   in: body
+//   description: New deck with flashcards request.
+//   required: true
+//   type: newDeckWithFlashcards
+//
 //
 // Responses:
-//
-//	201: newDeckWithFlashcardsCreatedResponse
-//	400: newDeckWithFlashcardsBadRequestError
-//	500: newDeckWithFlashcardsInternalServerError
+// 201: newDeckWithFlashcardsCreatedResponse
+// 400: newDeckWithFlashcardsBadRequestError
+// 500: newDeckWithFlashcardsInternalServerError
 
 // NewDeckWithFlashcards is a handler for the creating a new deck Endpoint.
 func (d Endpoint) NewDeckWithFlashcards(w http.ResponseWriter, r *http.Request) {
@@ -315,17 +315,17 @@ func (d Endpoint) NewDeckWithFlashcards(w http.ResponseWriter, r *http.Request) 
 // Schemes: http
 //
 // Parameters:
-//   - name: request
-//     in: body
-//     description: Delete deck request.
-//     required: true
-//     type: deleteDeck
+// + name: request
+//   in: body
+//   description: Delete deck request.
+//   required: true
+//   type: deleteDeck
+//
 //
 // Responses:
-//
-//	204: deleteDeckNoContentResponse
-//	400: deleteDeckBadRequestError
-//	500: deleteDeckInternalServerError
+// 204: deleteDeckNoContentResponse
+// 400: deleteDeckBadRequestError
+// 500: deleteDeckInternalServerError
 
 // DeleteDeck is a handler for the deleting a deck from user's collection Endpoint.
 func (d Endpoint) DeleteDeck(w http.ResponseWriter, r *http.Request) {
