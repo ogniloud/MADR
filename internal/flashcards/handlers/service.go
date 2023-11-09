@@ -150,6 +150,21 @@ func (d Deck) NewDeckWithFlashcards(w http.ResponseWriter, r *http.Request) {
 		d.ew.Error(w, "method not allowed", http.StatusBadRequest)
 		return
 	}
+
+	reqBody := models.NewDeckWithFlashcardsRequest{}
+	if err := ioutil.FromJSON(&reqBody, r.Body); err != nil {
+		d.ew.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	_, err := d.s.NewDeckWithFlashcards(reqBody.UserId, reqBody.DeckConfig, reqBody.Flashcards)
+	if err != nil {
+		d.logger.Errorf("error while creating a deck: %v", err)
+		d.ew.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.WriteHeader(http.StatusNoContent)
 }
 
 func (d Deck) DeleteDeck(w http.ResponseWriter, r *http.Request) {
