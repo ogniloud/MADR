@@ -36,9 +36,9 @@ type Endpoint struct {
 //
 // Responses:
 //
-//	201: loadDecksCreatedResponse
+//	201: loadDecksOkResponse
 //	400: loadDecksBadRequestError
-//	500: signDecksInternalServerError
+//	500: loadDecksInternalServerError
 
 // LoadDecks is a handler for the loading decks Endpoint.
 func (d Endpoint) LoadDecks(w http.ResponseWriter, r *http.Request) {
@@ -91,7 +91,7 @@ func (d Endpoint) LoadDecks(w http.ResponseWriter, r *http.Request) {
 //
 // Responses:
 //
-//	200: getFlashcardsByDeckIdOKResponse
+//	200: getFlashcardsByDeckIdOkResponse
 //	400: getFlashcardsByDeckIdBadRequestError
 //	500: getFlashcardsByDeckIdInternalServerError
 
