@@ -35,10 +35,10 @@ func main() {
 	r.Use(middleware.Logger)
 
 	// Set up a datalayer
-	dl := data.NewDatalayer()
+	dl := data.New()
 
 	// Set up endpoints
-	endpoints := handlers.NewEndpoints(dl, l)
+	endpoints := handlers.New(dl, l)
 
 	// handlers for documentation
 	dh := openapi.Redoc(openapi.RedocOpts{
