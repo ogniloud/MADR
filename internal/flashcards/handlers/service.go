@@ -16,7 +16,7 @@ type Endpoint struct {
 	logger *log.Logger
 }
 
-// swagger:route POST /api/flashcards/load
+// swagger:route POST /api/flashcards/load LoadDecks
 // Loads decks that the user has.
 //
 // Consumes:
@@ -71,7 +71,7 @@ func (d Endpoint) LoadDecks(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-// swagger:route POST /api/flashcards/cards
+// swagger:route POST /api/flashcards/cards CardsByDeckId
 // Returns flashcards containing in the deck.
 //
 // Consumes:
@@ -137,7 +137,7 @@ func (d Endpoint) GetFlashcardsByDeckId(w http.ResponseWriter, r *http.Request) 
 	}
 }
 
-// swagger:route PUT /api/flashcards/add_card
+// swagger:route PUT /api/flashcards/add_card AddCard
 // Puts a card to the deck.
 //
 // Consumes:
@@ -202,7 +202,7 @@ func (d Endpoint) AddFlashcardToDeck(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusCreated)
 }
 
-// swagger:route DELETE /api/flashcards/delete_card
+// swagger:route DELETE /api/flashcards/delete_card DeleteCard
 // Deletes a card from the deck.
 //
 // Consumes:
@@ -218,7 +218,7 @@ func (d Endpoint) AddFlashcardToDeck(w http.ResponseWriter, r *http.Request) {
 //   in: body
 //   description: Delete card from deck request.
 //   required: true
-//   type: deleteFlashcardFromDeck
+//   type: deleteFlashcardFromDeckRequest
 //
 //
 // Responses:
@@ -249,7 +249,7 @@ func (d Endpoint) DeleteFlashcardFromDeck(w http.ResponseWriter, r *http.Request
 	w.WriteHeader(http.StatusNoContent)
 }
 
-// swagger:route PUT /api/flashcards/new_deck
+// swagger:route PUT /api/flashcards/new_deck NewDeck
 // Creates a new deck with flashcards.
 //
 // Consumes:
@@ -265,7 +265,7 @@ func (d Endpoint) DeleteFlashcardFromDeck(w http.ResponseWriter, r *http.Request
 //   in: body
 //   description: New deck with flashcards request.
 //   required: true
-//   type: newDeckWithFlashcards
+//   type: newDeckWithFlashcardsRequest
 //
 //
 // Responses:
@@ -303,7 +303,7 @@ func (d Endpoint) NewDeckWithFlashcards(w http.ResponseWriter, r *http.Request) 
 	w.WriteHeader(http.StatusCreated)
 }
 
-// swagger:route DELETE /api/flashcards/delete_deck
+// swagger:route DELETE /api/flashcards/delete_deck DeleteDeck
 // Deletes a deck from user's collection.
 //
 // Consumes:
@@ -319,7 +319,7 @@ func (d Endpoint) NewDeckWithFlashcards(w http.ResponseWriter, r *http.Request) 
 //   in: body
 //   description: Delete deck request.
 //   required: true
-//   type: deleteDeck
+//   type: deleteDeckRequest
 //
 //
 // Responses:

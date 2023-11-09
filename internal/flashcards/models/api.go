@@ -3,7 +3,7 @@ package models
 // LoadDecksRequest is a struct that defines the request body for the
 // loading deck handler.
 //
-//swagger:model loadDeckRequest
+//swagger:model loadDecksRequest
 type LoadDecksRequest struct {
 	// UserId is used for loading for the cards that the user has.
 	//
@@ -59,13 +59,13 @@ type AddFlashcardToDeckRequest struct {
 	//
 	// required: true
 	// example: "Aboba"
-	Word Word
+	Word Word `json:"word"`
 
 	// Backside is a back side of the card.
 	//
 	// required: true
 	// example: Backside{Type: TypeDefinition, Value: "President"}
-	Backside Backside
+	Backside Backside `json:"backside"`
 }
 
 // AddFlashcardToDeckResponse is a struct that defines the request body for the
@@ -109,7 +109,7 @@ type NewDeckWithFlashcardsRequest struct {
 	//
 	// required: true
 	// example: "Aboba123"
-	Name string
+	Name string `json:"name"`
 
 	// Flashcards is a slice of flashcards that will be added.
 	Flashcards []Flashcard `json:"flashcards"`
