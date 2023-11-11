@@ -5,8 +5,8 @@ type Matching struct {
 	Cards map[string]Flashcard
 }
 
-type Sentence struct {
-	S     string
+type Text struct {
+	T     string
 	Opts  []string
 	Cards map[string]Flashcard
 }
