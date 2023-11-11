@@ -2,7 +2,6 @@ package psql
 
 import (
 	"context"
-	"log"
 
 	"github.com/jackc/pgx/v5"
 
@@ -26,8 +25,6 @@ func (d *DeckStorage) GetDecksByUserId(id models.UserId) (models.Decks, error) {
 
 	cfg := models.DeckConfig{}
 	_, err = pgx.ForEachRow(rows, []any{&cfg.DeckId, &cfg.UserId, &cfg.Name}, func() error {
-		log.Println(cfg)
-		cfg := cfg
 		decks[cfg.DeckId] = cfg
 
 		return nil
