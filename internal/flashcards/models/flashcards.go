@@ -30,6 +30,7 @@ type UserInfo struct {
 
 type (
 	Word         = string
+	Answer       = string
 	BacksideType int
 )
 
@@ -46,6 +47,7 @@ type Backside struct {
 type Flashcard struct {
 	Id FlashcardId `json:"id"`
 	W  Word        `json:"word"`
+	A  Answer      `json:"asnwer"`
 	B  Backside    `json:"backside"`
 
 	// DeckId shows which deck the flashcard belongs to.
