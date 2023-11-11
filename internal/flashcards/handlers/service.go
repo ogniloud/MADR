@@ -43,11 +43,6 @@ type Endpoint struct {
 
 // LoadDecks is a handler for the loading decks Endpoint.
 func (d Endpoint) LoadDecks(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodPost {
-		d.ew.Error(w, "method not allowed", http.StatusBadRequest)
-		return
-	}
-
 	reqBody := models.LoadDecksRequest{}
 	respBody := models.LoadDecksResponse{}
 
@@ -98,11 +93,6 @@ func (d Endpoint) LoadDecks(w http.ResponseWriter, r *http.Request) {
 
 // GetFlashcardsByDeckId is a handler for the getting cards Endpoint.
 func (d Endpoint) GetFlashcardsByDeckId(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodPost {
-		d.ew.Error(w, "method not allowed", http.StatusBadRequest)
-		return
-	}
-
 	reqBody := models.GetFlashcardsByDeckIdRequest{}
 	respBody := models.GetFlashcardsByDeckIdResponse{}
 
@@ -164,11 +154,6 @@ func (d Endpoint) GetFlashcardsByDeckId(w http.ResponseWriter, r *http.Request) 
 
 // AddFlashcardToDeck is a handler for the adding a card Endpoint.
 func (d Endpoint) AddFlashcardToDeck(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodPut {
-		d.ew.Error(w, "method not allowed", http.StatusBadRequest)
-		return
-	}
-
 	reqBody := models.AddFlashcardToDeckRequest{}
 
 	if err := ioutil.FromJSON(&reqBody, r.Body); err != nil {
@@ -228,11 +213,6 @@ func (d Endpoint) AddFlashcardToDeck(w http.ResponseWriter, r *http.Request) {
 
 // DeleteFlashcardFromDeck is a handler for the deleting a card Endpoint.
 func (d Endpoint) DeleteFlashcardFromDeck(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodDelete {
-		d.ew.Error(w, "method not allowed", http.StatusBadRequest)
-		return
-	}
-
 	reqBody := models.DeleteFlashcardFromDeckRequest{}
 	if err := ioutil.FromJSON(&reqBody, r.Body); err != nil {
 		d.ew.Error(w, err.Error(), http.StatusBadRequest)
@@ -275,11 +255,6 @@ func (d Endpoint) DeleteFlashcardFromDeck(w http.ResponseWriter, r *http.Request
 
 // NewDeckWithFlashcards is a handler for the creating a new deck Endpoint.
 func (d Endpoint) NewDeckWithFlashcards(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodPut {
-		d.ew.Error(w, "method not allowed", http.StatusBadRequest)
-		return
-	}
-
 	reqBody := models.NewDeckWithFlashcardsRequest{}
 	if err := ioutil.FromJSON(&reqBody, r.Body); err != nil {
 		d.ew.Error(w, err.Error(), http.StatusBadRequest)
@@ -329,11 +304,6 @@ func (d Endpoint) NewDeckWithFlashcards(w http.ResponseWriter, r *http.Request) 
 
 // DeleteDeck is a handler for the deleting a deck from user's collection Endpoint.
 func (d Endpoint) DeleteDeck(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodDelete {
-		d.ew.Error(w, "method not allowed", http.StatusBadRequest)
-		return
-	}
-
 	reqBody := models.DeleteDeckRequest{}
 	if err := ioutil.FromJSON(&reqBody, r.Body); err != nil {
 		d.ew.Error(w, err.Error(), http.StatusBadRequest)
