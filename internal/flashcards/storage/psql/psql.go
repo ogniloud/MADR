@@ -38,8 +38,27 @@ func (d *DeckStorage) GetDecksByUserId(id models.UserId) (models.Decks, error) {
 }
 
 func (d *DeckStorage) GetFlashcardsIdByDeckId(id models.DeckId) ([]models.FlashcardId, error) {
-	//TODO implement me
-	panic("implement me")
+	rows, err := d.Conn.Query(context.Background(), `SELECT card_id FROM flashcard WHERE deck_id=$1`, id)
+	if err != nil {
+		return nil, err
+	}
+
+	defer rows.Close()
+
+	ids := make([]models.FlashcardId, 0)
+
+	cardId := 0
+	_, err = pgx.ForEachRow(rows, []any{&cardId}, func() error {
+		ids = append(ids, cardId)
+
+		return nil
+	})
+
+	if err != nil {
+		return nil, err
+	}
+
+	return ids[:len(ids):len(ids)], nil
 }
 
 func (d *DeckStorage) GetFlashcardById(id models.FlashcardId) (models.Flashcard, error) {
