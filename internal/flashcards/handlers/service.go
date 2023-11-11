@@ -4,10 +4,11 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/charmbracelet/log"
 	"github.com/ogniloud/madr/internal/flashcards/models"
 	"github.com/ogniloud/madr/internal/flashcards/services/deck"
 	"github.com/ogniloud/madr/internal/ioutil"
+
+	"github.com/charmbracelet/log"
 )
 
 type Endpoint struct {
