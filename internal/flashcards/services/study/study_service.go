@@ -285,7 +285,7 @@ func (s Service) MakeSentence(generator IPalmService, uid models.UserId, down mo
 		return models.Sentence{}, err
 	}
 
-	return models.Sentence{S: text, Opts: words, Cards: cards}, nil
+	return models.Sentence{S: hideWords(words, text), Opts: words, Cards: cards}, nil
 }
 
 func hideWords(words []string, text string) string {
