@@ -169,7 +169,6 @@ func (d Endpoint) AddFlashcardToDeck(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var err error
 	reqBody := models.AddFlashcardToDeckRequest{}
 
 	if err := ioutil.FromJSON(&reqBody, r.Body); err != nil {
