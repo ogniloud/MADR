@@ -155,7 +155,12 @@ func (s *Service) GetNextRandomDeckN(uid models.UserId, id models.DeckId, down m
 	maxIter = n - len(cards)
 
 	for i := 0; i < len(ltns) && i < maxIter; i++ {
-		cards = append(cards, ltns[i].FlashcardId)
+		curLtn := ltns[i]
+		if curLtn.Box == b {
+			continue
+		}
+		maxIter--
+		cards = append(cards, curLtn.FlashcardId)
 	}
 
 	return cards, nil
