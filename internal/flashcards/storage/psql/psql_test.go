@@ -1,3 +1,6 @@
+//go:build psql_test
+// +build psql_test
+
 package psql
 
 import (
