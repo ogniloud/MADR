@@ -177,7 +177,7 @@ func (d Endpoint) AddFlashcardToDeck(w http.ResponseWriter, r *http.Request) {
 		UserId:      reqBody.UserId,
 		FlashcardId: id[0],
 		Box:         0,
-		CoolDown:    models.CoolDown{State: time.Now()},
+		CoolDown:    models.CoolDown(time.Now()),
 	}})
 	if err != nil {
 		d.logger.Errorf("error while creating leitner: %v", err)

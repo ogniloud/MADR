@@ -88,7 +88,7 @@ func (d *DeckStorage) GetLeitnerByUserIdCardId(ctx context.Context, id models.Us
 
 	l := models.UserLeitner{}
 
-	err := row.Scan(&l.Id, &l.UserId, &l.FlashcardId, &l.Box, &l.CoolDown.State)
+	err := row.Scan(&l.Id, &l.UserId, &l.FlashcardId, &l.Box, &l.CoolDown)
 	if err != nil {
 		return models.UserLeitner{}, fmt.Errorf("psql error: %w", err)
 	}
@@ -172,7 +172,7 @@ func (d *DeckStorage) PutAllUserLeitner(ctx context.Context, uls []models.UserLe
 			values.WriteByte('\n')
 		}
 
-		args = append(args, v.UserId, v.FlashcardId, v.Box, v.CoolDown.State)
+		args = append(args, v.UserId, v.FlashcardId, v.Box, v.CoolDown)
 	}
 
 	s := fmt.Sprintf(`INSERT INTO user_leitner (user_id, card_id, box, cool_down) VALUES %v RETURNING leitner_id;`, values.String())
@@ -213,7 +213,7 @@ func (d *DeckStorage) DeleteUserDeck(ctx context.Context, userId models.UserId, 
 func (d *DeckStorage) UpdateLeitner(ctx context.Context, ul models.UserLeitner) error {
 	row := d.Conn.QueryRow(ctx,
 		`UPDATE user_leitner SET user_id=$1, card_id=$2, box=$3, cool_down=$4 WHERE leitner_id=$5 RETURNING leitner_id`,
-		ul.UserId, ul.FlashcardId, ul.Box, ul.CoolDown.State, ul.Id)
+		ul.UserId, ul.FlashcardId, ul.Box, ul.CoolDown, ul.Id)
 
 	return row.Scan(&ul.Id)
 }
