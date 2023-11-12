@@ -2,6 +2,9 @@ package psql
 
 import (
 	"context"
+	"encoding/json"
+	"fmt"
+	"strings"
 
 	"github.com/jackc/pgx/v5"
 
@@ -62,13 +65,35 @@ func (d *DeckStorage) GetFlashcardsIdByDeckId(id models.DeckId) ([]models.Flashc
 }
 
 func (d *DeckStorage) GetFlashcardById(id models.FlashcardId) (models.Flashcard, error) {
-	//TODO implement me
-	panic("implement me")
+	row := d.Conn.QueryRow(context.Background(), `SELECT * FROM flashcard WHERE card_id=$1`, id)
+
+	flashcard := models.Flashcard{}
+	strBackside := ""
+
+	err := row.Scan(&flashcard.Id, &flashcard.W, &strBackside, &flashcard.DeckId)
+	if err != nil {
+		return models.Flashcard{}, fmt.Errorf("psql error: %w", err)
+	}
+
+	err = json.NewDecoder(strings.NewReader(strBackside)).Decode(&flashcard.B)
+	if err != nil {
+		return models.Flashcard{}, fmt.Errorf("json error: %w", err)
+	}
+
+	return flashcard, nil
 }
 
 func (d *DeckStorage) GetLeitnerByUserIdCardId(id models.UserId, flashcardId models.FlashcardId) (models.UserLeitner, error) {
-	//TODO implement me
-	panic("implement me")
+	row := d.Conn.QueryRow(context.Background(), `SELECT * FROM user_leitner WHERE user_id=$1 AND card_id=$2`, id, flashcardId)
+
+	l := models.UserLeitner{}
+
+	err := row.Scan(&l.Id, &l.UserId, &l.FlashcardId, &l.Box, &l.CoolDown.State)
+	if err != nil {
+		return models.UserLeitner{}, fmt.Errorf("psql error: %w", err)
+	}
+
+	return l, nil
 }
 
 func (d *DeckStorage) GetUserInfo(uid models.UserId) (models.UserInfo, error) {

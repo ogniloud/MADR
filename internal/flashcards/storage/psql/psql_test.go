@@ -42,6 +42,15 @@ func (s *PSQLSuite) TestDeckStorage_GetDecksByUserId() {
 	}
 }
 
+func (s *PSQLSuite) TestDeckStorage_GetFlashcardsIdByDeckId() {
+	cards, err := s.repo.GetFlashcardsIdByDeckId(1)
+
+	if assert.NoError(s.T(), err) {
+		assert.Equal(s.T(), 2, len(cards))
+		assert.Equal(s.T(), cards, []models.FlashcardId{1, 2})
+	}
+}
+
 func TestSuite(t *testing.T) {
 	suite.Run(t, new(PSQLSuite))
 }
