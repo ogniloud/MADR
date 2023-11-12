@@ -6,6 +6,7 @@ package psql
 import (
 	"context"
 	"io"
+	"sort"
 	"testing"
 
 	"github.com/charmbracelet/log"
@@ -41,7 +42,9 @@ func (s *PSQLSuite) TestDeckStorage_GetDecksByUserId() {
 
 	if assert.NoError(s.T(), err) {
 		assert.Equal(s.T(), 2, len(decks))
-		assert.Equal(s.T(), decks.Keys(), []models.DeckId{12, 23})
+		keys := decks.Keys()
+		sort.Ints(keys)
+		assert.Equal(s.T(), keys, []models.DeckId{12, 23})
 	}
 }
 
