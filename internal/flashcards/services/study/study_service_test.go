@@ -1,6 +1,7 @@
 package study_test
 
 import (
+	"context"
 	"io"
 	"slices"
 	"strconv"
@@ -74,16 +75,16 @@ var (
 )
 
 func (t *testingSuite) Test_GetNextRandomDeck() {
-	t.m.On("GetUserInfo", 1).
+	t.m.On("GetUserInfo", mock.Anything, 1).
 		Return(models.UserInfo{
 			UserId: 1,
 			MaxBox: 3,
 		}, nil)
-	t.m.On("GetFlashcardsIdByDeckId", 1).
+	t.m.On("GetFlashcardsIdByDeckId", mock.Anything, 1).
 		Return(flashcard, nil)
-	t.m.On("UpdateLeitner", mock.Anything).Return(nil)
-	t.m.On("GetLeitnerByUserIdCardId", 1, mock.AnythingOfType("int")).
-		Return(func(i, j int) (models.UserLeitner, error) {
+	t.m.On("UpdateLeitner", mock.Anything, mock.Anything).Return(nil)
+	t.m.On("GetLeitnerByUserIdCardId", mock.Anything, 1, mock.AnythingOfType("int")).
+		Return(func(_ context.Context, i, j int) (models.UserLeitner, error) {
 			if flashcardCalled[j-1] {
 				return models.UserLeitner{
 					Id:          0,
@@ -183,19 +184,19 @@ var (
 const length = 8
 
 func (t *testingSuite) Test_GetNextRandom() {
-	t.m.On("GetDecksByUserId", 1).Return(models.Decks{1: {}, 2: {}}, nil)
-	t.m.On("GetUserInfo", 1).
+	t.m.On("GetDecksByUserId", mock.Anything, 1).Return(models.Decks{1: {}, 2: {}}, nil)
+	t.m.On("GetUserInfo", mock.Anything, 1).
 		Return(models.UserInfo{
 			UserId: 1,
 			MaxBox: 3,
 		}, nil)
-	t.m.On("GetFlashcardsIdByDeckId", 1).
+	t.m.On("GetFlashcardsIdByDeckId", mock.Anything, 1).
 		Return(flashcard, nil)
-	t.m.On("GetFlashcardsIdByDeckId", 2).
+	t.m.On("GetFlashcardsIdByDeckId", mock.Anything, 2).
 		Return(flashcard2, nil)
-	t.m.On("UpdateLeitner", mock.Anything).Return(nil)
-	t.m.On("GetLeitnerByUserIdCardId", 1, mock.AnythingOfType("int")).
-		Return(func(i, j int) (models.UserLeitner, error) {
+	t.m.On("UpdateLeitner", mock.Anything, mock.Anything).Return(nil)
+	t.m.On("GetLeitnerByUserIdCardId", mock.Anything, 1, mock.AnythingOfType("int")).
+		Return(func(_ context.Context, i, j int) (models.UserLeitner, error) {
 			if flashcard2Called[j-1] {
 				return models.UserLeitner{
 					Id:          0,

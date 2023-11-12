@@ -8,6 +8,7 @@ import (
 	"io"
 	"sort"
 	"testing"
+	"time"
 
 	"github.com/charmbracelet/log"
 	"github.com/stretchr/testify/assert"
@@ -25,7 +26,10 @@ type PSQLSuite struct {
 const connStringTest = "user=postgres password=postgres host=localhost port=5432 dbname=postgres"
 
 func (s *PSQLSuite) SetupSuite() {
-	conn, err := db.NewPSQLDatabase(context.Background(), connStringTest, log.New(io.Discard))
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	conn, err := db.NewPSQLDatabase(ctx, connStringTest, log.New(io.Discard))
 	if err != nil {
 		s.T().Fatal(err)
 	}
@@ -38,18 +42,24 @@ func (s *PSQLSuite) TearDownSuite() {
 }
 
 func (s *PSQLSuite) TestDeckStorage_GetDecksByUserId() {
-	decks, err := s.repo.GetDecksByUserId(1)
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+	defer cancel()
+
+	decks, err := s.repo.GetDecksByUserId(ctx, 1488)
 
 	if assert.NoError(s.T(), err) {
 		assert.Equal(s.T(), 2, len(decks))
 		keys := decks.Keys()
 		sort.Ints(keys)
-		assert.Equal(s.T(), keys, []models.DeckId{12, 23})
+		assert.Equal(s.T(), keys, []models.DeckId{1, 2})
 	}
 }
 
 func (s *PSQLSuite) TestDeckStorage_GetFlashcardsIdByDeckId() {
-	cards, err := s.repo.GetFlashcardsIdByDeckId(1)
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+	defer cancel()
+
+	cards, err := s.repo.GetFlashcardsIdByDeckId(ctx, 1)
 
 	if assert.NoError(s.T(), err) {
 		assert.Equal(s.T(), 2, len(cards))

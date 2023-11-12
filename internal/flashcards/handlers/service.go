@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"context"
 	"net/http"
 	"time"
 
@@ -101,7 +102,7 @@ func (d Endpoint) GetFlashcardsByDeckId(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
-	ids, err := d.s.GetFlashcardsIdByDeckId(reqBody.DeckId)
+	ids, err := d.s.GetFlashcardsIdByDeckId(context.TODO(), reqBody.DeckId)
 	if err != nil {
 		d.logger.Errorf("error while loading ids of cards: %v", err)
 		d.ew.Error(w, err.Error(), http.StatusInternalServerError)
@@ -112,7 +113,7 @@ func (d Endpoint) GetFlashcardsByDeckId(w http.ResponseWriter, r *http.Request) 
 
 	// should be replaced with one read transaction
 	for i := 0; i < len(ids); i++ {
-		card, err := d.s.GetFlashcardById(ids[i])
+		card, err := d.s.GetFlashcardById(context.TODO(), ids[i])
 		if err != nil {
 			d.logger.Errorf("error while loading a card: %v", err)
 			d.ew.Error(w, err.Error(), http.StatusInternalServerError)
@@ -161,7 +162,7 @@ func (d Endpoint) AddFlashcardToDeck(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	id, err := d.s.PutAllFlashcards(reqBody.DeckId, []models.Flashcard{{
+	id, err := d.s.PutAllFlashcards(context.TODO(), reqBody.DeckId, []models.Flashcard{{
 		W:      reqBody.Word,
 		B:      reqBody.Backside,
 		DeckId: reqBody.DeckId,
@@ -172,7 +173,7 @@ func (d Endpoint) AddFlashcardToDeck(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	_, err = d.s.PutAllUserLeitner([]models.UserLeitner{{
+	_, err = d.s.PutAllUserLeitner(context.TODO(), []models.UserLeitner{{
 		UserId:      reqBody.UserId,
 		FlashcardId: id[0],
 		Box:         0,
@@ -219,7 +220,7 @@ func (d Endpoint) DeleteFlashcardFromDeck(w http.ResponseWriter, r *http.Request
 		return
 	}
 
-	err := d.s.DeleteFlashcardFromDeck(reqBody.FlashcardId)
+	err := d.s.DeleteFlashcardFromDeck(context.TODO(), reqBody.FlashcardId)
 	if err != nil {
 		d.logger.Errorf("error while deleting flashcard: %v", err)
 		d.ew.Error(w, err.Error(), http.StatusInternalServerError)

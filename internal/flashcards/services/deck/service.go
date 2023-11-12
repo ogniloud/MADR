@@ -1,6 +1,7 @@
 package deck
 
 import (
+	"context"
 	"fmt"
 
 	"github.com/ogniloud/madr/internal/flashcards/cache"
@@ -57,7 +58,7 @@ func (s *Service) LoadDecks(id models.UserId) (models.Decks, error) {
 		}
 	}
 
-	decks, err := s.GetDecksByUserId(id)
+	decks, err := s.GetDecksByUserId(context.TODO(), id)
 	if err != nil {
 		return nil, err
 	}
@@ -81,11 +82,11 @@ func (s *Service) NewDeckWithFlashcards(userId models.UserId, cfg models.DeckCon
 	}
 
 	var id models.DeckId
-	if id, err = s.PutNewDeck(cfg); err != nil {
+	if id, err = s.PutNewDeck(context.TODO(), cfg); err != nil {
 		return 0, err
 	}
 
-	if _, err := s.PutAllFlashcards(cfg.DeckId, flashcards); err != nil {
+	if _, err := s.PutAllFlashcards(context.TODO(), cfg.DeckId, flashcards); err != nil {
 		return 0, err
 	}
 
@@ -105,7 +106,7 @@ func (s *Service) DeleteDeck(userId models.UserId, deckId models.DeckId) error {
 		return err
 	}
 
-	if err := s.DeleteUserDeck(userId, deckId); err != nil {
+	if err := s.DeleteUserDeck(context.TODO(), userId, deckId); err != nil {
 		return err
 	}
 
@@ -120,7 +121,7 @@ func (s *Service) DeleteDeck(userId models.UserId, deckId models.DeckId) error {
 
 // UserMaxBox returns the maximum amount of boxes from the user.
 func (s *Service) UserMaxBox(uid models.UserId) (models.Box, error) {
-	info, err := s.GetUserInfo(uid)
+	info, err := s.GetUserInfo(context.TODO(), uid)
 	if err != nil {
 		return 0, err
 	}
