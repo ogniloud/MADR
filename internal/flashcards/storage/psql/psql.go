@@ -51,11 +51,15 @@ func (d *DeckStorage) GetFlashcardsIdByDeckId(ctx context.Context, id models.Dec
 	ids := make([]models.FlashcardId, 0)
 
 	cardId := 0
-	_, _ = pgx.ForEachRow(rows, []any{&cardId}, func() error {
+	_, err = pgx.ForEachRow(rows, []any{&cardId}, func() error {
 		ids = append(ids, cardId)
 
 		return nil
 	})
+
+	if err != nil {
+		return nil, err
+	}
 
 	return ids[:len(ids):len(ids)], nil
 }
@@ -129,10 +133,14 @@ func (d *DeckStorage) PutAllFlashcards(ctx context.Context, id models.DeckId, ca
 
 	temp := 0
 	ids := make([]models.FlashcardId, 0, len(cards))
-	_, _ = pgx.ForEachRow(rows, []any{&temp}, func() error {
+	_, err = pgx.ForEachRow(rows, []any{&temp}, func() error {
 		ids = append(ids, temp)
 		return nil
 	})
+
+	if err != nil {
+		return nil, err
+	}
 
 	return ids, nil
 }
