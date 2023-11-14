@@ -110,7 +110,7 @@ func (s *Service) GetNextRandom(ctx context.Context, uid models.UserId, down mod
 
 // GetNextRandomDeckN returns a random card from the user's deck whose CoolDown has expired.
 func (s *Service) GetNextRandomDeckN(ctx context.Context, uid models.UserId, id models.DeckId, down models.CoolDown, n int) ([]models.FlashcardId, error) {
-	ids, err := s.dsrv.GetFlashcardsIdByDeckId(context.TODO(), id)
+	ids, err := s.dsrv.GetFlashcardsIdByDeckId(ctx, id)
 	if err != nil {
 		return nil, err
 	}
@@ -118,7 +118,7 @@ func (s *Service) GetNextRandomDeckN(ctx context.Context, uid models.UserId, id 
 	ltns := make([]models.UserLeitner, 0, len(ids))
 
 	for _, id := range ids {
-		ltn, err := s.dsrv.GetLeitnerByUserIdCardId(context.TODO(), uid, id)
+		ltn, err := s.dsrv.GetLeitnerByUserIdCardId(ctx, uid, id)
 		if err != nil {
 			return nil, err
 		}
@@ -187,7 +187,7 @@ func (s *Service) GetNextRandomDeck(ctx context.Context, uid models.UserId, id m
 
 // Rate moves the card into the box relative to the mark.
 func (s *Service) Rate(ctx context.Context, uid models.UserId, id models.FlashcardId, mark Mark) error {
-	l, err := s.dsrv.GetLeitnerByUserIdCardId(context.TODO(), uid, id)
+	l, err := s.dsrv.GetLeitnerByUserIdCardId(ctx, uid, id)
 	if err != nil {
 		return err
 	}
@@ -209,7 +209,7 @@ func (s *Service) Rate(ctx context.Context, uid models.UserId, id models.Flashca
 		}
 	}
 
-	return s.dsrv.UpdateLeitner(context.TODO(), l)
+	return s.dsrv.UpdateLeitner(ctx, l)
 }
 
 // let p = [.5 .7 .8 .9 .95] and r is a random float
@@ -233,7 +233,7 @@ func (s *Service) MakeMatching(ctx context.Context, uid models.UserId, down mode
 	var answers []string = nil
 
 	for _, v := range cardIds {
-		card, err := s.dsrv.GetFlashcardById(context.TODO(), v)
+		card, err := s.dsrv.GetFlashcardById(ctx, v)
 		if err != nil {
 			continue
 		}
@@ -270,7 +270,7 @@ func (s *Service) MakeText(ctx context.Context, _ IPalmService, uid models.UserI
 	var words []string = nil
 
 	for _, v := range cardIds {
-		card, err := s.dsrv.GetFlashcardById(context.TODO(), v)
+		card, err := s.dsrv.GetFlashcardById(ctx, v)
 		if err != nil {
 			continue
 		}
