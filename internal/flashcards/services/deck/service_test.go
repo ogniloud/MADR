@@ -62,7 +62,7 @@ func (l *LeitnerSuite) Test_LoadDecks() {
 		Return(nil, fmt.Errorf("user not found")).Once()
 
 	l.Run("load #1", func() {
-		decks, err := l.s.LoadDecks(1)
+		decks, err := l.s.LoadDecks(context.Background(), 1)
 		if assert.NoError(l.T(), err) {
 			assert.Equal(l.T(), l.userData, decks)
 		}
@@ -80,14 +80,14 @@ func (l *LeitnerSuite) Test_LoadDecks() {
 	})
 
 	l.Run("load #2", func() {
-		decks, err := l.s.LoadDecks(2)
+		decks, err := l.s.LoadDecks(context.Background(), 2)
 		if assert.NoError(l.T(), err) {
 			assert.Equal(l.T(), l.userData, decks)
 		}
 	})
 
 	l.Run("not found", func() {
-		_, err := l.s.LoadDecks(666)
+		_, err := l.s.LoadDecks(context.Background(), 666)
 		assert.Error(l.T(), err)
 	})
 
@@ -96,7 +96,7 @@ func (l *LeitnerSuite) Test_LoadDecks() {
 		_, err := l.st.GetDecksByUserId(context.Background(), 1)
 		assert.Error(l.T(), err)
 
-		decks, err := l.s.LoadDecks(1)
+		decks, err := l.s.LoadDecks(context.Background(), 1)
 		if assert.NoError(l.T(), err) {
 			assert.Equal(l.T(), l.userData, decks)
 		}
@@ -138,12 +138,12 @@ func (l *LeitnerSuite) Test_CreateNewDeck() {
 		},
 	}
 
-	_, err := l.s.NewDeckWithFlashcards(1, models.DeckConfig{}, []models.Flashcard{})
+	_, err := l.s.NewDeckWithFlashcards(context.Background(), 1, models.DeckConfig{}, []models.Flashcard{})
 	assert.Error(l.T(), err)
-	_, err = l.s.NewDeckWithFlashcards(1, cfg, cards)
+	_, err = l.s.NewDeckWithFlashcards(context.Background(), 1, cfg, cards)
 	assert.Nil(l.T(), err)
 
-	decks, err := l.s.LoadDecks(1)
+	decks, err := l.s.LoadDecks(context.Background(), 1)
 	if assert.NoError(l.T(), err) {
 		assert.Equal(l.T(), l.userData, decks)
 	}
@@ -161,17 +161,17 @@ func (l *LeitnerSuite) Test_DeleteDeck() {
 		Return(nil, fmt.Errorf("user not found"))
 
 	l.Run("deck not found", func() {
-		assert.Error(l.T(), l.s.DeleteDeck(1, 3))
+		assert.Error(l.T(), l.s.DeleteDeck(context.Background(), 1, 3))
 	})
 
 	l.Run("user not found", func() {
-		assert.Error(l.T(), l.s.DeleteDeck(3, 1))
+		assert.Error(l.T(), l.s.DeleteDeck(context.Background(), 3, 1))
 	})
 
 	delete(l.userData, 4)
 	l.Run("success delete", func() {
-		assert.NoError(l.T(), l.s.DeleteDeck(1, 4))
-		decks, err := l.s.LoadDecks(1)
+		assert.NoError(l.T(), l.s.DeleteDeck(context.Background(), 1, 4))
+		decks, err := l.s.LoadDecks(context.Background(), 1)
 		if assert.NoError(l.T(), err) {
 			assert.Equal(l.T(), l.userData, decks)
 		}

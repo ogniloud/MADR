@@ -20,17 +20,17 @@ type IService interface {
 	storage.Storage
 
 	// LoadDecks loads user's decks in memory if needed and returns the decks.
-	LoadDecks(id models.UserId) (models.Decks, error)
+	LoadDecks(ctx context.Context, id models.UserId) (models.Decks, error)
 
 	// NewDeckWithFlashcards creates a new deck and puts all the flashcards there.
 	// Returns id of the new deck if there's no error.
-	NewDeckWithFlashcards(userId models.UserId, cfg models.DeckConfig, flashcards []models.Flashcard) (models.DeckId, error)
+	NewDeckWithFlashcards(ctx context.Context, userId models.UserId, cfg models.DeckConfig, flashcards []models.Flashcard) (models.DeckId, error)
 
 	// DeleteDeck deletes the whole deck from user. It doesn't remove flashcards from the deck.
-	DeleteDeck(userId models.UserId, deckId models.DeckId) error
+	DeleteDeck(ctx context.Context, userId models.UserId, deckId models.DeckId) error
 
 	// UserMaxBox returns the maximum amount of boxes from the user.
-	UserMaxBox(uid models.UserId) (models.Box, error)
+	UserMaxBox(ctx context.Context, uid models.UserId) (models.Box, error)
 	Cache() cache.Cache
 }
 
@@ -51,14 +51,14 @@ func NewService(s storage.Storage, c cache.Cache, logger *log.Logger) IService {
 }
 
 // LoadDecks loads user's decks in memory if needed and returns the decks.
-func (s *Service) LoadDecks(id models.UserId) (models.Decks, error) {
+func (s *Service) LoadDecks(ctx context.Context, id models.UserId) (_ models.Decks, err error) {
 	if decksAny, err := s.c.Load(id); err == nil {
 		if decks, ok := decksAny.(models.Decks); ok {
 			return decks, nil // returned from cache
 		}
 	}
 
-	decks, err := s.GetDecksByUserId(context.TODO(), id)
+	decks, err := s.GetDecksByUserId(ctx, id)
 	if err != nil {
 		return nil, err
 	}
@@ -71,22 +71,22 @@ func (s *Service) LoadDecks(id models.UserId) (models.Decks, error) {
 }
 
 // NewDeckWithFlashcards creates a new deck and puts all the flashcards there.
-func (s *Service) NewDeckWithFlashcards(userId models.UserId, cfg models.DeckConfig, flashcards []models.Flashcard) (models.DeckId, error) {
+func (s *Service) NewDeckWithFlashcards(ctx context.Context, userId models.UserId, cfg models.DeckConfig, flashcards []models.Flashcard) (_ models.DeckId, err error) {
 	if len(flashcards) == 0 {
 		return 0, ErrEmptyFlashcardsSlice
 	}
 
-	decks, err := s.LoadDecks(userId)
+	decks, err := s.LoadDecks(ctx, userId)
 	if err != nil {
 		return 0, err
 	}
 
 	var id models.DeckId
-	if id, err = s.PutNewDeck(context.TODO(), cfg); err != nil {
+	if id, err = s.PutNewDeck(ctx, cfg); err != nil {
 		return 0, err
 	}
 
-	if _, err := s.PutAllFlashcards(context.TODO(), cfg.DeckId, flashcards); err != nil {
+	if _, err := s.PutAllFlashcards(ctx, cfg.DeckId, flashcards); err != nil {
 		return 0, err
 	}
 
@@ -100,13 +100,13 @@ func (s *Service) NewDeckWithFlashcards(userId models.UserId, cfg models.DeckCon
 }
 
 // DeleteDeck deletes the whole deck from user. It doesn't remove flashcards from the deck.
-func (s *Service) DeleteDeck(userId models.UserId, deckId models.DeckId) error {
-	decks, err := s.LoadDecks(userId)
+func (s *Service) DeleteDeck(ctx context.Context, userId models.UserId, deckId models.DeckId) (err error) {
+	decks, err := s.LoadDecks(ctx, userId)
 	if err != nil {
 		return err
 	}
 
-	if err := s.DeleteUserDeck(context.TODO(), userId, deckId); err != nil {
+	if err := s.DeleteUserDeck(ctx, userId, deckId); err != nil {
 		return err
 	}
 
@@ -120,8 +120,8 @@ func (s *Service) DeleteDeck(userId models.UserId, deckId models.DeckId) error {
 }
 
 // UserMaxBox returns the maximum amount of boxes from the user.
-func (s *Service) UserMaxBox(uid models.UserId) (models.Box, error) {
-	info, err := s.GetUserInfo(context.TODO(), uid)
+func (s *Service) UserMaxBox(ctx context.Context, uid models.UserId) (_ models.Box, err error) {
+	info, err := s.GetUserInfo(ctx, uid)
 	if err != nil {
 		return 0, err
 	}
