@@ -6,7 +6,10 @@ require (
 	github.com/charmbracelet/log v0.2.5
 	github.com/go-chi/chi/v5 v5.0.10
 	github.com/go-openapi/runtime v0.26.0
+	github.com/golang-jwt/jwt/v5 v5.1.0
+	github.com/lib/pq v1.10.9
 	github.com/stretchr/testify v1.8.4
+	golang.org/x/crypto v0.15.0
 )
 
 require (
@@ -38,6 +41,6 @@ require (
 	github.com/rogpeppe/go-internal v1.11.0 // indirect
 	github.com/stretchr/objx v0.5.0 // indirect
 	go.mongodb.org/mongo-driver v1.12.1 // indirect
-	golang.org/x/sys v0.13.0 // indirect
+	golang.org/x/sys v0.14.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )

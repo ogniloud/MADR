@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/ogniloud/madr/internal/data"
+	"github.com/ogniloud/madr/internal/database"
 	"github.com/ogniloud/madr/internal/ioutil"
 	"github.com/ogniloud/madr/internal/models"
 )
@@ -55,12 +56,13 @@ func (e *Endpoints) SignUp(w http.ResponseWriter, r *http.Request) {
 	// And also in case we want to change the datalayer models or the
 	// API request models, we can do it without affecting the other.
 	err = e.data.CreateUser(r.Context(), models.User{
+		Username: request.Username,
 		Email:    request.Email,
 		Password: request.Password,
 	})
 	if err != nil {
-		if errors.Is(err, data.ErrEmailExists) {
-			e.ew.Error(w, data.ErrEmailExists.Error(), http.StatusConflict)
+		if errors.Is(err, data.ErrEmailOrUsernameExists) {
+			e.ew.Error(w, data.ErrEmailOrUsernameExists.Error(), http.StatusConflict)
 			return
 		}
 
@@ -111,10 +113,15 @@ func (e *Endpoints) SignIn(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	authToken, err := e.data.SignInUser(r.Context(), request.Email, request.Password)
+	authToken, err := e.data.SignInUser(r.Context(), request.Username, request.Password)
 	if err != nil {
 		if errors.Is(err, models.ErrUnauthorized) {
 			e.ew.Error(w, models.ErrUnauthorized.Error(), http.StatusUnauthorized)
+			return
+		}
+
+		if errors.Is(err, database.ErrUserNotFound) {
+			e.ew.Error(w, database.ErrUserNotFound.Error(), http.StatusUnauthorized)
 			return
 		}
 

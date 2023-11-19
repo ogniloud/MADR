@@ -1,33 +1,23 @@
 package handlers_test
 
 import (
+	"io"
 	"net/http"
 	"net/http/httptest"
-	"os"
 	"strings"
 	"testing"
 
 	"github.com/ogniloud/madr/internal/data"
 	"github.com/ogniloud/madr/internal/handlers"
+	"github.com/ogniloud/madr/internal/handlers/mocks"
+	"github.com/ogniloud/madr/internal/models"
 
 	"github.com/charmbracelet/log"
 )
 
 const (
-	jsonCredentials = `{"email":"blabla@gmail.com","password":"123"}`
+	jsonCredentials = `{"email":"blabla@gmail.com","password":"123","username":"boba"}`
 )
-
-func getEndpoints() *handlers.Endpoints {
-	dl := data.New()
-	l := log.NewWithOptions(os.Stderr, log.Options{
-		ReportCaller:    true,
-		ReportTimestamp: true,
-	})
-
-	endpoints := handlers.New(dl, l)
-
-	return endpoints
-}
 
 func TestEndpoints_SignUp(t *testing.T) {
 	bodyReader := strings.NewReader(jsonCredentials)
@@ -39,7 +29,19 @@ func TestEndpoints_SignUp(t *testing.T) {
 
 	response := httptest.NewRecorder()
 
-	s := getEndpoints()
+	// database mock
+	dl := mocks.NewDatalayer(t)
+	dl.EXPECT().CreateUser(request.Context(), models.User{
+		Username: "boba",
+		Email:    "blabla@gmail.com",
+		Password: "123",
+	}).Return(nil)
+
+	// logger
+	l := log.NewWithOptions(io.Discard, log.Options{})
+
+	// endpoints
+	s := handlers.New(dl, l)
 
 	s.SignUp(response, request)
 
@@ -67,7 +69,19 @@ func TestEndpoints_SignUpExisting(t *testing.T) {
 
 	firstResponse := httptest.NewRecorder()
 
-	s := getEndpoints()
+	// database mock
+	dl := mocks.NewDatalayer(t)
+	dl.EXPECT().CreateUser(firstRequest.Context(), models.User{
+		Username: "boba",
+		Email:    "blabla@gmail.com",
+		Password: "123",
+	}).Return(data.ErrEmailOrUsernameExists)
+
+	// logger
+	l := log.NewWithOptions(io.Discard, log.Options{})
+
+	// endpoints
+	s := handlers.New(dl, l)
 
 	// Create a user with the email blabla@gmail
 	s.SignUp(firstResponse, firstRequest)
@@ -85,7 +99,7 @@ func TestEndpoints_SignUpExisting(t *testing.T) {
 	s.SignUp(secondResponse, secondRequest)
 
 	got := secondResponse.Body.String()
-	want := `{"message":"user with this email already exists"}
+	want := `{"message":"user with this email or username already exists"}
 `
 
 	wantStatus := http.StatusConflict
@@ -110,7 +124,14 @@ func TestEndpoints_SignUpBadRequest(t *testing.T) {
 
 	response := httptest.NewRecorder()
 
-	s := getEndpoints()
+	// database mock
+	dl := mocks.NewDatalayer(t)
+
+	// logger
+	l := log.NewWithOptions(io.Discard, log.Options{})
+
+	// endpoints
+	s := handlers.New(dl, l)
 
 	s.SignUp(response, request)
 
@@ -140,7 +161,22 @@ func TestEndpoints_SignIn(t *testing.T) {
 
 	response := httptest.NewRecorder()
 
-	s := getEndpoints()
+	// database mock
+	dl := mocks.NewDatalayer(t)
+	dl.EXPECT().CreateUser(signUpRequest.Context(), models.User{
+		Username: "boba",
+		Email:    "blabla@gmail.com",
+		Password: "123",
+	}).Return(nil)
+
+	dl.EXPECT().SignInUser(signUpRequest.Context(), "boba", "123").
+		Return("Bearer blablablaIMATOKENyouAREpoorBASTARD", nil)
+
+	// logger
+	l := log.NewWithOptions(io.Discard, log.Options{})
+
+	// endpoints
+	s := handlers.New(dl, l)
 
 	s.SignUp(response, signUpRequest)
 
@@ -181,7 +217,14 @@ func TestEndpoints_SignInBadRequest(t *testing.T) {
 
 	response := httptest.NewRecorder()
 
-	s := getEndpoints()
+	// database mock
+	dl := mocks.NewDatalayer(t)
+
+	// logger
+	l := log.NewWithOptions(io.Discard, log.Options{})
+
+	// endpoints
+	s := handlers.New(dl, l)
 
 	s.SignIn(response, request)
 
@@ -209,7 +252,15 @@ func TestEndpoints_SignInUnauthorized(t *testing.T) {
 
 	response := httptest.NewRecorder()
 
-	s := getEndpoints()
+	// database mock
+	dl := mocks.NewDatalayer(t)
+	dl.EXPECT().SignInUser(signInRequest.Context(), "boba", "123").Return("", models.ErrUnauthorized)
+
+	// logger
+	l := log.NewWithOptions(io.Discard, log.Options{})
+
+	// endpoints
+	s := handlers.New(dl, l)
 
 	s.SignIn(response, signInRequest)
 

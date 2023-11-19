@@ -2,12 +2,17 @@ package main
 
 import (
 	"context"
+	"database/sql"
 	"net/http"
 	"os"
 	"os/signal"
+	"strconv"
 	"time"
 
+	_ "github.com/lib/pq"
+
 	"github.com/ogniloud/madr/internal/data"
+	"github.com/ogniloud/madr/internal/database"
 	"github.com/ogniloud/madr/internal/handlers"
 
 	"github.com/charmbracelet/log"
@@ -34,8 +39,71 @@ func main() {
 	r := chi.NewRouter()
 	r.Use(middleware.Logger)
 
+	// Set up a context
+	ctx := context.Background()
+
+	// Get the connection string from the environment
+	connStr := os.Getenv("DB_CONN_STR")
+	if connStr == "" {
+		l.Fatal("DB_CONN_STR env var is not set")
+	}
+
+	// wait until database is up
+	time.Sleep(5 * time.Second)
+
+	// Set up a database connection
+	db, err := sql.Open("postgres", connStr)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// set up context so that we can ping the database and don't wait forever
+	cancelCtx, cancel := context.WithTimeout(ctx, 15*time.Second)
+	defer cancel()
+
+	// check whether connection is established
+	err = db.PingContext(cancelCtx)
+	if err != nil {
+		log.Fatal("Unable to ping database in main", "error", err)
+	}
+
+	psqlDB := database.New(l, db)
+
+	// get salt length from env
+	saltLengthString := os.Getenv("SALT_LENGTH")
+	if saltLengthString == "" {
+		l.Fatal("SALT_LENGTH env var is not set")
+	}
+
+	// convert to int
+	saltLength, err := strconv.Atoi(saltLengthString)
+	if err != nil {
+		l.Fatal("Unable to convert salt length to int", "error", err)
+	}
+
+	// get token expiration time from env
+	tokenExpirationTime := os.Getenv("TOKEN_EXPIRATION_TIME")
+	if tokenExpirationTime == "" {
+		l.Fatal("TOKEN_EXPIRATION_TIME env var is not set")
+	}
+
+	// convert to int
+	tokenExpirationTimeInt, err := strconv.Atoi(tokenExpirationTime)
+	if err != nil {
+		l.Fatal("Unable to convert token expiration time to int", "error", err)
+	}
+
+	// convert to time.Duration
+	duration := time.Duration(tokenExpirationTimeInt) * time.Hour
+
+	// get sign key from env
+	tokenSignKey := os.Getenv("TOKEN_SECRET")
+	if tokenSignKey == "" {
+		l.Fatal("TOKEN_SECRET env var is not set")
+	}
+
 	// Set up a datalayer
-	dl := data.New()
+	dl := data.New(psqlDB, saltLength, duration, []byte(tokenSignKey))
 
 	// Set up endpoints
 	endpoints := handlers.New(dl, l)
@@ -81,10 +149,10 @@ func main() {
 	l.Infof("Shutting down...")
 
 	// gracefully shutdown the server, waiting max 30 seconds for current operations to complete
-	ctx, cancel := context.WithTimeout(context.Background(), shutdownTimeout)
+	cancelCtx, cancel = context.WithTimeout(context.Background(), shutdownTimeout)
 	defer cancel()
 
-	err := s.Shutdown(ctx)
+	err = s.Shutdown(cancelCtx)
 	if err != nil {
 		l.Fatal("Error shutting down server", "error", err)
 	}
