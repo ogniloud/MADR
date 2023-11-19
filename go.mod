@@ -1,6 +1,6 @@
 module github.com/ogniloud/madr
 
-go 1.21.3
+go 1.21.4
 
 require (
 	github.com/charmbracelet/log v0.2.5
