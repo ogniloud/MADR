@@ -11,6 +11,8 @@ import (
 
 	_ "github.com/lib/pq"
 
+	"github.com/go-chi/cors"
+
 	"github.com/ogniloud/madr/internal/data"
 	"github.com/ogniloud/madr/internal/database"
 	"github.com/ogniloud/madr/internal/handlers"
@@ -38,6 +40,12 @@ func main() {
 	// Set up a router
 	r := chi.NewRouter()
 	r.Use(middleware.Logger)
+	r.Use(cors.Handler(
+		cors.Options{
+			AllowedOrigins: []string{"https://*", "http://*"},
+			AllowedMethods: []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
+			AllowedHeaders: []string{"Accept", "Authorization", "Content-Type", "X-CSRF-Token"},
+		}))
 
 	// Set up a context
 	ctx := context.Background()
@@ -117,6 +125,7 @@ func main() {
 	// Set up routes
 	r.Route("/api", func(r chi.Router) {
 		r.Post("/signup", endpoints.SignUp)
+		r.Options("/signup", endpoints.SignUp)
 		r.Post("/signin", endpoints.SignIn)
 		r.Get("/swagger.yaml", http.StripPrefix("/api/", http.FileServer(http.Dir("./"))).ServeHTTP)
 		r.Get("/docs", dh.ServeHTTP)
