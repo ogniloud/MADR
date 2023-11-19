@@ -1,6 +1,7 @@
 package study_test
 
 import (
+	"context"
 	"io"
 	"slices"
 	"strconv"
@@ -40,7 +41,7 @@ var (
 			UserId:      1,
 			FlashcardId: 1,
 			Box:         0,
-			CoolDown:    models.CoolDown{State: time.Time{}},
+			CoolDown:    models.CoolDown{},
 		},
 		{
 			Id:          2,
@@ -74,23 +75,23 @@ var (
 )
 
 func (t *testingSuite) Test_GetNextRandomDeck() {
-	t.m.On("GetUserInfo", 1).
+	t.m.On("GetUserInfo", mock.Anything, 1).
 		Return(models.UserInfo{
 			UserId: 1,
 			MaxBox: 3,
 		}, nil)
-	t.m.On("GetFlashcardsIdByDeckId", 1).
+	t.m.On("GetFlashcardsIdByDeckId", mock.Anything, 1).
 		Return(flashcard, nil)
-	t.m.On("UpdateLeitner", mock.Anything).Return(nil)
-	t.m.On("GetLeitnerByUserIdCardId", 1, mock.AnythingOfType("int")).
-		Return(func(i, j int) (models.UserLeitner, error) {
+	t.m.On("UpdateLeitner", mock.Anything, mock.Anything).Return(nil)
+	t.m.On("GetLeitnerByUserIdCardId", mock.Anything, 1, mock.AnythingOfType("int")).
+		Return(func(_ context.Context, i, j int) (models.UserLeitner, error) {
 			if flashcardCalled[j-1] {
 				return models.UserLeitner{
 					Id:          0,
 					UserId:      0,
 					FlashcardId: 0,
 					Box:         0,
-					CoolDown:    models.CoolDown{State: time.Time{}.Add(time.Hour)},
+					CoolDown:    models.CoolDown(time.Time{}.Add(time.Hour)),
 				}, nil
 			}
 			return leitners[j-1], nil
@@ -99,20 +100,20 @@ func (t *testingSuite) Test_GetNextRandomDeck() {
 	cards := make([]models.FlashcardId, 0, 5)
 	for i := 0; i < len(flashcard); i++ {
 		t.Run(strconv.Itoa(i), func() {
-			id, err := t.s.GetNextRandomDeck(1, 1, models.CoolDown{State: time.Time{}.Add(time.Second)})
+			id, err := t.s.GetNextRandomDeck(context.Background(), 1, 1, models.CoolDown(time.Time{}.Add(time.Second)))
 			if assert.NoError(t.T(), err) {
 				cards = append(cards, id)
 				flashcardCalled[id-1] = true
 			}
 		})
 	}
-	_, err := t.s.GetNextRandomDeck(1, 1, models.CoolDown{State: time.Time{}.Add(time.Second)})
+	_, err := t.s.GetNextRandomDeck(context.Background(), 1, 1, models.CoolDown(time.Time{}.Add(time.Second)))
 	assert.Error(t.T(), err)
 
 	slices.Sort(cards)
 	assert.Equal(t.T(), flashcard, cards)
 
-	_, err = t.s.GetNextRandomDeck(1, 1, models.CoolDown{State: time.Time{}.Add(2 * time.Hour)})
+	_, err = t.s.GetNextRandomDeck(context.Background(), 1, 1, models.CoolDown(time.Time{}.Add(2*time.Hour)))
 	assert.NoError(t.T(), err)
 }
 
@@ -122,7 +123,7 @@ var leitners2 = []models.UserLeitner{
 		UserId:      1,
 		FlashcardId: 1,
 		Box:         0,
-		CoolDown:    models.CoolDown{State: time.Time{}},
+		CoolDown:    models.CoolDown{},
 	},
 	{
 		Id:          2,
@@ -183,26 +184,26 @@ var (
 const length = 8
 
 func (t *testingSuite) Test_GetNextRandom() {
-	t.m.On("GetDecksByUserId", 1).Return(models.Decks{1: {}, 2: {}}, nil)
-	t.m.On("GetUserInfo", 1).
+	t.m.On("GetDecksByUserId", mock.Anything, 1).Return(models.Decks{1: {}, 2: {}}, nil)
+	t.m.On("GetUserInfo", mock.Anything, 1).
 		Return(models.UserInfo{
 			UserId: 1,
 			MaxBox: 3,
 		}, nil)
-	t.m.On("GetFlashcardsIdByDeckId", 1).
+	t.m.On("GetFlashcardsIdByDeckId", mock.Anything, 1).
 		Return(flashcard, nil)
-	t.m.On("GetFlashcardsIdByDeckId", 2).
+	t.m.On("GetFlashcardsIdByDeckId", mock.Anything, 2).
 		Return(flashcard2, nil)
-	t.m.On("UpdateLeitner", mock.Anything).Return(nil)
-	t.m.On("GetLeitnerByUserIdCardId", 1, mock.AnythingOfType("int")).
-		Return(func(i, j int) (models.UserLeitner, error) {
+	t.m.On("UpdateLeitner", mock.Anything, mock.Anything).Return(nil)
+	t.m.On("GetLeitnerByUserIdCardId", mock.Anything, 1, mock.AnythingOfType("int")).
+		Return(func(_ context.Context, i, j int) (models.UserLeitner, error) {
 			if flashcard2Called[j-1] {
 				return models.UserLeitner{
 					Id:          0,
 					UserId:      0,
 					FlashcardId: 0,
 					Box:         0,
-					CoolDown:    models.CoolDown{State: time.Time{}.Add(time.Hour)},
+					CoolDown:    models.CoolDown(time.Time{}.Add(time.Hour)),
 				}, nil
 			}
 			return leitners2[j-1], nil
@@ -211,20 +212,20 @@ func (t *testingSuite) Test_GetNextRandom() {
 	cards := make([]models.FlashcardId, 0, length)
 	for i := 0; i < length; i++ {
 		t.Run(strconv.Itoa(i), func() {
-			id, err := t.s.GetNextRandom(1, models.CoolDown{State: time.Time{}.Add(time.Second)})
+			id, err := t.s.GetNextRandom(context.Background(), 1, models.CoolDown(time.Time{}.Add(time.Second)))
 			if assert.NoError(t.T(), err) {
 				cards = append(cards, id)
 				flashcard2Called[id-1] = true
 			}
 		})
 	}
-	_, err := t.s.GetNextRandom(1, models.CoolDown{State: time.Time{}.Add(time.Second)})
+	_, err := t.s.GetNextRandom(context.Background(), 1, models.CoolDown(time.Time{}.Add(time.Second)))
 	assert.Error(t.T(), err)
 
 	slices.Sort(cards)
 	assert.Equal(t.T(), append(flashcard, flashcard2...), cards)
 
-	_, err = t.s.GetNextRandom(1, models.CoolDown{State: time.Time{}.Add(2 * time.Hour)})
+	_, err = t.s.GetNextRandom(context.Background(), 1, models.CoolDown(time.Time{}.Add(2*time.Hour)))
 	assert.NoError(t.T(), err)
 }
 
