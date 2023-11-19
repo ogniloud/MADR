@@ -62,28 +62,21 @@ type (
 // CoolDown describes the timestamp.
 // If the current time is less than the CoolDown state,
 // the flashcard will not be shown for study.
-type CoolDown struct {
-	// the current simulation time.
-	State time.Time `json:"state"`
-}
-
-func (cd *CoolDown) String() string {
-	return cd.State.String()
-}
+type CoolDown time.Time
 
 // NextState updates the state of cd relatively f.
 func (cd *CoolDown) NextState(b Box, f func(Box) time.Time) {
-	cd.State = f(b)
+	*cd = CoolDown(f(b))
 }
 
 // IsPassedNow returns true if state of CoolDown is not less than time.Now.
 func (cd *CoolDown) IsPassedNow() bool {
-	return cd.IsPassed(CoolDown{State: time.Now()})
+	return cd.IsPassed(CoolDown(time.Now()))
 }
 
 // IsPassed returns true if state of cd is not less than t.
 func (cd *CoolDown) IsPassed(t CoolDown) bool {
-	return cd.State.Compare(t.State) == -1
+	return time.Time(*cd).Compare(time.Time(t)) == -1
 }
 
 // UserLeitner is a configuration of Leitner's system for each user.

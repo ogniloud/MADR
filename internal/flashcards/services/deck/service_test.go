@@ -1,18 +1,20 @@
 package deck_test
 
 import (
+	"context"
 	"fmt"
 	"io"
 	"testing"
 
 	"github.com/charmbracelet/log"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/mock"
+	"github.com/stretchr/testify/suite"
+
 	"github.com/ogniloud/madr/internal/flashcards/cache"
 	"github.com/ogniloud/madr/internal/flashcards/models"
 	"github.com/ogniloud/madr/internal/flashcards/services/deck"
 	"github.com/ogniloud/madr/internal/flashcards/storage/mocks"
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/mock"
-	"github.com/stretchr/testify/suite"
 )
 
 type LeitnerSuite struct {
@@ -41,27 +43,26 @@ func (l *LeitnerSuite) SetupTest() {
 		},
 	}
 
-	// s := mocks.NewStorage(l.T())
 	s := &mocks.Storage{}
 	l.st = s
 	l.s = deck.NewService(s, cache.New(), log.New(io.Discard))
 
-	s.On("GetDecksByUserId", 1).
+	s.On("GetDecksByUserId", mock.Anything, 1).
 		Return(l.userData, nil).Once()
-	s.On("GetDecksByUserId", 1).
+	s.On("GetDecksByUserId", mock.Anything, 1).
 		Return(nil, fmt.Errorf("db problem"))
 }
 
 func (l *LeitnerSuite) Test_LoadDecks() {
 	s := l.st
 
-	s.On("GetDecksByUserId", 2).
+	s.On("GetDecksByUserId", mock.Anything, 2).
 		Return(l.userData, nil).Once()
-	s.On("GetDecksByUserId", 666).
+	s.On("GetDecksByUserId", mock.Anything, 666).
 		Return(nil, fmt.Errorf("user not found")).Once()
 
 	l.Run("load #1", func() {
-		decks, err := l.s.LoadDecks(1)
+		decks, err := l.s.LoadDecks(context.Background(), 1)
 		if assert.NoError(l.T(), err) {
 			assert.Equal(l.T(), l.userData, decks)
 		}
@@ -79,23 +80,23 @@ func (l *LeitnerSuite) Test_LoadDecks() {
 	})
 
 	l.Run("load #2", func() {
-		decks, err := l.s.LoadDecks(2)
+		decks, err := l.s.LoadDecks(context.Background(), 2)
 		if assert.NoError(l.T(), err) {
 			assert.Equal(l.T(), l.userData, decks)
 		}
 	})
 
 	l.Run("not found", func() {
-		_, err := l.s.LoadDecks(666)
+		_, err := l.s.LoadDecks(context.Background(), 666)
 		assert.Error(l.T(), err)
 	})
 
 	// take from cache, must not panic
 	l.Run("pulling from cache", func() {
-		_, err := l.st.GetDecksByUserId(1)
+		_, err := l.st.GetDecksByUserId(context.Background(), 1)
 		assert.Error(l.T(), err)
 
-		decks, err := l.s.LoadDecks(1)
+		decks, err := l.s.LoadDecks(context.Background(), 1)
 		if assert.NoError(l.T(), err) {
 			assert.Equal(l.T(), l.userData, decks)
 		}
@@ -104,14 +105,15 @@ func (l *LeitnerSuite) Test_LoadDecks() {
 
 func (l *LeitnerSuite) Test_CreateNewDeck() {
 	s := l.st
-	s.On("PutNewDeck", mock.AnythingOfType("models.DeckConfig")).
+	s.On("PutNewDeck", mock.Anything, mock.AnythingOfType("models.DeckConfig")).
 		Return(0, nil).Once()
 	s.On("PutAllFlashcards",
+		mock.Anything,
 		mock.AnythingOfType("int"),
 		mock.AnythingOfType("[]models.Flashcard")).
 		Return(nil, nil).Once()
 
-	s.On("GetDecksByUserId", 1).
+	s.On("GetDecksByUserId", mock.Anything, 1).
 		Return(l.userData, nil).Once()
 
 	cfg := models.DeckConfig{
@@ -136,12 +138,12 @@ func (l *LeitnerSuite) Test_CreateNewDeck() {
 		},
 	}
 
-	_, err := l.s.NewDeckWithFlashcards(1, models.DeckConfig{}, []models.Flashcard{})
+	_, err := l.s.NewDeckWithFlashcards(context.Background(), 1, models.DeckConfig{}, []models.Flashcard{})
 	assert.Error(l.T(), err)
-	_, err = l.s.NewDeckWithFlashcards(1, cfg, cards)
+	_, err = l.s.NewDeckWithFlashcards(context.Background(), 1, cfg, cards)
 	assert.Nil(l.T(), err)
 
-	decks, err := l.s.LoadDecks(1)
+	decks, err := l.s.LoadDecks(context.Background(), 1)
 	if assert.NoError(l.T(), err) {
 		assert.Equal(l.T(), l.userData, decks)
 	}
@@ -149,27 +151,27 @@ func (l *LeitnerSuite) Test_CreateNewDeck() {
 
 func (l *LeitnerSuite) Test_DeleteDeck() {
 	s := l.st
-	s.On("DeleteUserDeck", 1, 3).
+	s.On("DeleteUserDeck", mock.Anything, 1, 3).
 		Return(fmt.Errorf("deck not found")).Once()
-	s.On("DeleteUserDeck", 1, 4).
+	s.On("DeleteUserDeck", mock.Anything, 1, 4).
 		Return(nil).Once()
-	s.On("DeleteUserDeck", mock.AnythingOfType("int")).
+	s.On("DeleteUserDeck", mock.Anything, mock.AnythingOfType("int")).
 		Return(nil).Once()
-	s.On("GetDecksByUserId", 3).
+	s.On("GetDecksByUserId", mock.Anything, 3).
 		Return(nil, fmt.Errorf("user not found"))
 
 	l.Run("deck not found", func() {
-		assert.Error(l.T(), l.s.DeleteDeck(1, 3))
+		assert.Error(l.T(), l.s.DeleteDeck(context.Background(), 1, 3))
 	})
 
 	l.Run("user not found", func() {
-		assert.Error(l.T(), l.s.DeleteDeck(3, 1))
+		assert.Error(l.T(), l.s.DeleteDeck(context.Background(), 3, 1))
 	})
 
 	delete(l.userData, 4)
 	l.Run("success delete", func() {
-		assert.NoError(l.T(), l.s.DeleteDeck(1, 4))
-		decks, err := l.s.LoadDecks(1)
+		assert.NoError(l.T(), l.s.DeleteDeck(context.Background(), 1, 4))
+		decks, err := l.s.LoadDecks(context.Background(), 1)
 		if assert.NoError(l.T(), err) {
 			assert.Equal(l.T(), l.userData, decks)
 		}

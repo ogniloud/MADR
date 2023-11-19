@@ -3,6 +3,8 @@
 package mocks
 
 import (
+	context "context"
+
 	models "github.com/ogniloud/madr/internal/flashcards/models"
 	mock "github.com/stretchr/testify/mock"
 )
@@ -12,13 +14,13 @@ type Storage struct {
 	mock.Mock
 }
 
-// DeleteFlashcardFromDeck provides a mock function with given fields: cardId
-func (_m *Storage) DeleteFlashcardFromDeck(cardId int) error {
-	ret := _m.Called(cardId)
+// DeleteFlashcardFromDeck provides a mock function with given fields: ctx, cardId
+func (_m *Storage) DeleteFlashcardFromDeck(ctx context.Context, cardId int) error {
+	ret := _m.Called(ctx, cardId)
 
 	var r0 error
-	if rf, ok := ret.Get(0).(func(int) error); ok {
-		r0 = rf(cardId)
+	if rf, ok := ret.Get(0).(func(context.Context, int) error); ok {
+		r0 = rf(ctx, cardId)
 	} else {
 		r0 = ret.Error(0)
 	}
@@ -26,13 +28,13 @@ func (_m *Storage) DeleteFlashcardFromDeck(cardId int) error {
 	return r0
 }
 
-// DeleteUserDeck provides a mock function with given fields: userId, id
-func (_m *Storage) DeleteUserDeck(userId int, id int) error {
-	ret := _m.Called(userId, id)
+// DeleteUserDeck provides a mock function with given fields: ctx, userId, id
+func (_m *Storage) DeleteUserDeck(ctx context.Context, userId int, id int) error {
+	ret := _m.Called(ctx, userId, id)
 
 	var r0 error
-	if rf, ok := ret.Get(0).(func(int, int) error); ok {
-		r0 = rf(userId, id)
+	if rf, ok := ret.Get(0).(func(context.Context, int, int) error); ok {
+		r0 = rf(ctx, userId, id)
 	} else {
 		r0 = ret.Error(0)
 	}
@@ -40,25 +42,25 @@ func (_m *Storage) DeleteUserDeck(userId int, id int) error {
 	return r0
 }
 
-// GetDecksByUserId provides a mock function with given fields: id
-func (_m *Storage) GetDecksByUserId(id int) (models.Decks, error) {
-	ret := _m.Called(id)
+// GetDecksByUserId provides a mock function with given fields: ctx, id
+func (_m *Storage) GetDecksByUserId(ctx context.Context, id int) (models.Decks, error) {
+	ret := _m.Called(ctx, id)
 
 	var r0 models.Decks
 	var r1 error
-	if rf, ok := ret.Get(0).(func(int) (models.Decks, error)); ok {
-		return rf(id)
+	if rf, ok := ret.Get(0).(func(context.Context, int) (models.Decks, error)); ok {
+		return rf(ctx, id)
 	}
-	if rf, ok := ret.Get(0).(func(int) models.Decks); ok {
-		r0 = rf(id)
+	if rf, ok := ret.Get(0).(func(context.Context, int) models.Decks); ok {
+		r0 = rf(ctx, id)
 	} else {
 		if ret.Get(0) != nil {
 			r0 = ret.Get(0).(models.Decks)
 		}
 	}
 
-	if rf, ok := ret.Get(1).(func(int) error); ok {
-		r1 = rf(id)
+	if rf, ok := ret.Get(1).(func(context.Context, int) error); ok {
+		r1 = rf(ctx, id)
 	} else {
 		r1 = ret.Error(1)
 	}
@@ -66,23 +68,23 @@ func (_m *Storage) GetDecksByUserId(id int) (models.Decks, error) {
 	return r0, r1
 }
 
-// GetFlashcardById provides a mock function with given fields: id
-func (_m *Storage) GetFlashcardById(id int) (models.Flashcard, error) {
-	ret := _m.Called(id)
+// GetFlashcardById provides a mock function with given fields: ctx, id
+func (_m *Storage) GetFlashcardById(ctx context.Context, id int) (models.Flashcard, error) {
+	ret := _m.Called(ctx, id)
 
 	var r0 models.Flashcard
 	var r1 error
-	if rf, ok := ret.Get(0).(func(int) (models.Flashcard, error)); ok {
-		return rf(id)
+	if rf, ok := ret.Get(0).(func(context.Context, int) (models.Flashcard, error)); ok {
+		return rf(ctx, id)
 	}
-	if rf, ok := ret.Get(0).(func(int) models.Flashcard); ok {
-		r0 = rf(id)
+	if rf, ok := ret.Get(0).(func(context.Context, int) models.Flashcard); ok {
+		r0 = rf(ctx, id)
 	} else {
 		r0 = ret.Get(0).(models.Flashcard)
 	}
 
-	if rf, ok := ret.Get(1).(func(int) error); ok {
-		r1 = rf(id)
+	if rf, ok := ret.Get(1).(func(context.Context, int) error); ok {
+		r1 = rf(ctx, id)
 	} else {
 		r1 = ret.Error(1)
 	}
@@ -90,25 +92,25 @@ func (_m *Storage) GetFlashcardById(id int) (models.Flashcard, error) {
 	return r0, r1
 }
 
-// GetFlashcardsIdByDeckId provides a mock function with given fields: id
-func (_m *Storage) GetFlashcardsIdByDeckId(id int) ([]int, error) {
-	ret := _m.Called(id)
+// GetFlashcardsIdByDeckId provides a mock function with given fields: ctx, id
+func (_m *Storage) GetFlashcardsIdByDeckId(ctx context.Context, id int) ([]int, error) {
+	ret := _m.Called(ctx, id)
 
 	var r0 []int
 	var r1 error
-	if rf, ok := ret.Get(0).(func(int) ([]int, error)); ok {
-		return rf(id)
+	if rf, ok := ret.Get(0).(func(context.Context, int) ([]int, error)); ok {
+		return rf(ctx, id)
 	}
-	if rf, ok := ret.Get(0).(func(int) []int); ok {
-		r0 = rf(id)
+	if rf, ok := ret.Get(0).(func(context.Context, int) []int); ok {
+		r0 = rf(ctx, id)
 	} else {
 		if ret.Get(0) != nil {
 			r0 = ret.Get(0).([]int)
 		}
 	}
 
-	if rf, ok := ret.Get(1).(func(int) error); ok {
-		r1 = rf(id)
+	if rf, ok := ret.Get(1).(func(context.Context, int) error); ok {
+		r1 = rf(ctx, id)
 	} else {
 		r1 = ret.Error(1)
 	}
@@ -116,23 +118,23 @@ func (_m *Storage) GetFlashcardsIdByDeckId(id int) ([]int, error) {
 	return r0, r1
 }
 
-// GetLeitnerByUserIdCardId provides a mock function with given fields: id, flashcardId
-func (_m *Storage) GetLeitnerByUserIdCardId(id int, flashcardId int) (models.UserLeitner, error) {
-	ret := _m.Called(id, flashcardId)
+// GetLeitnerByUserIdCardId provides a mock function with given fields: ctx, id, flashcardId
+func (_m *Storage) GetLeitnerByUserIdCardId(ctx context.Context, id int, flashcardId int) (models.UserLeitner, error) {
+	ret := _m.Called(ctx, id, flashcardId)
 
 	var r0 models.UserLeitner
 	var r1 error
-	if rf, ok := ret.Get(0).(func(int, int) (models.UserLeitner, error)); ok {
-		return rf(id, flashcardId)
+	if rf, ok := ret.Get(0).(func(context.Context, int, int) (models.UserLeitner, error)); ok {
+		return rf(ctx, id, flashcardId)
 	}
-	if rf, ok := ret.Get(0).(func(int, int) models.UserLeitner); ok {
-		r0 = rf(id, flashcardId)
+	if rf, ok := ret.Get(0).(func(context.Context, int, int) models.UserLeitner); ok {
+		r0 = rf(ctx, id, flashcardId)
 	} else {
 		r0 = ret.Get(0).(models.UserLeitner)
 	}
 
-	if rf, ok := ret.Get(1).(func(int, int) error); ok {
-		r1 = rf(id, flashcardId)
+	if rf, ok := ret.Get(1).(func(context.Context, int, int) error); ok {
+		r1 = rf(ctx, id, flashcardId)
 	} else {
 		r1 = ret.Error(1)
 	}
@@ -140,23 +142,23 @@ func (_m *Storage) GetLeitnerByUserIdCardId(id int, flashcardId int) (models.Use
 	return r0, r1
 }
 
-// GetUserInfo provides a mock function with given fields: uid
-func (_m *Storage) GetUserInfo(uid int) (models.UserInfo, error) {
-	ret := _m.Called(uid)
+// GetUserInfo provides a mock function with given fields: ctx, uid
+func (_m *Storage) GetUserInfo(ctx context.Context, uid int) (models.UserInfo, error) {
+	ret := _m.Called(ctx, uid)
 
 	var r0 models.UserInfo
 	var r1 error
-	if rf, ok := ret.Get(0).(func(int) (models.UserInfo, error)); ok {
-		return rf(uid)
+	if rf, ok := ret.Get(0).(func(context.Context, int) (models.UserInfo, error)); ok {
+		return rf(ctx, uid)
 	}
-	if rf, ok := ret.Get(0).(func(int) models.UserInfo); ok {
-		r0 = rf(uid)
+	if rf, ok := ret.Get(0).(func(context.Context, int) models.UserInfo); ok {
+		r0 = rf(ctx, uid)
 	} else {
 		r0 = ret.Get(0).(models.UserInfo)
 	}
 
-	if rf, ok := ret.Get(1).(func(int) error); ok {
-		r1 = rf(uid)
+	if rf, ok := ret.Get(1).(func(context.Context, int) error); ok {
+		r1 = rf(ctx, uid)
 	} else {
 		r1 = ret.Error(1)
 	}
@@ -164,25 +166,25 @@ func (_m *Storage) GetUserInfo(uid int) (models.UserInfo, error) {
 	return r0, r1
 }
 
-// PutAllFlashcards provides a mock function with given fields: id, cards
-func (_m *Storage) PutAllFlashcards(id int, cards []models.Flashcard) ([]int, error) {
-	ret := _m.Called(id, cards)
+// PutAllFlashcards provides a mock function with given fields: ctx, id, cards
+func (_m *Storage) PutAllFlashcards(ctx context.Context, id int, cards []models.Flashcard) ([]int, error) {
+	ret := _m.Called(ctx, id, cards)
 
 	var r0 []int
 	var r1 error
-	if rf, ok := ret.Get(0).(func(int, []models.Flashcard) ([]int, error)); ok {
-		return rf(id, cards)
+	if rf, ok := ret.Get(0).(func(context.Context, int, []models.Flashcard) ([]int, error)); ok {
+		return rf(ctx, id, cards)
 	}
-	if rf, ok := ret.Get(0).(func(int, []models.Flashcard) []int); ok {
-		r0 = rf(id, cards)
+	if rf, ok := ret.Get(0).(func(context.Context, int, []models.Flashcard) []int); ok {
+		r0 = rf(ctx, id, cards)
 	} else {
 		if ret.Get(0) != nil {
 			r0 = ret.Get(0).([]int)
 		}
 	}
 
-	if rf, ok := ret.Get(1).(func(int, []models.Flashcard) error); ok {
-		r1 = rf(id, cards)
+	if rf, ok := ret.Get(1).(func(context.Context, int, []models.Flashcard) error); ok {
+		r1 = rf(ctx, id, cards)
 	} else {
 		r1 = ret.Error(1)
 	}
@@ -190,25 +192,25 @@ func (_m *Storage) PutAllFlashcards(id int, cards []models.Flashcard) ([]int, er
 	return r0, r1
 }
 
-// PutAllUserLeitner provides a mock function with given fields: uls
-func (_m *Storage) PutAllUserLeitner(uls []models.UserLeitner) ([]int, error) {
-	ret := _m.Called(uls)
+// PutAllUserLeitner provides a mock function with given fields: ctx, uls
+func (_m *Storage) PutAllUserLeitner(ctx context.Context, uls []models.UserLeitner) ([]int, error) {
+	ret := _m.Called(ctx, uls)
 
 	var r0 []int
 	var r1 error
-	if rf, ok := ret.Get(0).(func([]models.UserLeitner) ([]int, error)); ok {
-		return rf(uls)
+	if rf, ok := ret.Get(0).(func(context.Context, []models.UserLeitner) ([]int, error)); ok {
+		return rf(ctx, uls)
 	}
-	if rf, ok := ret.Get(0).(func([]models.UserLeitner) []int); ok {
-		r0 = rf(uls)
+	if rf, ok := ret.Get(0).(func(context.Context, []models.UserLeitner) []int); ok {
+		r0 = rf(ctx, uls)
 	} else {
 		if ret.Get(0) != nil {
 			r0 = ret.Get(0).([]int)
 		}
 	}
 
-	if rf, ok := ret.Get(1).(func([]models.UserLeitner) error); ok {
-		r1 = rf(uls)
+	if rf, ok := ret.Get(1).(func(context.Context, []models.UserLeitner) error); ok {
+		r1 = rf(ctx, uls)
 	} else {
 		r1 = ret.Error(1)
 	}
@@ -216,23 +218,23 @@ func (_m *Storage) PutAllUserLeitner(uls []models.UserLeitner) ([]int, error) {
 	return r0, r1
 }
 
-// PutNewDeck provides a mock function with given fields: config
-func (_m *Storage) PutNewDeck(config models.DeckConfig) (int, error) {
-	ret := _m.Called(config)
+// PutNewDeck provides a mock function with given fields: ctx, config
+func (_m *Storage) PutNewDeck(ctx context.Context, config models.DeckConfig) (int, error) {
+	ret := _m.Called(ctx, config)
 
 	var r0 int
 	var r1 error
-	if rf, ok := ret.Get(0).(func(models.DeckConfig) (int, error)); ok {
-		return rf(config)
+	if rf, ok := ret.Get(0).(func(context.Context, models.DeckConfig) (int, error)); ok {
+		return rf(ctx, config)
 	}
-	if rf, ok := ret.Get(0).(func(models.DeckConfig) int); ok {
-		r0 = rf(config)
+	if rf, ok := ret.Get(0).(func(context.Context, models.DeckConfig) int); ok {
+		r0 = rf(ctx, config)
 	} else {
 		r0 = ret.Get(0).(int)
 	}
 
-	if rf, ok := ret.Get(1).(func(models.DeckConfig) error); ok {
-		r1 = rf(config)
+	if rf, ok := ret.Get(1).(func(context.Context, models.DeckConfig) error); ok {
+		r1 = rf(ctx, config)
 	} else {
 		r1 = ret.Error(1)
 	}
@@ -240,13 +242,13 @@ func (_m *Storage) PutNewDeck(config models.DeckConfig) (int, error) {
 	return r0, r1
 }
 
-// UpdateLeitner provides a mock function with given fields: ul
-func (_m *Storage) UpdateLeitner(ul models.UserLeitner) error {
-	ret := _m.Called(ul)
+// UpdateLeitner provides a mock function with given fields: ctx, ul
+func (_m *Storage) UpdateLeitner(ctx context.Context, ul models.UserLeitner) error {
+	ret := _m.Called(ctx, ul)
 
 	var r0 error
-	if rf, ok := ret.Get(0).(func(models.UserLeitner) error); ok {
-		r0 = rf(ul)
+	if rf, ok := ret.Get(0).(func(context.Context, models.UserLeitner) error); ok {
+		r0 = rf(ctx, ul)
 	} else {
 		r0 = ret.Error(0)
 	}

@@ -51,7 +51,7 @@ func (d Endpoint) LoadDecks(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	decksMap, err := d.s.LoadDecks(reqBody.UserId)
+	decksMap, err := d.s.LoadDecks(r.Context(), reqBody.UserId)
 	if err != nil {
 		d.logger.Errorf("error while loading decks: %v", err)
 		d.ew.Error(w, err.Error(), http.StatusInternalServerError)
@@ -101,7 +101,7 @@ func (d Endpoint) GetFlashcardsByDeckId(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
-	ids, err := d.s.GetFlashcardsIdByDeckId(reqBody.DeckId)
+	ids, err := d.s.GetFlashcardsIdByDeckId(r.Context(), reqBody.DeckId)
 	if err != nil {
 		d.logger.Errorf("error while loading ids of cards: %v", err)
 		d.ew.Error(w, err.Error(), http.StatusInternalServerError)
@@ -112,7 +112,7 @@ func (d Endpoint) GetFlashcardsByDeckId(w http.ResponseWriter, r *http.Request) 
 
 	// should be replaced with one read transaction
 	for i := 0; i < len(ids); i++ {
-		card, err := d.s.GetFlashcardById(ids[i])
+		card, err := d.s.GetFlashcardById(r.Context(), ids[i])
 		if err != nil {
 			d.logger.Errorf("error while loading a card: %v", err)
 			d.ew.Error(w, err.Error(), http.StatusInternalServerError)
@@ -161,7 +161,7 @@ func (d Endpoint) AddFlashcardToDeck(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	id, err := d.s.PutAllFlashcards(reqBody.DeckId, []models.Flashcard{{
+	id, err := d.s.PutAllFlashcards(r.Context(), reqBody.DeckId, []models.Flashcard{{
 		W:      reqBody.Word,
 		B:      reqBody.Backside,
 		DeckId: reqBody.DeckId,
@@ -172,11 +172,11 @@ func (d Endpoint) AddFlashcardToDeck(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	_, err = d.s.PutAllUserLeitner([]models.UserLeitner{{
+	_, err = d.s.PutAllUserLeitner(r.Context(), []models.UserLeitner{{
 		UserId:      reqBody.UserId,
 		FlashcardId: id[0],
 		Box:         0,
-		CoolDown:    models.CoolDown{State: time.Now()},
+		CoolDown:    models.CoolDown(time.Now()),
 	}})
 	if err != nil {
 		d.logger.Errorf("error while creating leitner: %v", err)
@@ -219,7 +219,7 @@ func (d Endpoint) DeleteFlashcardFromDeck(w http.ResponseWriter, r *http.Request
 		return
 	}
 
-	err := d.s.DeleteFlashcardFromDeck(reqBody.FlashcardId)
+	err := d.s.DeleteFlashcardFromDeck(r.Context(), reqBody.FlashcardId)
 	if err != nil {
 		d.logger.Errorf("error while deleting flashcard: %v", err)
 		d.ew.Error(w, err.Error(), http.StatusInternalServerError)
@@ -261,7 +261,7 @@ func (d Endpoint) NewDeckWithFlashcards(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
-	_, err := d.s.NewDeckWithFlashcards(
+	_, err := d.s.NewDeckWithFlashcards(r.Context(),
 		reqBody.UserId,
 		models.DeckConfig{
 			UserId: reqBody.UserId,
@@ -310,7 +310,7 @@ func (d Endpoint) DeleteDeck(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err := d.s.DeleteDeck(reqBody.UserId, reqBody.DeckId)
+	err := d.s.DeleteDeck(r.Context(), reqBody.UserId, reqBody.DeckId)
 	if err != nil {
 		d.logger.Errorf("error while deleting a deck: %v", err)
 		d.ew.Error(w, err.Error(), http.StatusInternalServerError)
