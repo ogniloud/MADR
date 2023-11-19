@@ -1,12 +1,15 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom'; 
-import './User-Components-Style/SignUp.css'
+import { Link, useNavigate } from 'react-router-dom';
+import './User-Components-Style/SignUp.css';
+
 function Form() {
   const [formData, setFormData] = useState({
     name: '',
     email: '',
     password: '',
   });
+
+  const navigate = useNavigate(); // Initialize navigate
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -16,45 +19,45 @@ function Form() {
     });
   };
 
-  const handleSubmit = async(e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    
-    try{
-      const response = await fetch('http://localhost:8080/api/signup',{
-        method:'POST',
-        headers:{
+
+    try {
+      const response = await fetch('http://localhost:8080/api/signup', {
+        method: 'POST',
+        headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(formData),
       });
 
-      if (response.ok){
-        console.log('Registration Successful')
-      } else{
-        console.error('Registration Faild')
+      if (response.ok) {
+        console.log('Registration Successful');
+        navigate('/signin'); // Redirect to the SignIn page
+      } else {
+        console.error('Registration Failed');
       }
-    } catch(error){
+    } catch (error) {
       console.error('Error during registration', error);
     }
-
   };
 
   return (
     <div className="container">
       <div className="left-side">
-        <p className='describtion'>
+        <p className="describtion">
           MADR is a modern language learning tool. It provides various vocabulary enrichment methods that are scientifically proven to be effective and engaging. Find all the necessary resources in the web application.
         </p>
-        <p className='madr_org'>madr.org</p>
-        <p className='one_tab'> Just one browser tab</p>
+        <p className="madr_org">madr.org</p>
+        <p className="one_tab"> Just one browser tab</p>
       </div>
 
       <div className="right-side">
-        <p className='title'>Create your MADR account</p>
-        <p className='subtitle'>Let’s make learning more effective</p>
+        <p className="title">Create your MADR account</p>
+        <p className="subtitle">Let’s make learning more effective</p>
         <form onSubmit={handleSubmit}>
           <div className="form-group">
-           <label htmlFor="name">Name</label>
+            <label htmlFor="name">Name</label>
             <input type="text" id="name" name="name" value={formData.name} onChange={handleInputChange} placeholder="" required />
           </div>
           <div className="form-group">
@@ -65,9 +68,13 @@ function Form() {
             <label htmlFor="password">Password</label>
             <input type="password" id="password" name="password" value={formData.password} onChange={handleInputChange} placeholder="" required />
           </div>
-          <button className="submit" type="submit">Create Account</button>
+          <button className="submit" type="submit">
+            Create Account
+          </button>
         </form>
-        <p>Already have an account? <Link to='/signin'>Sign in</Link></p>
+        <p>
+          Already have an account? <Link to="/signin">Sign in</Link>
+        </p>
       </div>
     </div>
   );
