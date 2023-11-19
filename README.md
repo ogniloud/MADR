@@ -1,6 +1,6 @@
 # MADR
 
-# How to start service
+# How to start the service
 
 ## Docker (recommended, everything is set up)
 ```
