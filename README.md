@@ -1,7 +1,7 @@
 <img src="https://github.com/ogniloud/MADR/assets/91509036/1903bbd8-50ec-4a19-bf20-bac04052e84e" alt="drawing" width="250"/>
 <h1>MADR</h1>
 
-# How to start service
+# How to start the service
 
 ## Docker (recommended, everything is set up)
 ```

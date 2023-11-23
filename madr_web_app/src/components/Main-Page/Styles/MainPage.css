@@ -1,0 +1,134 @@
+/* MainPage.css */
+
+.main-page {
+    font-family: 'Poppins', sans-serif;
+  }
+
+.upper-part{
+    width: 1512px;
+    height: 79px;
+    flex-shrink: 0;
+    margin-top: -355px;
+  }
+
+.decks-bar,
+.feed-bar,
+.profile-bar{
+    width: 200px;
+    height: 50.5px;
+    color: #000;
+    text-align: center;
+    font-family: Poppins;
+    font-size: 26px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: normal;
+    display: flex;
+    justify-content: center;
+    padding-top: 2%;
+    border-radius: 15px;
+    background: #D23520;
+
+}
+
+.feed-bar{
+    margin-left: -56%;
+}
+
+.lower-part{
+    flex-shrink: 0;
+    display: flex;
+}
+
+.create-deck,
+.all-cards {
+    background-color: antiquewhite;
+    width: 200px;
+    height: 150px;
+    border-radius: 15px;
+    color: #000;
+    text-align: center;
+    font-family: 'Poppins', sans-serif;
+    font-size: 20px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.create-deck{
+    margin-left: 15px;
+}
+.all-cards{
+    margin-left: 10px;
+}
+
+
+
+
+
+  
+  nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #f0f0f0;
+    padding: 10px;
+    margin-bottom: 20px;
+  }
+  
+  nav a {
+    text-decoration: none;
+    color: #333;
+    font-weight: bold;
+    font-size: 16px;
+    padding: 8px;
+    border-radius: 5px;
+    transition: background-color 0.3s;
+  }
+  
+  nav a:hover {
+    background-color: #ddd;
+  }
+  
+  .profile-link {
+    margin-left: auto; /* Push the Profile link to the right */
+  }
+  
+  .main-actions {
+    display: flex;
+    justify-content: space-between;
+    margin-top: auto; /* Push the actions to the bottom */
+  }
+  
+  .action-link {
+    text-decoration: none;
+    color: #fff;
+    font-weight: bold;
+    font-size: 14px;
+    padding: 10px 20px;
+    background-color: #007bff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+  
+  .action-link:hover {
+    background-color: #0056b3;
+  }
+  
+  .flashcard {
+    background-color: #007bff;
+    color: #fff;
+    padding: 10px;
+    border-radius: 5px;
+    margin-right: 10px;
+  }
+  
+  .flashcard:hover {
+    background-color: #0056b3;
+  }
+  
