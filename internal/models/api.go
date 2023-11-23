@@ -3,6 +3,12 @@ package models
 // swagger:model signUpRequest
 // SignUpRequest is a struct that defines the request body for the sign-up endpoint.
 type SignUpRequest struct {
+	// Username of the user.
+	//
+	// required: true
+	// example: user123
+	Username string `json:"username"`
+
 	// Email of the user.
 	//
 	// required: true
@@ -16,27 +22,14 @@ type SignUpRequest struct {
 	Password string `json:"password"`
 }
 
-// SignUpResponse is a struct that defines the response body for the sign-up endpoint.
-type SignUpResponse struct {
-	// ID of the user.
-	//
-	// example: 1
-	ID int `json:"id"`
-
-	// Email of the user.
-	//
-	// example: user@example.com
-	Email string `json:"email"`
-}
-
 // swagger:model signInRequest
 // SignInRequest is a struct that defines the request body for the sign-in endpoint.
 type SignInRequest struct {
-	// Email of the user.
+	// Username of the user.
 	//
 	// required: true
-	// example: user@example.com
-	Email string `json:"email"`
+	// example: user123
+	Username string `json:"username"`
 
 	// Password of the user.
 	//
