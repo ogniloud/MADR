@@ -39,6 +39,7 @@ body {
   font-weight: 500;
   text-align: left;
   position: absolute;
+  margin-top: -50px;
   bottom: 8px;
   left: 40px;
   top: 62%;
@@ -67,6 +68,9 @@ body {
   letter-spacing: 0.8px;
   left: 40px;
 
+}
+.madr_org:hover{
+  color: blueviolet;
 }
 
 .right-side {

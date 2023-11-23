@@ -42,6 +42,8 @@ function Form() {
     }
   };
 
+  
+
   return (
     <div className="container">
       <div className="left-side">
@@ -57,16 +59,16 @@ function Form() {
         <p className="subtitle">Let’s make learning more effective</p>
         <form onSubmit={handleSubmit}>
           <div className="form-group">
-            <label htmlFor="name">Name</label>
-            <input type="text" id="name" name="name" value={formData.name} onChange={handleInputChange} placeholder="" required />
+            <label htmlFor="name">User Name</label>
+            <input type="text" id="name" name="name" value={formData.name} onChange={handleInputChange} placeholder="pick a suitable user name" required />
           </div>
           <div className="form-group">
             <label htmlFor="email">Email</label>
-            <input type="email" id="email" name="email" value={formData.email} onChange={handleInputChange} placeholder="" required />
+            <input type="email" id="email" name="email" value={formData.email} onChange={handleInputChange} placeholder="Enter your email" required />
           </div>
           <div className="form-group">
             <label htmlFor="password">Password</label>
-            <input type="password" id="password" name="password" value={formData.password} onChange={handleInputChange} placeholder="" required />
+            <input type="password" id="password" name="password" value={formData.password} onChange={handleInputChange} placeholder="Password should be more that 8 digit " required />
           </div>
           <button className="submit" type="submit">
             Create Account

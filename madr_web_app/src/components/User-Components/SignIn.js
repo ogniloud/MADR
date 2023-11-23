@@ -51,17 +51,18 @@ function SignIn() {
         <p className="subtitle">Let's start learning</p>
         <form onSubmit={handleSignInSubmit}>
           <div className="form-group">
-            <label htmlFor="email">Email</label>
+            <label htmlFor="email">User Name</label>
             <input
-              type="email"
-              id="email"
-              name="email"
-              value={signInData.email}
+              type="name"
+              id="name"
+              name="name"
+              value={signInData.name}
               onChange={handleSignInChange}
-              placeholder=""
+              placeholder="Enter your madr.org username"
               required
             />
           </div>
+
           <div className="form-group">
             <label htmlFor="password">Password</label>
             <input
@@ -70,7 +71,7 @@ function SignIn() {
               name="password"
               value={signInData.password}
               onChange={handleSignInChange}
-              placeholder=""
+              placeholder="Enter your madr.org passowrd"
               required
             />
           </div>
