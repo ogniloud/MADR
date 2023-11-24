@@ -4,7 +4,7 @@ import './User-Components-Style/SignUp.css';
 
 function Form() {
   const [formData, setFormData] = useState({
-    name: '',
+    username: '',
     email: '',
     password: '',
   });
@@ -19,28 +19,36 @@ function Form() {
     });
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+ const handleSubmit = async (e) => {
+  e.preventDefault();
 
-    try {
-      const response = await fetch('http://localhost:8080/api/signup', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(formData),
-      });
+  try {
+    const response = await fetch('http://localhost:8080/api/signup', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(formData),
+    });
 
-      if (response.ok) {
-        console.log('Registration Successful');
-        navigate('/signin'); // Redirect to the SignIn page
-      } else {
-        console.error('Registration Failed');
+    console.log('Signup Response:', response);
+
+    if (response.ok) {
+      console.log('Registration Successful');
+      navigate('/signin'); // Redirect to the SignIn page
+    } else {
+      const data = await response.json().catch(() => null);
+      console.error('Registration Failed:', data);
+
+      // If data is null, it means the response body is not a valid JSON
+      if (data === null) {
+        console.error('Invalid JSON in response body');
       }
-    } catch (error) {
-      console.error('Error during registration', error);
     }
-  };
+  } catch (error) {
+    console.error('Error during registration', error);
+  }
+};
 
   
 
@@ -60,7 +68,7 @@ function Form() {
         <form onSubmit={handleSubmit}>
           <div className="form-group">
             <label htmlFor="name">User Name</label>
-            <input type="text" id="name" name="name" value={formData.name} onChange={handleInputChange} placeholder="pick a suitable user name" required />
+            <input type="text" id="name" name="username" value={formData.username} onChange={handleInputChange} placeholder="pick a suitable user name" required />
           </div>
           <div className="form-group">
             <label htmlFor="email">Email</label>

@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 
 function SignIn() {
   const [signInData, setSignInData] = useState({
-    email: '',
+    username: '',
     password: '',
   });
 
@@ -51,12 +51,12 @@ function SignIn() {
         <p className="subtitle">Let's start learning</p>
         <form onSubmit={handleSignInSubmit}>
           <div className="form-group">
-            <label htmlFor="email">User Name</label>
+            <label htmlFor="username">User Name</label>
             <input
-              type="name"
-              id="name"
-              name="name"
-              value={signInData.name}
+              type="text" 
+              id="username" 
+              name="username" 
+              value={signInData.username} 
               onChange={handleSignInChange}
               placeholder="Enter your madr.org username"
               required
@@ -71,7 +71,7 @@ function SignIn() {
               name="password"
               value={signInData.password}
               onChange={handleSignInChange}
-              placeholder="Enter your madr.org passowrd"
+              placeholder="Enter your madr.org password"
               required
             />
           </div>
