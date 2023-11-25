@@ -181,9 +181,5 @@ func (e *Endpoints) Rate(w http.ResponseWriter, r *http.Request) {
 }
 
 func isValidMark(mark models.Mark) bool {
-	if mark <= study.Excellent {
-		return true
-	}
-
-	return false
+	return mark <= study.Excellent
 }
