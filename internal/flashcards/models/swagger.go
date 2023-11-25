@@ -113,3 +113,39 @@ type SwaggerDeleteDeckInternalServerError struct {
 	// in: body
 	Body ioutil.GenericError
 }
+
+// swagger:response randomCardBadRequestError
+type SwaggerRandomCardBadRequest struct {
+	// in: body
+	Body ioutil.GenericError
+}
+
+// swagger:response randomCardInternalServerError
+type SwaggerRandomCardBadResponse struct {
+	// in: body
+	Body ioutil.GenericError
+}
+
+// swagger:response randomCardDeckBadRequestError
+type SwaggerRandomCardDeckBadRequest struct {
+	// in: body
+	Body ioutil.GenericError
+}
+
+// swagger:response randomCardDeckInternalServerError
+type SwaggerRandomCardDeckBadResponse struct {
+	// in: body
+	Body ioutil.GenericError
+}
+
+// swagger:response rateBadRequestError
+type SwaggerRateBadRequest struct {
+	// in: body
+	Body ioutil.GenericError
+}
+
+// swagger:response rateInternalServerError
+type SwaggerRateBadResponse struct {
+	// in: body
+	Body ioutil.GenericError
+}

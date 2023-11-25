@@ -1,5 +1,7 @@
 package models
 
+import "github.com/ogniloud/madr/internal/flashcards/services/study"
+
 // LoadDecksRequest is a struct that defines the request body for the
 // loading deck handler.
 //
@@ -173,3 +175,75 @@ type DeleteDeckRequest struct {
 // DeleteDeckResponse is a struct that defines the request body for the
 // deleting the deck handler.
 type DeleteDeckResponse struct{}
+
+// RandomCardDeckRequest is a struct that defines the request body for the
+// getting a random card from the deck.
+//
+//swagger:model randomCardDeckRequest
+type RandomCardDeckRequest struct {
+	// UserId is an ID of the user in a storage.
+	//
+	// required: true
+	// example: 189
+	UserId UserId `json:"user_id"`
+
+	// DeckId is an ID of the deck where the flashcard will be added.
+	//
+	// required: true
+	// example: 123
+	DeckId DeckId `json:"deck_id"`
+}
+
+// RandomCardDeckResponse is a struct that defines the request body for the
+// getting a random card from the deck.
+type RandomCardDeckResponse struct {
+	// Flashcard is a flashcard that is returned to the user.
+	Flashcard Flashcard `json:"flashcard"`
+}
+
+// RandomCardRequest is a struct that defines the request body for the
+// getting a random card from all the decks.
+//
+//swagger:model randomCardRequest
+type RandomCardRequest struct {
+	// UserId is an ID of the user in a storage.
+	//
+	// required: true
+	// example: 189
+	UserId UserId `json:"user_id"`
+}
+
+// RandomCardResponse is a struct that defines the request body for the
+// getting a random card from all the decks.
+type RandomCardResponse struct {
+	// Flashcard is a flashcard that is returned to the user.
+	Flashcard Flashcard `json:"flashcard"`
+}
+
+// RateRequest is a struct that defines the request body for the
+// rating a card.
+//
+//swagger:model rateRequest
+type RateRequest struct {
+	// UserId is an ID of the user in a storage.
+	//
+	// required: true
+	// example: 189
+	UserId UserId `json:"user_id"`
+
+	// FlashcardId is an ID of the flashcard.
+	//
+	// required: true
+	// example: 1111
+	FlashcardId FlashcardId `json:"flashcard_id"`
+
+	// Mark is a mark for the card.
+	//
+	// required: true
+	// example: 0, 1 or 2
+	Mark study.Mark `json:"mark"`
+}
+
+// RateResponse is a struct that defines the request body for the
+// rating a card.
+type RateResponse struct{}

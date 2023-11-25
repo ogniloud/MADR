@@ -34,12 +34,26 @@ type (
 	BacksideType int
 )
 
+const (
+	Translation = BacksideType(iota)
+	Definition
+)
+
 // Backside is an abstract type for representation an answer
 // of describing the Word. That can be just a string (translation, definition)
 // or image, or sound - everything depends on Answer method.
 type Backside struct {
 	Type  BacksideType `json:"type"`
 	Value string       `json:"value"`
+}
+
+func ParseBackside(b Backside) string {
+	switch b.Type {
+	case Translation, Definition:
+		return b.Value
+	default:
+		return b.Value
+	}
 }
 
 // Flashcard is a model of real flashcards with front side with word
