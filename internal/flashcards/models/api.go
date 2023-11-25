@@ -1,7 +1,5 @@
 package models
 
-import "github.com/ogniloud/madr/internal/flashcards/services/study"
-
 // LoadDecksRequest is a struct that defines the request body for the
 // loading deck handler.
 //
@@ -241,7 +239,7 @@ type RateRequest struct {
 	//
 	// required: true
 	// example: 0, 1 or 2
-	Mark study.Mark `json:"mark"`
+	Mark Mark `json:"mark"`
 }
 
 // RateResponse is a struct that defines the request body for the

@@ -180,7 +180,7 @@ func (e *Endpoints) Rate(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNoContent)
 }
 
-func isValidMark(mark study.Mark) bool {
+func isValidMark(mark models.Mark) bool {
 	if mark <= study.Excellent {
 		return true
 	}
