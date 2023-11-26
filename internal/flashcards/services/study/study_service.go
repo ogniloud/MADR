@@ -56,7 +56,8 @@ type Service struct {
 	// Since p[1] <= r < p[2], we choose the flashcard from the box 1.
 }
 
-func NewService(s deck.IService, maxBox models.Box) IStudyService {
+func NewService(s deck.IService) IStudyService {
+	maxBox := 4 //todo:will be removed in 2 semester
 	p := make([]float32, maxBox)
 	p[0] = 0
 
