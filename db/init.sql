@@ -1,4 +1,4 @@
-CREATE TABLE user_credentials (
+CREATE TABLE IF NOT EXISTS user_credentials (
     user_id SERIAL PRIMARY KEY,
     username VARCHAR(50) UNIQUE NOT NULL,
     salt VARCHAR(100) NOT NULL,
@@ -6,29 +6,28 @@ CREATE TABLE user_credentials (
     email VARCHAR(100) UNIQUE NOT NULL
 );
 
-CREATE TABLE deck_config (
+CREATE TABLE IF NOT EXISTS deck_config (
     deck_id SERIAL PRIMARY KEY,
     user_id SERIAL,
     name VARCHAR(50) NOT NULL,
     FOREIGN KEY (user_id) REFERENCES user_credentials(user_id)
 );
 
-CREATE TABLE flashcard (
+CREATE TABLE IF NOT EXISTS flashcard (
     card_id SERIAL PRIMARY KEY,
     word VARCHAR(100) NOT NULL,
     backside TEXT NOT NULL,
     deck_id SERIAL,
-    answer VARCHAR(100) NOT NULL,
-    FOREIGN KEY (deck_id) REFERENCES deck_config(deck_id)
+    answer VARCHAR(100) NOT NULL
 );
 
-CREATE TABLE user_info (
+CREATE TABLE IF NOT EXISTS user_info (
     user_id SERIAL PRIMARY KEY,
     max_box INT NOT NULL CHECK (max_box > 0),
     FOREIGN KEY (user_id) REFERENCES user_credentials(user_id)
 );
 
-CREATE TABLE user_leitner (
+CREATE TABLE IF NOT EXISTS user_leitner (
     leitner_id SERIAL PRIMARY KEY,
     user_id SERIAL,
     card_id SERIAL,
