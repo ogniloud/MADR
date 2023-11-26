@@ -20,7 +20,7 @@ import (
 
 type PSQLSuite struct {
 	suite.Suite
-	repo *DeckStorage
+	repo *Storage
 }
 
 const connStringTest = "user=postgres password=postgres host=localhost port=5432 dbname=postgres"
@@ -34,7 +34,7 @@ func (s *PSQLSuite) SetupSuite() {
 		s.T().Fatal(err)
 	}
 
-	s.repo = &DeckStorage{Conn: conn}
+	s.repo = &Storage{Conn: conn}
 }
 
 func (s *PSQLSuite) TearDownSuite() {

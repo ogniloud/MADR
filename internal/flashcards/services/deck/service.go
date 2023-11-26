@@ -3,6 +3,7 @@ package deck
 import (
 	"context"
 	"fmt"
+	"time"
 
 	"github.com/ogniloud/madr/internal/flashcards/cache"
 	"github.com/ogniloud/madr/internal/flashcards/models"
@@ -86,12 +87,26 @@ func (s *Service) NewDeckWithFlashcards(ctx context.Context, userId models.UserI
 		return 0, err
 	}
 
-	if _, err := s.PutAllFlashcards(ctx, cfg.DeckId, flashcards); err != nil {
+	var ids []models.FlashcardId
+	if ids, err = s.PutAllFlashcards(ctx, id, flashcards); err != nil {
+		return 0, err
+	}
+
+	uls := make([]models.UserLeitner, len(flashcards))
+	for i := 0; i < len(flashcards); i++ {
+		uls[i] = models.UserLeitner{
+			UserId:      userId,
+			FlashcardId: ids[i],
+			Box:         0,
+			CoolDown:    models.CoolDown(time.Now()),
+		}
+	}
+	if _, err = s.PutAllUserLeitner(ctx, uls); err != nil {
 		return 0, err
 	}
 
 	decks[cfg.DeckId] = cfg // maybe critical section!
-	if err := s.Cache().Store(userId, decks); err != nil {
+	if err = s.Cache().Store(userId, decks); err != nil {
 		s.logger.Errorf("cache store failed: %v", err)
 		_ = s.Cache().Delete(userId) // non-consistent cache
 	}

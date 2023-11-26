@@ -88,6 +88,12 @@ type AddFlashcardToDeckRequest struct {
 	// required: true
 	// example: Backside{Type: TypeDefinition, Value: "President"}
 	Backside Backside `json:"backside"`
+
+	// Answer is an answer for exercises.
+	//
+	// required: true
+	// example: "aboba"
+	Answer Answer `json:"answer"`
 }
 
 // AddFlashcardToDeckResponse is a struct that defines the request body for the
@@ -145,7 +151,11 @@ type NewDeckWithFlashcardsRequest struct {
 	//   - name: obj
 	//     value: field
 	// ---
-	Flashcards []Flashcard `json:"flashcards"`
+	Flashcards []struct {
+		Word     Word     `json:"word"`
+		Backside Backside `json:"backside"`
+		Answer   Answer   `json:"answer"`
+	} `json:"flashcards"`
 }
 
 // NewDeckWithFlashcardsResponse is a struct that defines the request body for the
