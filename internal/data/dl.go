@@ -10,8 +10,8 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 	"golang.org/x/crypto/bcrypt"
 
-	"github.com/ogniloud/madr/internal/database"
 	"github.com/ogniloud/madr/internal/models"
+	"github.com/ogniloud/madr/internal/usercred"
 )
 
 // ErrEmailOrUsernameExists is an error returned when a user with the given email already exists.
@@ -20,7 +20,7 @@ var ErrEmailOrUsernameExists = fmt.Errorf("user with this email or username alre
 // Datalayer is a struct that helps us to interact with the data.
 type Datalayer struct {
 	// db is a database.
-	db *database.Database
+	db *usercred.UserCredentials
 
 	// saltLength is the length of the salt.
 	// We will use this to generate a salt for the password.
@@ -34,7 +34,7 @@ type Datalayer struct {
 }
 
 // New returns a new Datalayer struct.
-func New(db *database.Database, saltLength int, tokenExpirationTime time.Duration, signKey []byte) *Datalayer {
+func New(db *usercred.UserCredentials, saltLength int, tokenExpirationTime time.Duration, signKey []byte) *Datalayer {
 	return &Datalayer{
 		db:                  db,
 		saltLength:          saltLength,
