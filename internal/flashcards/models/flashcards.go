@@ -29,8 +29,10 @@ type UserInfo struct {
 }
 
 type (
-	Word         = string
-	Answer       = string
+	Word   = string
+	Answer = string
+
+	// BacksideType tells how to imagine a value of Backside.
 	BacksideType int
 )
 
@@ -47,6 +49,9 @@ type Backside struct {
 	Value string       `json:"value"`
 }
 
+// ParseBackside returns a new string from value of backside if needed.
+//
+// For example, from base64 to another string.
 func ParseBackside(b Backside) string {
 	switch b.Type {
 	case Translation, Definition:
