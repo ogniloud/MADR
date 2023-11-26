@@ -29,7 +29,7 @@ type testingSuite struct {
 func (t *testingSuite) SetupTest() {
 	t.m = &mocks.Storage{}
 	serv := deck.NewService(t.m, cache.New(), log.New(io.Discard))
-	t.s = study.NewService(serv, 5)
+	t.s = study.NewService(serv)
 }
 
 var (

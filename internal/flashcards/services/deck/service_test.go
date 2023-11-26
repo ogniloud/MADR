@@ -111,11 +111,12 @@ func (l *LeitnerSuite) Test_CreateNewDeck() {
 		mock.Anything,
 		mock.AnythingOfType("int"),
 		mock.AnythingOfType("[]models.Flashcard")).
-		Return(nil, nil).Once()
+		Return([]models.FlashcardId{1, 2}, nil).Once()
 
 	s.On("GetDecksByUserId", mock.Anything, 1).
 		Return(l.userData, nil).Once()
-
+	s.On("PutAllUserLeitner", mock.Anything, mock.Anything).
+		Return(nil, nil)
 	cfg := models.DeckConfig{
 		DeckId: 10,
 		UserId: 1,
