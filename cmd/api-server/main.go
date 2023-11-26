@@ -84,7 +84,7 @@ func main() {
 
 	// storage by package definition
 	credentials := usercred.New(psqlDB)
-	deckStorage := &deckstorage.DeckStorage{Conn: psqlDB}
+	deckStorage := &deckstorage.Storage{Conn: psqlDB}
 
 	// get salt length from env
 	saltLengthString := os.Getenv("SALT_LENGTH")
@@ -137,25 +137,6 @@ func main() {
 	deckEndpoints := deck.New(deckService, ioutil.JSONErrorWriter{Logger: l}, l)
 	exerciseEndpoints := study.New(deckService, studyService, ioutil.JSONErrorWriter{Logger: l}, l)
 
-	// flashcards router
-	routerDeck := chi.NewRouter()
-	routerDeck.Route("/flashcards", func(r chi.Router) {
-		r.Put("/add_card", deckEndpoints.AddFlashcardToDeck)
-		r.Delete("/delete_deck", deckEndpoints.DeleteDeck)
-		r.Delete("/delete_card", deckEndpoints.DeleteFlashcardFromDeck)
-		r.Post("/cards", deckEndpoints.GetFlashcardsByDeckId)
-		r.Post("/load", deckEndpoints.LoadDecks)
-		r.Put("/new_deck", deckEndpoints.NewDeckWithFlashcards)
-	})
-
-	// study router
-	routerStudy := chi.NewRouter()
-	routerStudy.Route("/study", func(r chi.Router) {
-		r.Post("/random", exerciseEndpoints.RandomCard)
-		r.Post("/random_deck", exerciseEndpoints.RandomCardDeck)
-		r.Post("/rate", exerciseEndpoints.Rate)
-	})
-
 	// Set up routes
 	r.Route("/api", func(r chi.Router) {
 		r.Post("/signup", endpoints.SignUp)
@@ -163,6 +144,23 @@ func main() {
 		r.Post("/signin", endpoints.SignIn)
 		r.Get("/swagger.yaml", http.StripPrefix("/api/", http.FileServer(http.Dir("./"))).ServeHTTP)
 		r.Get("/docs", dh.ServeHTTP)
+
+		// deck service handler
+		r.Route("/flashcards", func(r chi.Router) {
+			r.Put("/add_card", deckEndpoints.AddFlashcardToDeck)
+			r.Delete("/delete_deck", deckEndpoints.DeleteDeck)
+			r.Delete("/delete_card", deckEndpoints.DeleteFlashcardFromDeck)
+			r.Post("/cards", deckEndpoints.GetFlashcardsByDeckId)
+			r.Post("/load", deckEndpoints.LoadDecks)
+			r.Put("/new_deck", deckEndpoints.NewDeckWithFlashcards)
+		})
+
+		// study handler
+		r.Route("/study", func(r chi.Router) {
+			r.Post("/random", exerciseEndpoints.RandomCard)
+			r.Post("/random_deck", exerciseEndpoints.RandomCardDeck)
+			r.Post("/rate", exerciseEndpoints.Rate)
+		})
 	})
 
 	// create a new server
