@@ -29,9 +29,16 @@ type UserInfo struct {
 }
 
 type (
-	Word         = string
-	Answer       = string
+	Word   = string
+	Answer = string
+
+	// BacksideType tells how to imagine a value of Backside.
 	BacksideType int
+)
+
+const (
+	Translation = BacksideType(iota)
+	Definition
 )
 
 // Backside is an abstract type for representation an answer
@@ -40,6 +47,18 @@ type (
 type Backside struct {
 	Type  BacksideType `json:"type"`
 	Value string       `json:"value"`
+}
+
+// ParseBackside returns a new string from value of backside if needed.
+//
+// For example, from base64 to another string.
+func ParseBackside(b Backside) string {
+	switch b.Type {
+	case Translation, Definition:
+		return b.Value
+	default:
+		return b.Value
+	}
 }
 
 // Flashcard is a model of real flashcards with front side with word

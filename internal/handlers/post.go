@@ -5,9 +5,9 @@ import (
 	"net/http"
 
 	"github.com/ogniloud/madr/internal/data"
-	"github.com/ogniloud/madr/internal/database"
 	"github.com/ogniloud/madr/internal/ioutil"
 	"github.com/ogniloud/madr/internal/models"
+	"github.com/ogniloud/madr/internal/usercred"
 )
 
 // swagger:route POST /api/signup SignUp
@@ -120,8 +120,8 @@ func (e *Endpoints) SignIn(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		if errors.Is(err, database.ErrUserNotFound) {
-			e.ew.Error(w, database.ErrUserNotFound.Error(), http.StatusUnauthorized)
+		if errors.Is(err, usercred.ErrUserNotFound) {
+			e.ew.Error(w, usercred.ErrUserNotFound.Error(), http.StatusUnauthorized)
 			return
 		}
 

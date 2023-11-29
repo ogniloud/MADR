@@ -15,11 +15,8 @@ import (
 var ErrNoCards = fmt.Errorf("no cards")
 var ErrCardsAmt = fmt.Errorf("wrong amount of cards returned")
 
-// Mark is a type of rating marks of flashcards in Leitner's system.
-type Mark int
-
 const (
-	Bad = Mark(iota)
+	Bad = models.Mark(iota)
 	Satisfactory
 	Excellent
 )
@@ -32,7 +29,7 @@ type IStudyService interface {
 	GetNextRandomDeck(ctx context.Context, uid models.UserId, id models.DeckId, down models.CoolDown) (models.FlashcardId, error)
 
 	// Rate moves the card into the box relative to the mark.
-	Rate(ctx context.Context, uid models.UserId, id models.FlashcardId, mark Mark) error
+	Rate(ctx context.Context, uid models.UserId, id models.FlashcardId, mark models.Mark) error
 
 	// MakeMatching returns a matching comprised from words from the entire set of user cards with expired CoolDown.
 	MakeMatching(ctx context.Context, uid models.UserId, down models.CoolDown, size int) (models.Matching, error)
@@ -59,7 +56,8 @@ type Service struct {
 	// Since p[1] <= r < p[2], we choose the flashcard from the box 1.
 }
 
-func NewService(s deck.IService, maxBox models.Box) IStudyService {
+func NewService(s deck.IService) IStudyService {
+	maxBox := 5 //todo:will be removed in 2 semester
 	p := make([]float32, maxBox)
 	p[0] = 0
 
@@ -186,7 +184,7 @@ func (s *Service) GetNextRandomDeck(ctx context.Context, uid models.UserId, id m
 }
 
 // Rate moves the card into the box relative to the mark.
-func (s *Service) Rate(ctx context.Context, uid models.UserId, id models.FlashcardId, mark Mark) error {
+func (s *Service) Rate(ctx context.Context, uid models.UserId, id models.FlashcardId, mark models.Mark) error {
 	l, err := s.dsrv.GetLeitnerByUserIdCardId(ctx, uid, id)
 	if err != nil {
 		return err

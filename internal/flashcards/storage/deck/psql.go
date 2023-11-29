@@ -1,10 +1,11 @@
-package psql
+package deck
 
 import (
 	"context"
 	"encoding/json"
 	"fmt"
 	"strings"
+	"time"
 
 	"github.com/jackc/pgx/v5"
 
@@ -12,11 +13,11 @@ import (
 	"github.com/ogniloud/madr/internal/flashcards/models"
 )
 
-type DeckStorage struct {
+type Storage struct {
 	Conn *db.PSQLDatabase
 }
 
-func (d *DeckStorage) GetDecksByUserId(ctx context.Context, id models.UserId) (models.Decks, error) {
+func (d *Storage) GetDecksByUserId(ctx context.Context, id models.UserId) (models.Decks, error) {
 	rows, err := d.Conn.Query(ctx, `SELECT * FROM deck_config WHERE user_id=$1`, id)
 	if err != nil {
 		return nil, err
@@ -40,7 +41,7 @@ func (d *DeckStorage) GetDecksByUserId(ctx context.Context, id models.UserId) (m
 	return decks, nil
 }
 
-func (d *DeckStorage) GetFlashcardsIdByDeckId(ctx context.Context, id models.DeckId) ([]models.FlashcardId, error) {
+func (d *Storage) GetFlashcardsIdByDeckId(ctx context.Context, id models.DeckId) ([]models.FlashcardId, error) {
 	rows, err := d.Conn.Query(ctx, `SELECT card_id FROM flashcard WHERE deck_id=$1`, id)
 	if err != nil {
 		return nil, err
@@ -64,7 +65,7 @@ func (d *DeckStorage) GetFlashcardsIdByDeckId(ctx context.Context, id models.Dec
 	return ids[:len(ids):len(ids)], nil
 }
 
-func (d *DeckStorage) GetFlashcardById(ctx context.Context, id models.FlashcardId) (models.Flashcard, error) {
+func (d *Storage) GetFlashcardById(ctx context.Context, id models.FlashcardId) (models.Flashcard, error) {
 	row := d.Conn.QueryRow(ctx, `SELECT * FROM flashcard WHERE card_id=$1`, id)
 
 	flashcard := models.Flashcard{}
@@ -83,7 +84,7 @@ func (d *DeckStorage) GetFlashcardById(ctx context.Context, id models.FlashcardI
 	return flashcard, nil
 }
 
-func (d *DeckStorage) GetLeitnerByUserIdCardId(ctx context.Context, id models.UserId, flashcardId models.FlashcardId) (models.UserLeitner, error) {
+func (d *Storage) GetLeitnerByUserIdCardId(ctx context.Context, id models.UserId, flashcardId models.FlashcardId) (models.UserLeitner, error) {
 	row := d.Conn.QueryRow(ctx, `SELECT * FROM user_leitner WHERE user_id=$1 AND card_id=$2`, id, flashcardId)
 
 	l := models.UserLeitner{}
@@ -96,7 +97,7 @@ func (d *DeckStorage) GetLeitnerByUserIdCardId(ctx context.Context, id models.Us
 	return l, nil
 }
 
-func (d *DeckStorage) GetUserInfo(ctx context.Context, uid models.UserId) (models.UserInfo, error) {
+func (d *Storage) GetUserInfo(ctx context.Context, uid models.UserId) (models.UserInfo, error) {
 	row := d.Conn.QueryRow(ctx, `SELECT * FROM user_info WHERE user_id=$1`, uid)
 
 	i := models.UserInfo{}
@@ -109,7 +110,7 @@ func (d *DeckStorage) GetUserInfo(ctx context.Context, uid models.UserId) (model
 	return i, nil
 }
 
-func (d *DeckStorage) PutAllFlashcards(ctx context.Context, id models.DeckId, cards []models.Flashcard) ([]models.FlashcardId, error) {
+func (d *Storage) PutAllFlashcards(ctx context.Context, id models.DeckId, cards []models.Flashcard) ([]models.FlashcardId, error) {
 	values := strings.Builder{}
 	args := make([]any, 0, 4*len(cards))
 
@@ -145,7 +146,7 @@ func (d *DeckStorage) PutAllFlashcards(ctx context.Context, id models.DeckId, ca
 	return ids, nil
 }
 
-func (d *DeckStorage) PutNewDeck(ctx context.Context, config models.DeckConfig) (models.DeckId, error) {
+func (d *Storage) PutNewDeck(ctx context.Context, config models.DeckConfig) (models.DeckId, error) {
 	row := d.Conn.QueryRow(ctx,
 		`INSERT INTO deck_config (user_id, name) VALUES ($1, $2) RETURNING deck_id`,
 		config.UserId, config.Name,
@@ -161,7 +162,7 @@ func (d *DeckStorage) PutNewDeck(ctx context.Context, config models.DeckConfig) 
 	return id, nil
 }
 
-func (d *DeckStorage) PutAllUserLeitner(ctx context.Context, uls []models.UserLeitner) ([]models.LeitnerId, error) {
+func (d *Storage) PutAllUserLeitner(ctx context.Context, uls []models.UserLeitner) ([]models.LeitnerId, error) {
 	values := strings.Builder{}
 	args := make([]any, 0, 4*len(uls))
 
@@ -172,7 +173,7 @@ func (d *DeckStorage) PutAllUserLeitner(ctx context.Context, uls []models.UserLe
 			values.WriteByte('\n')
 		}
 
-		args = append(args, v.UserId, v.FlashcardId, v.Box, v.CoolDown)
+		args = append(args, v.UserId, v.FlashcardId, v.Box, time.Time(v.CoolDown))
 	}
 
 	s := fmt.Sprintf(`INSERT INTO user_leitner (user_id, card_id, box, cool_down) VALUES %v RETURNING leitner_id;`, values.String())
@@ -195,14 +196,14 @@ func (d *DeckStorage) PutAllUserLeitner(ctx context.Context, uls []models.UserLe
 	return ids, nil
 }
 
-func (d *DeckStorage) DeleteFlashcardFromDeck(ctx context.Context, cardId models.FlashcardId) error {
+func (d *Storage) DeleteFlashcardFromDeck(ctx context.Context, cardId models.FlashcardId) error {
 	row := d.Conn.QueryRow(ctx,
 		`DELETE FROM flashcard WHERE card_id=$1 RETURNING card_id`, cardId)
 
 	return row.Scan(&cardId)
 }
 
-func (d *DeckStorage) DeleteUserDeck(ctx context.Context, userId models.UserId, deckId models.DeckId) error {
+func (d *Storage) DeleteUserDeck(ctx context.Context, userId models.UserId, deckId models.DeckId) error {
 	row := d.Conn.QueryRow(ctx,
 		`DELETE FROM deck_config WHERE user_id=$1 AND deck_id=$2 RETURNING name`, userId, deckId)
 
@@ -210,7 +211,7 @@ func (d *DeckStorage) DeleteUserDeck(ctx context.Context, userId models.UserId, 
 	return row.Scan(&s)
 }
 
-func (d *DeckStorage) UpdateLeitner(ctx context.Context, ul models.UserLeitner) error {
+func (d *Storage) UpdateLeitner(ctx context.Context, ul models.UserLeitner) error {
 	row := d.Conn.QueryRow(ctx,
 		`UPDATE user_leitner SET user_id=$1, card_id=$2, box=$3, cool_down=$4 WHERE leitner_id=$5 RETURNING leitner_id`,
 		ul.UserId, ul.FlashcardId, ul.Box, ul.CoolDown, ul.Id)

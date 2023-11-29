@@ -1,4 +1,4 @@
-package handlers
+package deck
 
 import (
 	"net/http"
@@ -11,10 +11,18 @@ import (
 	"github.com/charmbracelet/log"
 )
 
-type Endpoint struct {
+type Endpoints struct {
 	s      deck.IService
 	ew     ioutil.ErrorWriter
 	logger *log.Logger
+}
+
+func New(s deck.IService, ew ioutil.ErrorWriter, logger *log.Logger) *Endpoints {
+	return &Endpoints{
+		s:      s,
+		ew:     ew,
+		logger: logger,
+	}
 }
 
 // swagger:route POST /api/flashcards/load LoadDecks
@@ -41,8 +49,8 @@ type Endpoint struct {
 // 400: loadDecksBadRequestError
 // 500: loadDecksInternalServerError
 
-// LoadDecks is a handler for the loading decks Endpoint.
-func (d Endpoint) LoadDecks(w http.ResponseWriter, r *http.Request) {
+// LoadDecks is a handler for the loading decks Endpoints.
+func (d Endpoints) LoadDecks(w http.ResponseWriter, r *http.Request) {
 	reqBody := models.LoadDecksRequest{}
 	respBody := models.LoadDecksResponse{}
 
@@ -91,8 +99,8 @@ func (d Endpoint) LoadDecks(w http.ResponseWriter, r *http.Request) {
 // 400: getFlashcardsByDeckIdBadRequestError
 // 500: getFlashcardsByDeckIdInternalServerError
 
-// GetFlashcardsByDeckId is a handler for the getting cards Endpoint.
-func (d Endpoint) GetFlashcardsByDeckId(w http.ResponseWriter, r *http.Request) {
+// GetFlashcardsByDeckId is a handler for the getting cards Endpoints.
+func (d Endpoints) GetFlashcardsByDeckId(w http.ResponseWriter, r *http.Request) {
 	reqBody := models.GetFlashcardsByDeckIdRequest{}
 	respBody := models.GetFlashcardsByDeckIdResponse{}
 
@@ -152,8 +160,8 @@ func (d Endpoint) GetFlashcardsByDeckId(w http.ResponseWriter, r *http.Request) 
 // 400: addFlashcardToDeckBadRequestError
 // 500: addFlashcardToDeckInternalServerError
 
-// AddFlashcardToDeck is a handler for the adding a card Endpoint.
-func (d Endpoint) AddFlashcardToDeck(w http.ResponseWriter, r *http.Request) {
+// AddFlashcardToDeck is a handler for the adding a card Endpoints.
+func (d Endpoints) AddFlashcardToDeck(w http.ResponseWriter, r *http.Request) {
 	reqBody := models.AddFlashcardToDeckRequest{}
 
 	if err := ioutil.FromJSON(&reqBody, r.Body); err != nil {
@@ -162,9 +170,9 @@ func (d Endpoint) AddFlashcardToDeck(w http.ResponseWriter, r *http.Request) {
 	}
 
 	id, err := d.s.PutAllFlashcards(r.Context(), reqBody.DeckId, []models.Flashcard{{
-		W:      reqBody.Word,
-		B:      reqBody.Backside,
-		DeckId: reqBody.DeckId,
+		W: reqBody.Word,
+		B: reqBody.Backside,
+		A: reqBody.Answer,
 	}})
 	if err != nil {
 		d.logger.Errorf("error while putting a card: %v", err)
@@ -211,8 +219,8 @@ func (d Endpoint) AddFlashcardToDeck(w http.ResponseWriter, r *http.Request) {
 // 400: deleteFlashcardFromDeckBadRequestError
 // 500: deleteFlashcardFromDeckInternalServerError
 
-// DeleteFlashcardFromDeck is a handler for the deleting a card Endpoint.
-func (d Endpoint) DeleteFlashcardFromDeck(w http.ResponseWriter, r *http.Request) {
+// DeleteFlashcardFromDeck is a handler for the deleting a card Endpoints.
+func (d Endpoints) DeleteFlashcardFromDeck(w http.ResponseWriter, r *http.Request) {
 	reqBody := models.DeleteFlashcardFromDeckRequest{}
 	if err := ioutil.FromJSON(&reqBody, r.Body); err != nil {
 		d.ew.Error(w, err.Error(), http.StatusBadRequest)
@@ -253,21 +261,28 @@ func (d Endpoint) DeleteFlashcardFromDeck(w http.ResponseWriter, r *http.Request
 // 400: newDeckWithFlashcardsBadRequestError
 // 500: newDeckWithFlashcardsInternalServerError
 
-// NewDeckWithFlashcards is a handler for the creating a new deck Endpoint.
-func (d Endpoint) NewDeckWithFlashcards(w http.ResponseWriter, r *http.Request) {
+// NewDeckWithFlashcards is a handler for the creating a new deck Endpoints.
+func (d Endpoints) NewDeckWithFlashcards(w http.ResponseWriter, r *http.Request) {
 	reqBody := models.NewDeckWithFlashcardsRequest{}
 	if err := ioutil.FromJSON(&reqBody, r.Body); err != nil {
 		d.ew.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
+	cards := make([]models.Flashcard, len(reqBody.Flashcards))
+	for i := 0; i < len(cards); i++ {
+		cards[i].W = reqBody.Flashcards[i].Word
+		cards[i].B = reqBody.Flashcards[i].Backside
+		cards[i].A = reqBody.Flashcards[i].Answer
+	}
+	log.Print(cards)
 	_, err := d.s.NewDeckWithFlashcards(r.Context(),
 		reqBody.UserId,
 		models.DeckConfig{
 			UserId: reqBody.UserId,
 			Name:   reqBody.Name,
 		},
-		reqBody.Flashcards,
+		cards,
 	)
 	if err != nil {
 		d.logger.Errorf("error while creating a deck: %v", err)
@@ -302,8 +317,8 @@ func (d Endpoint) NewDeckWithFlashcards(w http.ResponseWriter, r *http.Request) 
 // 400: deleteDeckBadRequestError
 // 500: deleteDeckInternalServerError
 
-// DeleteDeck is a handler for the deleting a deck from user's collection Endpoint.
-func (d Endpoint) DeleteDeck(w http.ResponseWriter, r *http.Request) {
+// DeleteDeck is a handler for the deleting a deck from user's collection Endpoints.
+func (d Endpoints) DeleteDeck(w http.ResponseWriter, r *http.Request) {
 	reqBody := models.DeleteDeckRequest{}
 	if err := ioutil.FromJSON(&reqBody, r.Body); err != nil {
 		d.ew.Error(w, err.Error(), http.StatusBadRequest)
