@@ -1,6 +1,6 @@
 package models
 
-// LoadDecksRequest is a struct that defines the request body for the
+// LoadDecksRequest is a struct that defines the request body for
 // loading deck handler.
 //
 //swagger:model loadDecksRequest
@@ -12,7 +12,7 @@ type LoadDecksRequest struct {
 	UserId UserId `json:"user_id"`
 }
 
-// LoadDecksResponse is a struct that defines the request body for the
+// LoadDecksResponse is a struct that defines the response body for
 // loading deck handler.
 type LoadDecksResponse struct {
 	// Decks is a slice of deck with their configs.
@@ -30,19 +30,19 @@ type LoadDecksResponse struct {
 	Decks []DeckConfig `json:"decks"`
 }
 
-// GetFlashcardsByDeckIdRequest is a struct that defines the request body for the
+// GetFlashcardsByDeckIdRequest is a struct that defines the request body for
 // loading cards from the deck handler.
 //
 //swagger:model getFlashcardsByDeckIdRequest
 type GetFlashcardsByDeckIdRequest struct {
-	// DeckId defines the deck which flashcards will be loaded.
+	// DeckId defines the deck which flashcards will be loaded from.
 	//
 	// required: true
 	// example: 123
 	DeckId DeckId `json:"deck_id"`
 }
 
-// GetFlashcardsByDeckIdResponse is a struct that defines the request body for the
+// GetFlashcardsByDeckIdResponse is a struct that defines the response body for
 // loading cards from the deck handler.
 type GetFlashcardsByDeckIdResponse struct {
 	// Flashcards is a slice of flashcards that is returned to the client.
@@ -60,7 +60,7 @@ type GetFlashcardsByDeckIdResponse struct {
 	Flashcards []Flashcard `json:"flashcards"`
 }
 
-// AddFlashcardToDeckRequest is a struct that defines the request body for the
+// AddFlashcardToDeckRequest is a struct that defines the request body for
 // adding cards to the deck handler.
 //
 //swagger:model addFlashcardToDeckRequest
@@ -71,7 +71,7 @@ type AddFlashcardToDeckRequest struct {
 	// example: 189
 	UserId UserId `json:"user_id"`
 
-	// DeckId is an ID of the deck where the flashcard will be added.
+	// DeckId is an ID of the deck which the flashcard will be added to.
 	//
 	// required: true
 	// example: 123
@@ -96,11 +96,11 @@ type AddFlashcardToDeckRequest struct {
 	Answer Answer `json:"answer"`
 }
 
-// AddFlashcardToDeckResponse is a struct that defines the request body for the
+// AddFlashcardToDeckResponse is a struct that defines the response body for
 // adding cards to the deck handler.
 type AddFlashcardToDeckResponse struct{}
 
-// DeleteFlashcardFromDeckRequest is a struct that defines the request body for the
+// DeleteFlashcardFromDeckRequest is a struct that defines the request body for
 // deleting cards from the deck handler.
 //
 //swagger:model deleteFlashcardFromDeckRequest
@@ -118,11 +118,11 @@ type DeleteFlashcardFromDeckRequest struct {
 	FlashcardId FlashcardId `json:"flashcard_id"`
 }
 
-// DeleteFlashcardFromDeckResponse is a struct that defines the request body for the
+// DeleteFlashcardFromDeckResponse is a struct that defines the response body for
 // deleting cards from the deck handler.
 type DeleteFlashcardFromDeckResponse struct{}
 
-// NewDeckWithFlashcardsRequest is a struct that defines the request body for the
+// NewDeckWithFlashcardsRequest is a struct that defines the request body for
 // creating a new deck handler.
 //
 //swagger:model newDeckWithFlashcardsRequest
@@ -158,7 +158,7 @@ type NewDeckWithFlashcardsRequest struct {
 	} `json:"flashcards"`
 }
 
-// NewDeckWithFlashcardsResponse is a struct that defines the request body for the
+// NewDeckWithFlashcardsResponse is a struct that defines the response body for
 // creating a new deck handler.
 type NewDeckWithFlashcardsResponse struct{}
 
@@ -173,14 +173,14 @@ type DeleteDeckRequest struct {
 	// example: 189
 	UserId UserId `json:"user_id"`
 
-	// DeckId is an ID of the deck where the flashcard will be added.
+	// DeckId is an ID of the deck which will be deleted.
 	//
 	// required: true
 	// example: 123
 	DeckId DeckId `json:"deck_id"`
 }
 
-// DeleteDeckResponse is a struct that defines the request body for the
+// DeleteDeckResponse is a struct that defines the response body for the
 // deleting the deck handler.
 type DeleteDeckResponse struct{}
 
@@ -195,21 +195,49 @@ type RandomCardDeckRequest struct {
 	// example: 189
 	UserId UserId `json:"user_id"`
 
-	// DeckId is an ID of the deck where the flashcard will be added.
+	// DeckId is an ID of the deck where the flashcard are taken from.
 	//
 	// required: true
 	// example: 123
 	DeckId DeckId `json:"deck_id"`
 }
 
-// RandomCardDeckResponse is a struct that defines the request body for the
+// RandomCardDeckResponse is a struct that defines the response body for
 // getting a random card from the deck.
 type RandomCardDeckResponse struct {
 	// Flashcard is a flashcard that is returned to the user.
 	Flashcard Flashcard `json:"flashcard"`
 }
 
-// RandomCardRequest is a struct that defines the request body for the
+// RandomNCardsDeckRequest is a struct that defines the request body for
+// getting n random cards from the deck.
+//
+//swagger:model randomNCardsDeckRequest
+type RandomNCardsDeckRequest struct {
+	// UserId is an ID of the user in a storage.
+	//
+	// required: true
+	// example: 189
+	UserId UserId `json:"user_id"`
+
+	// DeckId is an ID of the deck where the flashcard are taken from.
+	//
+	// required: true
+	// example: 123
+	DeckId DeckId `json:"deck_id"`
+
+	// Amount of cards to get
+	N int `json:"n"`
+}
+
+// RandomNCardsDeckResponse is a struct that defines the response body for
+// getting n random cards from the deck.
+type RandomNCardsDeckResponse struct {
+	// Flashcard is a flashcard that is returned to the user.
+	Flashcards []Flashcard `json:"flashcards"`
+}
+
+// RandomCardRequest is a struct that defines the request body for
 // getting a random card from all the decks.
 //
 //swagger:model randomCardRequest
@@ -221,11 +249,33 @@ type RandomCardRequest struct {
 	UserId UserId `json:"user_id"`
 }
 
-// RandomCardResponse is a struct that defines the request body for the
+// RandomCardResponse is a struct that defines the response body for
 // getting a random card from all the decks.
 type RandomCardResponse struct {
 	// Flashcard is a flashcard that is returned to the user.
 	Flashcard Flashcard `json:"flashcard"`
+}
+
+// RandomNCardsRequest is a struct that defines the request body for
+// getting n random cards from all the decks.
+//
+//swagger:model randomNCardsRequest
+type RandomNCardsRequest struct {
+	// UserId is an ID of the user in a storage.
+	//
+	// required: true
+	// example: 189
+	UserId UserId `json:"user_id"`
+
+	// Amount of cards to get
+	N int `json:"n"`
+}
+
+// RandomNCardsResponse is a struct that defines the response body for
+// getting n random cards from all the decks.
+type RandomNCardsResponse struct {
+	// Flashcard is a flashcard that is returned to the user.
+	Flashcards []Flashcard `json:"flashcards"`
 }
 
 // RateRequest is a struct that defines the request body for the
@@ -255,3 +305,111 @@ type RateRequest struct {
 // RateResponse is a struct that defines the request body for the
 // rating a card.
 type RateResponse struct{}
+
+// RandomMatchingRequest is a struct that defines the request body for
+// getting a random matching exercise from all the decks.
+//
+//swagger:model randomMatchingRequest
+type RandomMatchingRequest struct {
+	// UserId is an ID of the user in a storage.
+	//
+	// required: true
+	// example: 189
+	UserId UserId `json:"user_id"`
+
+	// Size is the max amount of cards to include int the exercise
+	//
+	// required: true
+	// example: 5
+	Size int `json:"size"`
+}
+
+// RandomMatchingRequest is a struct that defines the request body for
+// getting a random matching from all the decks.
+type RandomMatchingResponse struct {
+	Matching Matching `json:"matching"`
+}
+
+// RandomMatchingDeckRequest is a struct that defines the request body for
+// getting a random matching exercise from the deck.
+//
+//swagger:model randomMatchingDeckRequest
+type RandomMatchingDeckRequest struct {
+	// UserId is an ID of the user in a storage.
+	//
+	// required: true
+	// example: 189
+	UserId UserId `json:"user_id"`
+
+	// DeckId is an ID of the deck where the flashcard are taken from.
+	//
+	// required: true
+	// example: 123
+	DeckId DeckId `json:"deck_id"`
+
+	// Size is the max amount of cards to include int the exercise
+	//
+	// required: true
+	// example: 5
+	Size int `json:"size"`
+}
+
+// RandomMatchingDeckRequest is a struct that defines the request body for
+// getting a random matching from the deck.
+type RandomMatchingDeckResponse struct {
+	Matching Matching `json:"matching"`
+}
+
+// RandomTextRequest is a struct that defines the request body for
+// getting a random text exercise from all the decks.
+//
+//swagger:model randomTextRequest
+type RandomTextRequest struct {
+	// UserId is an ID of the user in a storage.
+	//
+	// required: true
+	// example: 189
+	UserId UserId `json:"user_id"`
+
+	// Size is the max amount of cards to include int the exercise
+	//
+	// required: true
+	// example: 5
+	Size int `json:"size"`
+}
+
+// RandomTextRequest is a struct that defines the response body for
+// getting a random text exercise from all the decks.
+type RandomTextResponse struct {
+	Text Text `json:"text"`
+}
+
+// RandomTextDeckRequest is a struct that defines the request body for
+// getting a random text exercise from all the decks.
+//
+//swagger:model randomTextDeckRequest
+type RandomTextDeckRequest struct {
+	// UserId is an ID of the user in a storage.
+	//
+	// required: true
+	// example: 189
+	UserId UserId `json:"user_id"`
+
+	// DeckId is an ID of the deck where the flashcard are taken from.
+	//
+	// required: true
+	// example: 123
+	DeckId DeckId `json:"deck_id"`
+
+	// Size is the max amount of cards to include int the exercise
+	//
+	// required: true
+	// example: 5
+	Size int `json:"size"`
+}
+
+// RandomTextRequest is a struct that defines the response body for
+// getting a random text exercise from all the decks.
+type RandomTextDeckResponse struct {
+	Text Text `json:"text"`
+}

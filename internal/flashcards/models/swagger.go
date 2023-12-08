@@ -114,6 +114,24 @@ type SwaggerDeleteDeckInternalServerError struct {
 	Body ioutil.GenericError
 }
 
+// swagger:response randomNCardsDeckOkResponse
+type SwaggerRandomNCardsDeckOkResponse struct {
+	// in: body
+	Body RandomNCardsDeckResponse
+}
+
+// swagger:response randomNCardsDeckBadRequestError
+type SwaggerRandomNCardsDeckBadRequest struct {
+	// in: body
+	Body ioutil.GenericError
+}
+
+// swagger:response randomNCardsDeckInternalServerError
+type SwaggerRandomNCardsDeckInternalServerError struct {
+	// in: body
+	Body ioutil.GenericError
+}
+
 // swagger:response randomCardOkResponse
 type SwaggerRandomCardOkResponse struct {
 	// in: body
@@ -128,6 +146,24 @@ type SwaggerRandomCardBadRequest struct {
 
 // swagger:response randomCardInternalServerError
 type SwaggerRandomCardInternalServerError struct {
+	// in: body
+	Body ioutil.GenericError
+}
+
+// swagger:response randomNCardsOkResponse
+type SwaggerRandomNCardsOkResponse struct {
+	// in: body
+	Body RandomNCardsResponse
+}
+
+// swagger:response randomNCardsBadRequestError
+type SwaggerRandomNCardsBadRequest struct {
+	// in: body
+	Body ioutil.GenericError
+}
+
+// swagger:response randomNCardsInternalServerError
+type SwaggerRandomNCardsInternalServerError struct {
 	// in: body
 	Body ioutil.GenericError
 }
@@ -161,6 +197,78 @@ type SwaggerRateBadRequest struct {
 
 // swagger:response rateInternalServerError
 type SwaggerRateInternalServerError struct {
+	// in: body
+	Body ioutil.GenericError
+}
+
+// swagger:response randomMatchingOkResponse
+type SwaggerRandomMatchingOkResponse struct {
+	// in: body
+	Body RandomMatchingResponse
+}
+
+// swagger:response randomMatchingBadRequestError
+type SwaggerRandomMatchingBadRequest struct {
+	// in: body
+	Body ioutil.GenericError
+}
+
+// swagger:response randomMatchingInternalServerError
+type SwaggerRandomMatchingInternalServerError struct {
+	// in: body
+	Body ioutil.GenericError
+}
+
+// swagger:response randomMatchingDeckOkResponse
+type SwaggerRandomMatchingDeckOkResponse struct {
+	// in: body
+	Body RandomMatchingDeckResponse
+}
+
+// swagger:response randomMatchingDeckBadRequestError
+type SwaggerRandomMatchingDeckBadRequest struct {
+	// in: body
+	Body ioutil.GenericError
+}
+
+// swagger:response randomMatchingDeckInternalServerError
+type SwaggerRandomMatchingDeckInternalServerError struct {
+	// in: body
+	Body ioutil.GenericError
+}
+
+// swagger:response randomTextOkResponse
+type SwaggerRandomTextOkResponse struct {
+	// in: body
+	Body RandomTextResponse
+}
+
+// swagger:response randomTextBadRequestError
+type SwaggerRandomTextBadRequest struct {
+	// in: body
+	Body ioutil.GenericError
+}
+
+// swagger:response randomTextInternalServerError
+type SwaggerRandomTextInternalServerError struct {
+	// in: body
+	Body ioutil.GenericError
+}
+
+// swagger:response randomTextDeckOkResponse
+type SwaggerRandomTextDeckOkResponse struct {
+	// in: body
+	Body RandomTextDeckResponse
+}
+
+// swagger:response randomTextDeckBadRequestError
+type SwaggerRandomTextDeckBadRequest struct {
+	// in: body
+	Body ioutil.GenericError
+}
+
+// swagger:response randomTextDeckInternalServerError
+type SwaggerRandomTextDeckInternalServerError struct {
 	// in: body
 	Body ioutil.GenericError
 }
