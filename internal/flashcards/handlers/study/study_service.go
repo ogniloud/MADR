@@ -180,6 +180,50 @@ func (e *Endpoints) Rate(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNoContent)
 }
 
+// swagger:route POST /api/study/random_matching RandomMatching
+// Returns a random matching exercise from all the decks.
+//
+// Consumes:
+// - application/json
+//
+// Produces:
+// - application/json
+//
+// Schemes: http
+//
+// Parameters:
+// + name: request
+//   in: body
+//   description: Random Card request.
+//   required: true
+//   type: randomCardRequest
+//
+//
+// Responses:
+// 200: randomCardOkResponse
+// 400: randomCardBadRequestError
+// 500: randomCardInternalServerError
+
+// RandomCard is a handler for getting a random card.
+func (e *Endpoints) RandomMatching(w http.ResponseWriter, r *http.Request) {
+	reqBody := models.RandomMatchingRequest{}
+	respBody := models.RandomMatchingResponse{}
+
+	if err := ioutil.FromJSON(&reqBody, r.Body); err != nil {
+		e.ew.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	// выполняем логику
+
+	// пишем в w, если боди не пустой
+	if err := ioutil.ToJSON(&respBody, w); err != nil {
+		e.ew.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	// если боди пустой возвращаем только w.WriteHeader(http.StatusNoContent)
+}
+
 func isValidMark(mark models.Mark) bool {
 	return mark <= study.Excellent
 }

@@ -255,3 +255,15 @@ type RateRequest struct {
 // RateResponse is a struct that defines the request body for the
 // rating a card.
 type RateResponse struct{}
+
+type RandomMatchingRequest struct {
+	// UserId is an ID of the user in a storage.
+	//
+	// required: true
+	// example: 189
+	UserId UserId `json:"user_id"`
+}
+
+type RandomMatchingResponse struct {
+	Matching Matching `json:"matching"`
+}
