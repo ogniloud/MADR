@@ -81,8 +81,64 @@ func (e *Endpoints) RandomCard(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// swagger:route POST /api/study/random_n RandomNCards
+// Returns n random cards from all the decks.
+//
+// Consumes:
+// - application/json
+//
+// Produces:
+// - application/json
+//
+// Schemes: http
+//
+// Parameters:
+// + name: request
+//   in: body
+//   description: Random N Cards request.
+//   required: true
+//   type: randomNCardsRequest
+//
+//
+// Responses:
+// 200: randomNCardsOkResponse
+// 400: randomNCardsBadRequestError
+// 500: randomNCardsInternalServerError
+
+// RandomNCards is a handler for getting n random card.
+func (e *Endpoints) RandomNCards(w http.ResponseWriter, r *http.Request) {
+	reqBody := models.RandomNCardsRequest{}
+	respBody := models.RandomNCardsResponse{}
+
+	if err := ioutil.FromJSON(&reqBody, r.Body); err != nil {
+		e.ew.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	cardIds, err := e.ss.GetNextRandomN(r.Context(), reqBody.UserId, models.CoolDown(time.Now()), reqBody.N)
+	if err != nil {
+		e.ew.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	var cards []models.Flashcard
+	for _, cardId := range cardIds {
+		card, err := e.ds.GetFlashcardById(r.Context(), cardId)
+		if err != nil {
+			e.ew.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		cards = append(cards, card)
+	}
+	respBody.Flashcards = cards
+
+	if err := ioutil.ToJSON(&respBody, w); err != nil {
+		e.ew.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+}
+
 // swagger:route POST /api/study/random_deck RandomCardDeck
-// Returns a random card from the decks.
+// Returns a random card from the deck.
 //
 // Consumes:
 // - application/json
@@ -126,6 +182,62 @@ func (e *Endpoints) RandomCardDeck(w http.ResponseWriter, r *http.Request) {
 		e.ew.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
+
+	if err := ioutil.ToJSON(&respBody, w); err != nil {
+		e.ew.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+}
+
+// swagger:route POST /api/study/random_deck_n RandomNCardsDeck
+// Returns n random cards from the deck.
+//
+// Consumes:
+// - application/json
+//
+// Produces:
+// - application/json
+//
+// Schemes: http
+//
+// Parameters:
+// + name: request
+//   in: body
+//   description: Random N Cards Deck request.
+//   required: true
+//   type: randomNCardsDeckRequest
+//
+//
+// Responses:
+// 200: randomNCardsDeckOkResponse
+// 400: randomNCardsDeckBadRequestError
+// 500: randomNCardsDeckInternalServerError
+
+// RandomNCardsDeck is a handler for getting n random card.
+func (e *Endpoints) RandomNCardsDeck(w http.ResponseWriter, r *http.Request) {
+	reqBody := models.RandomNCardsDeckRequest{}
+	respBody := models.RandomNCardsDeckResponse{}
+
+	if err := ioutil.FromJSON(&reqBody, r.Body); err != nil {
+		e.ew.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	cardIds, err := e.ss.GetNextRandomDeckN(r.Context(), reqBody.UserId, reqBody.DeckId, models.CoolDown(time.Now()), reqBody.N)
+	if err != nil {
+		e.ew.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	var cards []models.Flashcard
+	for _, cardId := range cardIds {
+		card, err := e.ds.GetFlashcardById(r.Context(), cardId)
+		if err != nil {
+			e.ew.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		cards = append(cards, card)
+	}
+	respBody.Flashcards = cards
 
 	if err := ioutil.ToJSON(&respBody, w); err != nil {
 		e.ew.Error(w, err.Error(), http.StatusInternalServerError)
@@ -194,17 +306,17 @@ func (e *Endpoints) Rate(w http.ResponseWriter, r *http.Request) {
 // Parameters:
 // + name: request
 //   in: body
-//   description: Random Card request.
+//   description: Random Matching request.
 //   required: true
-//   type: randomCardRequest
+//   type: randomMatchingRequest
 //
 //
 // Responses:
-// 200: randomCardOkResponse
-// 400: randomCardBadRequestError
-// 500: randomCardInternalServerError
+// 200: randomMatchingOkResponse
+// 400: randomMatchingBadRequestError
+// 500: randomMatchingInternalServerError
 
-// RandomCard is a handler for getting a random card.
+// RandomMatching is a handler for getting a random matching exercise.
 func (e *Endpoints) RandomMatching(w http.ResponseWriter, r *http.Request) {
 	reqBody := models.RandomMatchingRequest{}
 	respBody := models.RandomMatchingResponse{}
@@ -214,14 +326,158 @@ func (e *Endpoints) RandomMatching(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// выполняем логику
+	matching, err := e.ss.MakeMatching(r.Context(), reqBody.UserId, models.CoolDown(time.Now()), reqBody.Size)
+	if err != nil {
+		e.ew.Error(w, err.Error(), http.StatusInternalServerError)
+	}
 
-	// пишем в w, если боди не пустой
+	respBody.Matching = matching
+
 	if err := ioutil.ToJSON(&respBody, w); err != nil {
 		e.ew.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	// если боди пустой возвращаем только w.WriteHeader(http.StatusNoContent)
+}
+
+// swagger:route POST /api/study/random_matching_deck RandomMatchingDeck
+// Returns a random matching exercise from the deck.
+//
+// Consumes:
+// - application/json
+//
+// Produces:
+// - application/json
+//
+// Schemes: http
+//
+// Parameters:
+// + name: request
+//   in: body
+//   description: Random Matching Deck request.
+//   required: true
+//   type: randomMatchingDeckRequest
+//
+//
+// Responses:
+// 200: randomMatchingDeckOkResponse
+// 400: randomMatchingDeckBadRequestError
+// 500: randomMatchingDeckInternalServerError
+
+// RandomMatchingDeck is a handler for getting a random matching exercise.
+func (e *Endpoints) RandomMatchingDeck(w http.ResponseWriter, r *http.Request) {
+	reqBody := models.RandomMatchingDeckRequest{}
+	respBody := models.RandomMatchingDeckResponse{}
+
+	if err := ioutil.FromJSON(&reqBody, r.Body); err != nil {
+		e.ew.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	matching, err := e.ss.MakeMatchingDeck(r.Context(), reqBody.UserId, reqBody.DeckId, models.CoolDown(time.Now()), reqBody.Size)
+	if err != nil {
+		e.ew.Error(w, err.Error(), http.StatusInternalServerError)
+	}
+
+	respBody.Matching = matching
+
+	if err := ioutil.ToJSON(&respBody, w); err != nil {
+		e.ew.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+}
+
+// swagger:route POST /api/study/random_text RandomText
+// Returns a random text exercise from all the decks.
+//
+// Consumes:
+// - application/json
+//
+// Produces:
+// - application/json
+//
+// Schemes: http
+//
+// Parameters:
+// + name: request
+//   in: body
+//   description: Random Text request.
+//   required: true
+//   type: randomTextRequest
+//
+//
+// Responses:
+// 200: randomTextOkResponse
+// 400: randomTextBadRequestError
+// 500: randomTextInternalServerError
+
+// RandomText is a handler for getting a random text exercise.
+func (e *Endpoints) RandomText(w http.ResponseWriter, r *http.Request) {
+	reqBody := models.RandomTextRequest{}
+	respBody := models.RandomTextResponse{}
+
+	if err := ioutil.FromJSON(&reqBody, r.Body); err != nil {
+		e.ew.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	text, err := e.ss.MakeText(r.Context(), reqBody.UserId, models.CoolDown(time.Now()), reqBody.Size)
+	if err != nil {
+		e.ew.Error(w, err.Error(), http.StatusInternalServerError)
+	}
+
+	respBody.Text = text
+
+	if err := ioutil.ToJSON(&respBody, w); err != nil {
+		e.ew.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+}
+
+// swagger:route POST /api/study/random_text_deck RandomTextDeck
+// Returns a random text exercise from the deck.
+//
+// Consumes:
+// - application/json
+//
+// Produces:
+// - application/json
+//
+// Schemes: http
+//
+// Parameters:
+// + name: request
+//   in: body
+//   description: Random Text Deck request.
+//   required: true
+//   type: randomTextDeckRequest
+//
+//
+// Responses:
+// 200: randomTextDeckOkResponse
+// 400: randomTextDeckBadRequestError
+// 500: randomTextDeckInternalServerError
+
+// RandomTextDeck is a handler for getting a random text exercise.
+func (e *Endpoints) RandomTextDeck(w http.ResponseWriter, r *http.Request) {
+	reqBody := models.RandomTextDeckRequest{}
+	respBody := models.RandomTextDeckResponse{}
+
+	if err := ioutil.FromJSON(&reqBody, r.Body); err != nil {
+		e.ew.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	text, err := e.ss.MakeTextDeck(r.Context(), reqBody.UserId, reqBody.DeckId, models.CoolDown(time.Now()), reqBody.Size)
+	if err != nil {
+		e.ew.Error(w, err.Error(), http.StatusInternalServerError)
+	}
+
+	respBody.Text = text
+
+	if err := ioutil.ToJSON(&respBody, w); err != nil {
+		e.ew.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
 }
 
 func isValidMark(mark models.Mark) bool {
