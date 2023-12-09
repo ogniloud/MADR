@@ -43,8 +43,16 @@ type Datalayer struct {
 }
 
 func (d *Datalayer) GetUserById(ctx context.Context, id int) (models.UserInfo, error) {
-	//TODO implement me
-	panic("implement me")
+	username, email, err := d.db.GetUserInfo(ctx, id)
+	if err != nil {
+		return models.UserInfo{}, fmt.Errorf("unable to get user info in GetUserById: %w", err)
+	}
+
+	return models.UserInfo{
+		ID:       id,
+		Username: username,
+		Email:    email,
+	}, nil
 }
 
 // New returns a new Datalayer struct.

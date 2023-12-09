@@ -16,6 +16,11 @@ type UserCredentials struct {
 	conn *db.PSQLDatabase
 }
 
+func (d *UserCredentials) GetUserInfo(ctx context.Context, userId int) (username, email string, err error) {
+	//TODO implement me
+	panic("implement me")
+}
+
 // New returns new database.
 func New(conn *db.PSQLDatabase) *UserCredentials {
 	return &UserCredentials{
