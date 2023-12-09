@@ -122,8 +122,11 @@ func main() {
 	// Set up a datalayer
 	dl := data.New(credentials, saltLength, duration, []byte(tokenSignKey))
 
+	// Set up error writer
+	ew := ioutil.JSONErrorWriter{Logger: l}
+
 	// Set up endpoints
-	endpoints := handlers.New(dl, l)
+	endpoints := handlers.New(dl, ew, l)
 
 	// handlers for documentation
 	dh := openapi.Redoc(openapi.RedocOpts{

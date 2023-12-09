@@ -33,6 +33,11 @@ type Datalayer struct {
 	signKey []byte
 }
 
+func (d *Datalayer) GetUserById(ctx context.Context, id int) (models.UserInfo, error) {
+	//TODO implement me
+	panic("implement me")
+}
+
 // New returns a new Datalayer struct.
 func New(db *usercred.UserCredentials, saltLength int, tokenExpirationTime time.Duration, signKey []byte) *Datalayer {
 	return &Datalayer{

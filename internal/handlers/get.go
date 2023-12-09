@@ -1,11 +1,13 @@
 package handlers
 
 import (
+	"errors"
 	"net/http"
 	"strconv"
 
 	"github.com/go-chi/chi/v5"
 
+	"github.com/ogniloud/madr/internal/ioutil"
 	"github.com/ogniloud/madr/internal/models"
 )
 
@@ -21,4 +23,14 @@ func (e *Endpoints) GetUserInfo(w http.ResponseWriter, r *http.Request) {
 		e.ew.Error(w, "User id cannot be less than 1", http.StatusBadRequest)
 		return
 	}
+
+	userInfo, err := e.data.GetUserById(r.Context(), userID)
+	if err != nil {
+		if errors.Is(err, models.ErrUserNotFound) {
+			e.ew.Error(w, models.ErrUserNotFound.Error(), http.StatusNotFound)
+			return
+		}
+	}
+
+	_ = ioutil.ToJSON(userInfo, w)
 }

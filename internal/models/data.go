@@ -13,3 +13,10 @@ type Users []User
 
 // AuthorizationToken is a type that defines the authorization token.
 type AuthorizationToken string
+
+// UserInfo is a struct that defines the user info model.
+type UserInfo struct {
+	ID       int    `json:"id"`
+	Username string `json:"username"`
+	Email    string `json:"email"`
+}

@@ -10,6 +10,7 @@ import (
 	"github.com/ogniloud/madr/internal/data"
 	"github.com/ogniloud/madr/internal/handlers"
 	"github.com/ogniloud/madr/internal/handlers/mocks"
+	"github.com/ogniloud/madr/internal/ioutil"
 	"github.com/ogniloud/madr/internal/models"
 
 	"github.com/charmbracelet/log"
@@ -41,7 +42,7 @@ func TestEndpoints_SignUp(t *testing.T) {
 	l := log.NewWithOptions(io.Discard, log.Options{})
 
 	// endpoints
-	s := handlers.New(dl, l)
+	s := handlers.New(dl, ioutil.JSONErrorWriter{Logger: l}, l)
 
 	s.SignUp(response, request)
 
@@ -81,7 +82,7 @@ func TestEndpoints_SignUpExisting(t *testing.T) {
 	l := log.NewWithOptions(io.Discard, log.Options{})
 
 	// endpoints
-	s := handlers.New(dl, l)
+	s := handlers.New(dl, ioutil.JSONErrorWriter{Logger: l}, l)
 
 	// Create a user with the email blabla@gmail
 	s.SignUp(firstResponse, firstRequest)
@@ -124,14 +125,14 @@ func TestEndpoints_SignUpBadRequest(t *testing.T) {
 
 	response := httptest.NewRecorder()
 
-	// database mock
+	// database mocks
 	dl := mocks.NewDatalayer(t)
 
 	// logger
 	l := log.NewWithOptions(io.Discard, log.Options{})
 
 	// endpoints
-	s := handlers.New(dl, l)
+	s := handlers.New(dl, ioutil.JSONErrorWriter{Logger: l}, l)
 
 	s.SignUp(response, request)
 
@@ -161,7 +162,7 @@ func TestEndpoints_SignIn(t *testing.T) {
 
 	response := httptest.NewRecorder()
 
-	// database mock
+	// database mocks
 	dl := mocks.NewDatalayer(t)
 	dl.EXPECT().CreateUser(signUpRequest.Context(), models.User{
 		Username: "boba",
@@ -176,7 +177,7 @@ func TestEndpoints_SignIn(t *testing.T) {
 	l := log.NewWithOptions(io.Discard, log.Options{})
 
 	// endpoints
-	s := handlers.New(dl, l)
+	s := handlers.New(dl, ioutil.JSONErrorWriter{Logger: l}, l)
 
 	s.SignUp(response, signUpRequest)
 
@@ -224,7 +225,7 @@ func TestEndpoints_SignInBadRequest(t *testing.T) {
 	l := log.NewWithOptions(io.Discard, log.Options{})
 
 	// endpoints
-	s := handlers.New(dl, l)
+	s := handlers.New(dl, ioutil.JSONErrorWriter{Logger: l}, l)
 
 	s.SignIn(response, request)
 
@@ -252,7 +253,7 @@ func TestEndpoints_SignInUnauthorized(t *testing.T) {
 
 	response := httptest.NewRecorder()
 
-	// database mock
+	// database mocks
 	dl := mocks.NewDatalayer(t)
 	dl.EXPECT().SignInUser(signInRequest.Context(), "boba", "123").Return("", models.ErrUnauthorized)
 
@@ -260,7 +261,7 @@ func TestEndpoints_SignInUnauthorized(t *testing.T) {
 	l := log.NewWithOptions(io.Discard, log.Options{})
 
 	// endpoints
-	s := handlers.New(dl, l)
+	s := handlers.New(dl, ioutil.JSONErrorWriter{Logger: l}, l)
 
 	s.SignIn(response, signInRequest)
 
