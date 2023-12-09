@@ -147,6 +147,7 @@ func main() {
 		r.Post("/signin", endpoints.SignIn)
 		r.Get("/swagger.yaml", http.StripPrefix("/api/", http.FileServer(http.Dir("./"))).ServeHTTP)
 		r.Get("/docs", dh.ServeHTTP)
+		r.Get("/user/{id}", endpoints.GetUserInfo)
 
 		// deck service handler
 		r.Route("/flashcards", func(r chi.Router) {
