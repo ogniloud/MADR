@@ -17,10 +17,13 @@ import (
 var ErrEmailOrUsernameExists = fmt.Errorf("user with this email or username already exists")
 
 // UserCredentials is an interface that represents database.
+//
+//go:generate mockery --name UserCredentials --output=./ --filename=mocks/userCredentials.go --with-expecter
 type UserCredentials interface {
 	HasEmailOrUsername(ctx context.Context, username, email string) (bool, error)
 	GetSaltAndHash(ctx context.Context, username string) (salt, hash string, err error)
 	InsertUser(ctx context.Context, username, salt, hash, email string) error
+	GetUserInfo(ctx context.Context, userId int) (username, email string, err error)
 }
 
 // Datalayer is a struct that helps us to interact with the data.
