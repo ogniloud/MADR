@@ -16,7 +16,7 @@ type AuthorizationToken string
 
 // UserInfo is a struct that defines the user info model.
 type UserInfo struct {
-	ID       int    `json:"id"`
-	Username string `json:"username"`
-	Email    string `json:"email"`
+	ID       int
+	Username string
+	Email    string
 }
