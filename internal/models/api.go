@@ -45,3 +45,16 @@ type SignInResponse struct {
 	// example: Bearer eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJleHAiOjkxOTU0Nzk4MDksInVzZXJfaWQiOjEsInVzZXJuYW1lIjoidXNlcjEyMyJ9.fHSoS6ZFf1TU4AmcqNeqpEDo6hdU6uLr2-PRAd0MKzAKDvDtGafuV6X6W8HSXAgwraXZ0_3qS8CmrUQW6am8Hg
 	Authorization string `json:"authorization"`
 }
+
+// swagger:model getUserInfoRequest
+// GetUserInfoRequest is a struct that defines the request body for the getUserInfo endpoint.
+type GetUserInfoRequest struct {
+}
+
+// swagger:model getUserInfoResponse
+// GetUserInfoResponse is a struct that defines the response body for the getUserInfo endpoint.
+type GetUserInfoResponse struct {
+	ID       int    `json:"id"`
+	Username string `json:"username"`
+	Email    string `json:"email"`
+}

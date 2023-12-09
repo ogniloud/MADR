@@ -63,3 +63,21 @@ type SwaggersignInInternalServerError struct {
 	// in: body
 	Body ioutil.GenericError
 }
+
+// swagger:response getUserInfoBadRequestError
+type SwaggerGetUserInfoBadRequestError struct {
+	// in: body
+	Body ioutil.GenericError
+}
+
+// swagger:response getUserInfoNotFoundError
+type SwaggerGetUserInfoNotFoundError struct {
+	// in: body
+	Body ioutil.GenericError
+}
+
+// swagger:response getUserInfoInternalServerError
+type SwaggerGetUserInfoInternalServerError struct {
+	// in: body
+	Body ioutil.GenericError
+}

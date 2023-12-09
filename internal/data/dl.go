@@ -16,10 +16,14 @@ import (
 // ErrEmailOrUsernameExists is an error returned when a user with the given email already exists.
 var ErrEmailOrUsernameExists = fmt.Errorf("user with this email or username already exists")
 
+// UserCredentials is an interface that represents database.
+//
+//go:generate mockery --name UserCredentials --output=./ --filename=mocks/userCredentials.go --with-expecter
 type UserCredentials interface {
 	HasEmailOrUsername(ctx context.Context, username, email string) (bool, error)
 	GetSaltAndHash(ctx context.Context, username string) (salt, hash string, err error)
 	InsertUser(ctx context.Context, username, salt, hash, email string) error
+	GetUserInfo(ctx context.Context, userId int) (username, email string, err error)
 	GetUserID(ctx context.Context, username string) (int64, error)
 }
 
@@ -37,6 +41,19 @@ type Datalayer struct {
 
 	// signKey is a key to sign the token.
 	signKey []byte
+}
+
+func (d *Datalayer) GetUserById(ctx context.Context, id int) (models.UserInfo, error) {
+	username, email, err := d.db.GetUserInfo(ctx, id)
+	if err != nil {
+		return models.UserInfo{}, fmt.Errorf("unable to get user info in GetUserById: %w", err)
+	}
+
+	return models.UserInfo{
+		ID:       id,
+		Username: username,
+		Email:    email,
+	}, nil
 }
 
 // New returns a new Datalayer struct.

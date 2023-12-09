@@ -122,8 +122,11 @@ func main() {
 	// Set up a datalayer
 	dl := data.New(credentials, saltLength, duration, []byte(tokenSignKey))
 
+	// Set up error writer
+	ew := ioutil.JSONErrorWriter{Logger: l}
+
 	// Set up endpoints
-	endpoints := handlers.New(dl, l)
+	endpoints := handlers.New(dl, ew, l)
 
 	// handlers for documentation
 	dh := openapi.Redoc(openapi.RedocOpts{
@@ -144,6 +147,7 @@ func main() {
 		r.Post("/signin", endpoints.SignIn)
 		r.Get("/swagger.yaml", http.StripPrefix("/api/", http.FileServer(http.Dir("./"))).ServeHTTP)
 		r.Get("/docs", dh.ServeHTTP)
+		r.Get("/user/{id}", endpoints.GetUserInfo)
 
 		// deck service handler
 		r.Route("/flashcards", func(r chi.Router) {

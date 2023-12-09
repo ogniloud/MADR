@@ -16,6 +16,23 @@ type UserCredentials struct {
 	conn *db.PSQLDatabase
 }
 
+// GetUserInfo returns username, email and error by given userId.
+func (d *UserCredentials) GetUserInfo(ctx context.Context, userId int) (string, string, error) {
+	var username string
+	var email string
+
+	err := d.conn.QueryRow(ctx, "SELECT username, email FROM user_credentials WHERE user_id = $1", userId).Scan(&username, &email)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return "", "", ErrUserNotFound
+		}
+
+		return "", "", fmt.Errorf("unable to get username and email from db in GetUserInfo: %w", err)
+	}
+
+	return username, email, nil
+}
+
 // New returns new database.
 func New(conn *db.PSQLDatabase) *UserCredentials {
 	return &UserCredentials{
