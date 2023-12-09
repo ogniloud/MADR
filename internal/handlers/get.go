@@ -31,9 +31,14 @@ func (e *Endpoints) GetUserInfo(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		e.ew.Error(w, models.ErrInternalServer.Error(), http.StatusInternalServerError)
-		e.logger.Error("unable to get user info in GetUserInfo", "error", err)
+		e.logger.Error("unable to get user info in GetUserInfo", "error", err, "userId", userID)
 		return
 	}
 
-	_ = ioutil.ToJSON(userInfo, w)
+	err = ioutil.ToJSON(userInfo, w)
+	if err != nil {
+		e.ew.Error(w, models.ErrInternalServer.Error(), http.StatusInternalServerError)
+		e.logger.Error("unable to marshal userInfo in GetUserInfo", "error", err, "userInfo", userInfo)
+		return
+	}
 }

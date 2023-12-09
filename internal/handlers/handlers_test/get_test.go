@@ -107,7 +107,9 @@ func TestEndpoints_GetUserInfo(t *testing.T) {
 			},
 			prepareMocks: func(mocks mocks) {
 				mocks.data.EXPECT().GetUserById(mock.Anything, 144).Return(models.UserInfo{}, fmt.Errorf("some kind of different error"))
-				mocks.logger.EXPECT().Error("unable to get user info in GetUserInfo", "error", fmt.Errorf("some kind of different error"))
+				mocks.logger.EXPECT().Error("unable to get user info in GetUserInfo",
+					"error", fmt.Errorf("some kind of different error"),
+					"userId", 144)
 			},
 			request: prepareRequest(httptest.NewRequest(http.MethodGet, "/api/user/{id}", nil), "144"),
 			wantBody: `{"message":"don't worry, we are working on it"}
