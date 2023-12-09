@@ -11,16 +11,22 @@ import (
 	"golang.org/x/crypto/bcrypt"
 
 	"github.com/ogniloud/madr/internal/models"
-	"github.com/ogniloud/madr/internal/usercred"
 )
 
 // ErrEmailOrUsernameExists is an error returned when a user with the given email already exists.
 var ErrEmailOrUsernameExists = fmt.Errorf("user with this email or username already exists")
 
+type UserCredentials interface {
+	HasEmailOrUsername(ctx context.Context, username, email string) (bool, error)
+	GetSaltAndHash(ctx context.Context, username string) (salt, hash string, err error)
+	InsertUser(ctx context.Context, username, salt, hash, email string) error
+	GetUserID(ctx context.Context, username string) (int64, error)
+}
+
 // Datalayer is a struct that helps us to interact with the data.
 type Datalayer struct {
 	// db is a database.
-	db *usercred.UserCredentials
+	db UserCredentials
 
 	// saltLength is the length of the salt.
 	// We will use this to generate a salt for the password.
@@ -34,7 +40,7 @@ type Datalayer struct {
 }
 
 // New returns a new Datalayer struct.
-func New(db *usercred.UserCredentials, saltLength int, tokenExpirationTime time.Duration, signKey []byte) *Datalayer {
+func New(db UserCredentials, saltLength int, tokenExpirationTime time.Duration, signKey []byte) *Datalayer {
 	return &Datalayer{
 		db:                  db,
 		saltLength:          saltLength,
@@ -83,13 +89,14 @@ func (d *Datalayer) generateSalt() (string, error) {
 }
 
 // generateToken is a helper function to generate a JWT token.
-func (d *Datalayer) generateToken(username string) (string, error) {
+func (d *Datalayer) generateToken(username string, userID int64) (string, error) {
 	// Set the expiration time of the token
 	expirationTime := time.Now().Add(d.tokenExpirationTime * time.Minute)
 
 	// Create the JWT claims, which includes the username and expiry time
 	token := jwt.NewWithClaims(jwt.SigningMethodHS512, jwt.MapClaims{
 		"username": username,
+		"user_id":  userID,
 		"exp":      expirationTime.Unix(),
 	})
 
@@ -147,7 +154,12 @@ func (d *Datalayer) SignInUser(ctx context.Context, username, password string) (
 		return "", models.ErrUnauthorized
 	}
 
-	token, err := d.generateToken(username)
+	userID, err := d.db.GetUserID(ctx, username)
+	if err != nil {
+		return "", fmt.Errorf("unable to get user id in SignInUser: %w", err)
+	}
+
+	token, err := d.generateToken(username, userID)
 	if err != nil {
 		return "", fmt.Errorf("unable to generate token in SignInUser: %w", err)
 	}
