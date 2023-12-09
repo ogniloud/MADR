@@ -2,6 +2,7 @@ package handlers_test
 
 import (
 	"context"
+	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -97,6 +98,21 @@ func TestEndpoints_GetUserInfo(t *testing.T) {
 			wantBody: `{"id":228,"username":"idiot","email":"sobaka@govno.com"}
 `,
 			wantStatus: http.StatusOK,
+		},
+		{
+			name: "Error from datalayer",
+			mock: mocks{
+				data:   handlerMocks.NewDatalayer(t),
+				logger: handlerMocks.NewLogger(t),
+			},
+			prepareMocks: func(mocks mocks) {
+				mocks.data.EXPECT().GetUserById(mock.Anything, 144).Return(models.UserInfo{}, fmt.Errorf("some kind of different error"))
+				mocks.logger.EXPECT().Error("unable to get user info in GetUserInfo", "error", fmt.Errorf("some kind of different error"))
+			},
+			request: prepareRequest(httptest.NewRequest(http.MethodGet, "/api/user/{id}", nil), "144"),
+			wantBody: `{"message":"don't worry, we are working on it"}
+`,
+			wantStatus: http.StatusInternalServerError,
 		},
 	}
 

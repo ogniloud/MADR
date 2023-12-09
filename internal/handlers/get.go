@@ -30,6 +30,9 @@ func (e *Endpoints) GetUserInfo(w http.ResponseWriter, r *http.Request) {
 			e.ew.Error(w, models.ErrUserNotFound.Error(), http.StatusNotFound)
 			return
 		}
+		e.ew.Error(w, models.ErrInternalServer.Error(), http.StatusInternalServerError)
+		e.logger.Error("unable to get user info in GetUserInfo", "error", err)
+		return
 	}
 
 	_ = ioutil.ToJSON(userInfo, w)
