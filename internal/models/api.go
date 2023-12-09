@@ -42,7 +42,7 @@ type SignInRequest struct {
 type SignInResponse struct {
 	// Authorization token.
 	//
-	// example: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9s
+	// example: Bearer eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJleHAiOjkxOTU0Nzk4MDksInVzZXJfaWQiOjEsInVzZXJuYW1lIjoidXNlcjEyMyJ9.fHSoS6ZFf1TU4AmcqNeqpEDo6hdU6uLr2-PRAd0MKzAKDvDtGafuV6X6W8HSXAgwraXZ0_3qS8CmrUQW6am8Hg
 	Authorization string `json:"authorization"`
 }
 

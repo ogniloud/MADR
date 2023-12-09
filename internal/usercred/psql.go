@@ -78,3 +78,19 @@ func (d *UserCredentials) GetSaltAndHash(ctx context.Context, username string) (
 
 	return salt, hash, nil
 }
+
+// GetUserID returns user id for the given username.
+func (d *UserCredentials) GetUserID(ctx context.Context, username string) (int64, error) {
+	var userID int64
+
+	err := d.conn.QueryRow(ctx, "SELECT user_id FROM user_credentials WHERE username = $1", username).Scan(&userID)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return 0, ErrUserNotFound
+		}
+
+		return 0, fmt.Errorf("unable to get user id in GetUserID: %w", err)
+	}
+
+	return userID, nil
+}
