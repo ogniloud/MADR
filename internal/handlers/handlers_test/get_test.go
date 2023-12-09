@@ -46,7 +46,6 @@ func TestEndpoints_GetUserInfo(t *testing.T) {
 				data: handlerMocks.NewDatalayer(t),
 			},
 			prepareMocks: func(mocks mocks) {
-				return
 			},
 			request: prepareRequest(httptest.NewRequest(http.MethodGet, "/api/user/{id}", nil), "0"),
 			wantBody: `{"message":"User id cannot be less than 1"}
