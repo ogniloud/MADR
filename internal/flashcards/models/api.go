@@ -378,7 +378,7 @@ type RandomTextRequest struct {
 	Size int `json:"size"`
 }
 
-// RandomTextRequest is a struct that defines the response body for
+// RandomTextResponse is a struct that defines the response body for
 // getting a random text exercise from all the decks.
 type RandomTextResponse struct {
 	Text Text `json:"text"`
@@ -408,8 +408,13 @@ type RandomTextDeckRequest struct {
 	Size int `json:"size"`
 }
 
-// RandomTextRequest is a struct that defines the response body for
+// RandomTextDeckResponse is a struct that defines the response body for
 // getting a random text exercise from all the decks.
 type RandomTextDeckResponse struct {
 	Text Text `json:"text"`
+}
+
+// GetFlashcardByIdResponse is a response that contains a flashcard.
+type GetFlashcardByIdResponse struct {
+	Flashcard Flashcard `json:"flashcard"`
 }
