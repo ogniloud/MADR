@@ -2,7 +2,10 @@ package deck
 
 import (
 	"net/http"
+	"strconv"
 	"time"
+
+	"github.com/go-chi/chi/v5"
 
 	"github.com/ogniloud/madr/internal/flashcards/models"
 	"github.com/ogniloud/madr/internal/flashcards/services/deck"
@@ -333,4 +336,56 @@ func (d Endpoints) DeleteDeck(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.WriteHeader(http.StatusNoContent)
+}
+
+// swagger:route GET /api/flashcards/card/{id} GetFlashcardById
+// Takes a flashcard by id.
+//
+// Consumes:
+// - application/json
+//
+// Produces:
+// - application/json
+//
+// Schemes: http
+//
+// Parameters:
+// + name: id
+//   in: query
+//   description: FlashcardId.
+//   required: true
+//   type: int
+//
+//
+// Responses:
+// 200: getFlashcardByIdOKResponse
+// 400: getFlashcardByIdBadRequestError
+// 500: getFlashcardByIdInternalServerError
+
+// GetFlashcardById is a handler that takes a flashcard by id.
+func (d Endpoints) GetFlashcardById(w http.ResponseWriter, r *http.Request) {
+	id, err := strconv.Atoi(chi.URLParam(r, "id"))
+	if err != nil {
+		d.ew.Error(w, "bad request", http.StatusBadRequest)
+		return
+	}
+
+	if id < 0 {
+		d.ew.Error(w, "id must be >= 0", http.StatusBadRequest)
+		return
+	}
+
+	respBody := models.GetFlashcardByIdResponse{}
+	respBody.Flashcard, err = d.s.GetFlashcardById(r.Context(), id)
+	if err != nil {
+		d.ew.Error(w, "internal server error", http.StatusInternalServerError)
+		d.logger.Error("error on backside", "error", err)
+		return
+	}
+
+	if err := ioutil.ToJSON(respBody, w); err != nil {
+		d.ew.Error(w, "internal server error", http.StatusInternalServerError)
+		d.logger.Error("unable to marshal flashcard", "error", err, "body", respBody)
+		return
+	}
 }

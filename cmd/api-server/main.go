@@ -157,6 +157,7 @@ func main() {
 			r.Post("/cards", deckEndpoints.GetFlashcardsByDeckId)
 			r.Post("/load", deckEndpoints.LoadDecks)
 			r.Put("/new_deck", deckEndpoints.NewDeckWithFlashcards)
+			r.Get("/card/{id}", deckEndpoints.GetFlashcardById)
 		})
 
 		// study handler

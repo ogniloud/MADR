@@ -272,3 +272,21 @@ type SwaggerRandomTextDeckInternalServerError struct {
 	// in: body
 	Body ioutil.GenericError
 }
+
+// swagger:response getFlashcardByIdOKResponse
+type SwaggerGetFlashcardByIdOkResponse struct {
+	// in: body
+	Body GetFlashcardByIdResponse
+}
+
+// swagger:response getFlashcardByIdBadRequestError
+type SwaggerGetFlashcardByIdBadRequest struct {
+	// in: body
+	Body ioutil.GenericError
+}
+
+// swagger:response getFlashcardByIdInternalServerError
+type SwaggerGetFlashcardByIdInternalServerError struct {
+	// in: body
+	Body ioutil.GenericError
+}
