@@ -127,10 +127,10 @@ func (d *Storage) PutAllFlashcards(ctx context.Context, id models.DeckId, cards 
 
 	s := fmt.Sprintf(`INSERT INTO flashcard (word, backside, deck_id, answer) VALUES %v RETURNING card_id;`, values.String())
 	rows, err := d.Conn.Query(ctx, s, args...)
-
 	if err != nil {
 		return nil, fmt.Errorf("psql error: %w", err)
 	}
+	defer rows.Close()
 
 	temp := 0
 	ids := make([]models.FlashcardId, 0, len(cards))
@@ -178,10 +178,10 @@ func (d *Storage) PutAllUserLeitner(ctx context.Context, uls []models.UserLeitne
 
 	s := fmt.Sprintf(`INSERT INTO user_leitner (user_id, card_id, box, cool_down) VALUES %v RETURNING leitner_id;`, values.String())
 	rows, err := d.Conn.Query(ctx, s, args...)
-
 	if err != nil {
 		return nil, fmt.Errorf("psql error: %w", err)
 	}
+	defer rows.Close()
 
 	temp := 0
 	ids := make([]models.LeitnerId, 0, len(uls))
