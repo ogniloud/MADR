@@ -44,8 +44,8 @@ const Decks = () => {
                 {/* Display all decks in a grid view */}
                 {createdDecks.length > 0 &&
                     createdDecks.map((deck) => (
-                        <div key={deck.id} className="deck-card">
-                            <Link to={`/decks/${deck.id}`}>
+                        <div key={deck.deck_id} className="deck-card">
+                            <Link to={`/decks/${deck.deck_id}`}>
                                 <span>{deck.name}</span>
                             </Link>
                         </div>
