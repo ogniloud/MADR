@@ -53,20 +53,20 @@ func NewService(s storage.Storage, c cache.Cache, logger *log.Logger) IService {
 
 // LoadDecks loads user's decks in memory if needed and returns the decks.
 func (s *Service) LoadDecks(ctx context.Context, id models.UserId) (_ models.Decks, err error) {
-	if decksAny, err := s.c.Load(id); err == nil {
-		if decks, ok := decksAny.(models.Decks); ok {
-			return decks, nil // returned from cache
-		}
-	}
+	//if decksAny, err := s.c.Load(id); err == nil {
+	//	if decks, ok := decksAny.(models.Decks); ok {
+	//		return decks, nil // returned from cache
+	//	}
+	//}
 
 	decks, err := s.GetDecksByUserId(ctx, id)
 	if err != nil {
 		return nil, err
 	}
 
-	if err := s.Cache().Store(id, decks); err != nil {
-		s.logger.Errorf("cache store failed: %v", err)
-	}
+	//if err := s.Cache().Store(id, decks); err != nil {
+	//	s.logger.Errorf("cache store failed: %v", err)
+	//}
 
 	return decks, nil
 }
