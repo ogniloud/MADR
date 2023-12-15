@@ -8,6 +8,7 @@ function SignIn() {
     password: '',
   });
 
+  const [error, setError] = useState(null); // State to handle sign-in errors
   const navigate = useNavigate(); // Initialize navigate
 
   const handleSignInChange = (e) => {
@@ -31,56 +32,60 @@ function SignIn() {
       });
 
       if (response.ok) {
-        // Handle successful sign-in
-        console.log('Sign-in successful');
-        navigate('/mainpage'); // Redirect to the main page
+        const { authorization } = await response.json();
+        localStorage.setItem('token', authorization);
+
+        // Redirect to the main page
+        navigate('/mainpage');
       } else {
-        // Handle unsuccessful sign-in, e.g., display an error message
-        console.error('Sign-in failed');
+        const errorData = await response.json(); // Parse the error response JSON
+        setError(errorData.message || 'Sign-in failed'); // Set error message
       }
     } catch (error) {
       console.error('Error during sign-in:', error);
+      setError('Error during sign-in. Please try again.'); // Set generic error message
     }
   };
 
   return (
-    <div className="container">
-      <div className="left-side"></div>
-      <div className="right-side">
-        <p className="title">Sign in to your MADR account</p>
-        <p className="subtitle">Let's start learning</p>
-        <form onSubmit={handleSignInSubmit}>
-          <div className="form-group">
-            <label htmlFor="username">User Name</label>
-            <input
-              type="text" 
-              id="username" 
-              name="username" 
-              value={signInData.username} 
-              onChange={handleSignInChange}
-              placeholder="Enter your madr.org username"
-              required
-            />
-          </div>
+      <div className="container">
+        <div className="left-side"></div>
+        <div className="right-side">
+          <p className="title">Sign in to your MADR account</p>
+          <p className="subtitle">Let's start learning</p>
+          <form onSubmit={handleSignInSubmit}>
+            <div className="form-group">
+              <label htmlFor="username">User Name</label>
+              <input
+                  type="text"
+                  id="username"
+                  name="username"
+                  value={signInData.username}
+                  onChange={handleSignInChange}
+                  placeholder="Enter your madr.org username"
+                  required
+              />
+            </div>
 
-          <div className="form-group">
-            <label htmlFor="password">Password</label>
-            <input
-              type="password"
-              id="password"
-              name="password"
-              value={signInData.password}
-              onChange={handleSignInChange}
-              placeholder="Enter your madr.org password"
-              required
-            />
-          </div>
-          <button className="submit" type="submit">
-            Login
-          </button>
-        </form>
+            <div className="form-group">
+              <label htmlFor="password">Password</label>
+              <input
+                  type="password"
+                  id="password"
+                  name="password"
+                  value={signInData.password}
+                  onChange={handleSignInChange}
+                  placeholder="Enter your madr.org password"
+                  required
+              />
+            </div>
+            <button className="submit" type="submit">
+              Login
+            </button>
+            {error && <div className="error-message">{error}</div>}
+          </form>
+        </div>
       </div>
-    </div>
   );
 }
 

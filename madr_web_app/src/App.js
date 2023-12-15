@@ -3,7 +3,11 @@ import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import Form from './components/User-Components/SignUp';
 import SignIn from './components/User-Components/SignIn';
 import MainPage from './components/Main-Page/MainPage';
-import './Style-component/App.css';
+import './components/Style-component/App.css';
+import CreateDecks from "./components/Main-Page/Decks/CreateDecks";
+import Decks from './components/Main-Page/Decks/DeckPage';
+
+
 
 function App() {
   return (
@@ -14,6 +18,8 @@ function App() {
           <Route path="/" element={<Form />} />
           <Route path="/signin" element={<SignIn />} />
           <Route path="/mainpage" element={<MainPage />} />
+          <Route path="/create-deck" element={<CreateDecks/>} />
+          <Route path="/decks" element={<Decks />} />
         </Routes>
       </Router>
     </div>

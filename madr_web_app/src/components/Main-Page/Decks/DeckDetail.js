@@ -1,4 +1,4 @@
-// DeckPage.js
+// Decks.js
 import React, { useEffect, useState } from 'react';
 import { Link, Route, Routes } from 'react-router-dom';
 import { jwtDecode } from 'jwt-decode';
@@ -45,7 +45,8 @@ const Decks = () => {
                 {createdDecks.length > 0 &&
                     createdDecks.map((deck) => (
                         <div key={deck.id} className="deck-card">
-                            <Link to={`/decks/${deck.id}`}>
+                            {/* Check if deck.id is present before constructing the link */}
+                            <Link to={deck.id ? `/decks/${deck.id}` : '#'}>
                                 <span>{deck.name}</span>
                             </Link>
                         </div>
@@ -55,7 +56,7 @@ const Decks = () => {
             {/* Use the Routes component to define routes */}
             <Routes>
                 {/* Add a route for deck details */}
-                <Route path="/:deckId/*" element={<DeckDetail />} />
+                <Route path="/decks/:deckId/*" element={<DeckDetail />} />
             </Routes>
         </div>
     );
