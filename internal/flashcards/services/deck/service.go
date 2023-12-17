@@ -98,7 +98,7 @@ func (s *Service) NewDeckWithFlashcards(ctx context.Context, userId models.UserI
 			UserId:      userId,
 			FlashcardId: ids[i],
 			Box:         0,
-			CoolDown:    models.CoolDown(time.Now()),
+			CoolDown:    models.CoolDown(time.Now().UTC()),
 		}
 	}
 	if _, err = s.PutAllUserLeitner(ctx, uls); err != nil {
