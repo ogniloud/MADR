@@ -1,65 +1,65 @@
-// Decks.js
-import React, { useEffect, useState } from 'react';
-import { Link, Route, Routes } from 'react-router-dom';
-import { jwtDecode } from 'jwt-decode';
-import DeckDetail from './DeckDetail';
-import './DeckPage.css';
+import React from 'react';
+import { useParams, Link, Route, Routes } from 'react-router-dom';
+import AllWords from './Browse Cards/AllWords';
+import TheHottest from './Browse Cards/TheHottest';
+import Warm from './Browse Cards/Warm';
+import Learned from './Browse Cards/Learned';
+import Flashcards from './Exercise Cards/Flashcards';
+import Texts from './Exercise Cards/Texts';
+import WordMatch from './Exercise Cards/WordMatch';
+import FillGaps from './Exercise Cards/FillGaps';
+import './DeckDetails.css';
 
-const Decks = () => {
-    const [createdDecks, setCreatedDecks] = useState([]);
-
-    useEffect(() => {
-        const fetchUserDecks = async () => {
-            try {
-                const token = localStorage.getItem('token');
-                if (token) {
-                    const decodedToken = jwtDecode(token);
-                    const response = await fetch('http://localhost:8080/api/flashcards/load', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify({ user_id: decodedToken.user_id }),
-                    });
-
-                    if (response.ok) {
-                        const { decks } = await response.json();
-                        setCreatedDecks(decks);
-                    } else {
-                        console.error('Failed to load user decks:', response.statusText);
-                    }
-                }
-            } catch (error) {
-                console.error('Error loading user decks:', error);
-            }
-        };
-
-        fetchUserDecks();
-    }, []);
+const DeckDetail = () => {
+    const { deck_id } = useParams();
 
     return (
         <div>
-            <h2>All Decks</h2>
-            <div className="deck-container">
-                {/* Display all decks in a grid view */}
-                {createdDecks.length > 0 &&
-                    createdDecks.map((deck) => (
-                        <div key={deck.id} className="deck-card">
-                            {/* Check if deck.id is present before constructing the link */}
-                            <Link to={deck.id ? `/decks/${deck.id}` : '#'}>
-                                <span>{deck.name}</span>
-                            </Link>
-                        </div>
-                    ))}
-            </div>
+            <h2>Deck Details</h2>
+            <nav>
+                <ul>
+                    <li>
+                        <Link to={`/decks/${deck_id}/browse-cards/all-words`}>All Words</Link>
+                    </li>
+                    <li>
+                        <Link to={`/decks/${deck_id}/browse-cards/the-hottest`}>The Hottest</Link>
+                    </li>
+                    <li>
+                        <Link to={`/decks/${deck_id}/browse-cards/warm`}>Warm</Link>
+                    </li>
+                    <li>
+                        <Link to={`/decks/${deck_id}/browse-cards/learned`}>Learned</Link>
+                    </li>
+                    <li>
+                        <Link to={`/decks/${deck_id}/exercise/flashcards`}>Flashcards</Link>
+                    </li>
+                    <li>
+                        <Link to={`/decks/${deck_id}/exercise/texts`}>Texts</Link>
+                    </li>
+                    <li>
+                        <Link to={`/decks/${deck_id}/exercise/word-match`}>Word Match</Link>
+                    </li>
+                    <li>
+                        <Link to={`/decks/${deck_id}/exercise/fill-gaps`}>Fill Gaps</Link>
+                    </li>
+                </ul>
+            </nav>
 
-            {/* Use the Routes component to define routes */}
             <Routes>
-                {/* Add a route for deck details */}
-                <Route path="/decks/:deckId/*" element={<DeckDetail />} />
+                {/* Browse Cards Routes */}
+                <Route path="browse-cards/all-words" element={<AllWords />} />
+                <Route path="browse-cards/the-hottest" element={<TheHottest />} />
+                <Route path="browse-cards/warm" element={<Warm />} />
+                <Route path="browse-cards/learned" element={<Learned />} />
+
+                {/* Exercise Routes */}
+                <Route path="exercise/flashcards" element={<Flashcards />} />
+                <Route path="exercise/texts" element={<Texts />} />
+                <Route path="exercise/word-match" element={<WordMatch />} />
+                <Route path="exercise/fill-gaps" element={<FillGaps />} />
             </Routes>
         </div>
     );
 };
 
-export default Decks;
+export default DeckDetail;

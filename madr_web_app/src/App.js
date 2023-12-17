@@ -5,8 +5,8 @@ import SignIn from './components/User-Components/SignIn';
 import MainPage from './components/Main-Page/MainPage';
 import './components/Style-component/App.css';
 import CreateDecks from "./components/Main-Page/Decks/CreateDecks";
-import Decks from './components/Main-Page/Decks/DeckPage';
-
+import DecksPage from './components/Main-Page/Decks/DeckPage';
+import DeckDetail from "./components/Main-Page/Decks/DeckDetail";
 
 
 function App() {
@@ -19,7 +19,9 @@ function App() {
           <Route path="/signin" element={<SignIn />} />
           <Route path="/mainpage" element={<MainPage />} />
           <Route path="/create-deck" element={<CreateDecks/>} />
-          <Route path="/decks" element={<Decks />} />
+          <Route path="/decks" element={<DecksPage />} />
+          <Route path="/decks/:deck_id/*" element={<DeckDetail />} />
+
         </Routes>
       </Router>
     </div>
