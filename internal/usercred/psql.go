@@ -7,6 +7,7 @@ import (
 	"fmt"
 
 	"github.com/ogniloud/madr/internal/db"
+	"github.com/ogniloud/madr/internal/flashcards/models"
 )
 
 var ErrUserNotFound = fmt.Errorf("user not found")
@@ -57,9 +58,16 @@ func (d *UserCredentials) HasEmailOrUsername(ctx context.Context, username, emai
 
 // InsertUser inserts a new user into the database.
 func (d *UserCredentials) InsertUser(ctx context.Context, username, salt, hash, email string) error {
-	_, err := d.conn.Exec(ctx, "INSERT INTO user_credentials (username, salt, hash, email) VALUES ($1, $2, $3, $4)", username, salt, hash, email)
-	if err != nil {
+	row := d.conn.QueryRow(ctx, "INSERT INTO user_credentials (username, salt, hash, email) VALUES ($1, $2, $3, $4) RETURNING user_id", username, salt, hash, email)
+	var id models.UserId
+
+	if err := row.Scan(&id); err != nil {
 		return fmt.Errorf("unable to insert user in InsertUser: %w", err)
+	}
+
+	_, err := d.conn.Exec(ctx, "INSERT INTO user_info (user_id, max_box) VALUES ($1, $2)", id, 4)
+	if err != nil {
+		return fmt.Errorf("unable to insert user info: %w", err)
 	}
 
 	return nil

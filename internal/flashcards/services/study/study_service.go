@@ -199,12 +199,12 @@ func (s *Service) GetNextRandomDeck(ctx context.Context, uid models.UserId, id m
 func (s *Service) Rate(ctx context.Context, uid models.UserId, id models.FlashcardId, mark models.Mark) error {
 	l, err := s.dsrv.GetLeitnerByUserIdCardId(ctx, uid, id)
 	if err != nil {
-		return err
+		return fmt.Errorf("leitner not found: %w", err)
 	}
 
 	box, err := s.dsrv.UserMaxBox(ctx, uid)
 	if err != nil {
-		return err
+		return fmt.Errorf("user max box: %w", err)
 	}
 
 	switch mark {
@@ -219,7 +219,11 @@ func (s *Service) Rate(ctx context.Context, uid models.UserId, id models.Flashca
 		}
 	}
 
-	return s.dsrv.UpdateLeitner(ctx, l)
+	if err := s.dsrv.UpdateLeitner(ctx, l); err != nil {
+		return fmt.Errorf("update leitner failed: %w", err)
+	}
+
+	return nil
 }
 
 // let p = [.5 .7 .8 .9 .95] and r is a random float
