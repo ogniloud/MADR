@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import {jwtDecode}from 'jwt-decode';
-
+import './Styles/AllWords.css';
 const AllWords = () => {
     const { deck_id } = useParams();
 
@@ -33,15 +33,18 @@ const AllWords = () => {
             const decodedToken = jwtDecode(token);
             const user_id = decodedToken.user_id;
 
+            // Convert deck_id to a number
+            const deckIdAsNumber = Number(deck_id);
+
             const requestBody = {
-                word: word,
+                word,
                 answer: answer.replace(/^"|"$/g, ''), // Remove double quotes if present
                 backside: {
                     type: Number(backsideType),
                     value: backsideValue,
                 },
-                deck_id: deck_id,
-                user_id: user_id,
+                deck_id: deckIdAsNumber,
+                user_id,
             };
 
             console.log('Request Body:', JSON.stringify(requestBody));
@@ -59,6 +62,12 @@ const AllWords = () => {
             if (response.ok) {
                 setSuccessMessage('Flashcard added successfully!');
                 setErrorMessage('');
+
+                // Clear form fields after success
+                setWord('');
+                setAnswer('');
+                setBacksideType(0);
+                setBacksideValue('');
             } else {
                 const errorData = await response.json();
                 setSuccessMessage('');
@@ -70,10 +79,8 @@ const AllWords = () => {
             setErrorMessage('An unexpected error occurred.');
         }
     };
-
-
     return (
-        <div>
+        <div >
             <h2>All Words</h2>
             <div>
                 <label>
