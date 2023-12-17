@@ -89,10 +89,13 @@ func (d *Storage) GetLeitnerByUserIdCardId(ctx context.Context, id models.UserId
 
 	l := models.UserLeitner{}
 
-	err := row.Scan(&l.Id, &l.UserId, &l.FlashcardId, &l.Box, &l.CoolDown)
+	t := time.Time{}
+	err := row.Scan(&l.Id, &l.UserId, &l.FlashcardId, &l.Box, &t)
 	if err != nil {
 		return models.UserLeitner{}, fmt.Errorf("psql error: %w", err)
 	}
+
+	l.CoolDown = models.CoolDown(t)
 
 	return l, nil
 }
@@ -214,7 +217,7 @@ func (d *Storage) DeleteUserDeck(ctx context.Context, userId models.UserId, deck
 func (d *Storage) UpdateLeitner(ctx context.Context, ul models.UserLeitner) error {
 	row := d.Conn.QueryRow(ctx,
 		`UPDATE user_leitner SET user_id=$1, card_id=$2, box=$3, cool_down=$4 WHERE leitner_id=$5 RETURNING leitner_id`,
-		ul.UserId, ul.FlashcardId, ul.Box, ul.CoolDown, ul.Id)
+		ul.UserId, ul.FlashcardId, ul.Box, time.Time(ul.CoolDown), ul.Id)
 
 	return row.Scan(&ul.Id)
 }
