@@ -165,6 +165,8 @@ func main() {
 			r.Post("/random", exerciseEndpoints.RandomCard)
 			r.Post("/random_deck", exerciseEndpoints.RandomCardDeck)
 			r.Post("/rate", exerciseEndpoints.Rate)
+			r.Post("/random_matching", exerciseEndpoints.RandomMatching)
+			r.Post("/random_matching_deck", exerciseEndpoints.RandomMatchingDeck)
 		})
 	})
 
