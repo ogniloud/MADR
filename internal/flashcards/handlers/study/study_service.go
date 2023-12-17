@@ -64,7 +64,7 @@ func (e *Endpoints) RandomCard(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	cardId, err := e.ss.GetNextRandom(r.Context(), reqBody.UserId, models.CoolDown(time.Now()))
+	cardId, err := e.ss.GetNextRandom(r.Context(), reqBody.UserId, models.CoolDown(time.Now().UTC()))
 	if err != nil {
 		e.logger.Errorf("reqBody: %+v, error: %v", reqBody, err)
 		e.ew.Error(w, err.Error(), http.StatusInternalServerError)
@@ -120,7 +120,7 @@ func (e *Endpoints) RandomNCards(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	cardIds, err := e.ss.GetNextRandomN(r.Context(), reqBody.UserId, models.CoolDown(time.Now()), reqBody.N)
+	cardIds, err := e.ss.GetNextRandomN(r.Context(), reqBody.UserId, models.CoolDown(time.Now().UTC()), reqBody.N)
 	if err != nil {
 		e.logger.Errorf("reqBody: %+v, error: %v", reqBody, err)
 		e.ew.Error(w, err.Error(), http.StatusInternalServerError)
@@ -180,7 +180,7 @@ func (e *Endpoints) RandomCardDeck(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	cardId, err := e.ss.GetNextRandomDeck(r.Context(), reqBody.UserId, reqBody.DeckId, models.CoolDown(time.Now()))
+	cardId, err := e.ss.GetNextRandomDeck(r.Context(), reqBody.UserId, reqBody.DeckId, models.CoolDown(time.Now().UTC()))
 	if err != nil {
 		e.logger.Errorf("reqBody: %+v, error: %v", reqBody, err)
 		e.ew.Error(w, err.Error(), http.StatusInternalServerError)
@@ -236,7 +236,7 @@ func (e *Endpoints) RandomNCardsDeck(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	cardIds, err := e.ss.GetNextRandomDeckN(r.Context(), reqBody.UserId, reqBody.DeckId, models.CoolDown(time.Now()), reqBody.N)
+	cardIds, err := e.ss.GetNextRandomDeckN(r.Context(), reqBody.UserId, reqBody.DeckId, models.CoolDown(time.Now().UTC()), reqBody.N)
 	if err != nil {
 		e.logger.Errorf("reqBody: %+v, error: %v", reqBody, err)
 		e.ew.Error(w, err.Error(), http.StatusInternalServerError)
@@ -346,7 +346,7 @@ func (e *Endpoints) RandomMatching(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	matching, err := e.ss.MakeMatching(r.Context(), reqBody.UserId, models.CoolDown(time.Now()), reqBody.Size)
+	matching, err := e.ss.MakeMatching(r.Context(), reqBody.UserId, models.CoolDown(time.Now().UTC()), reqBody.Size)
 	if err != nil {
 		e.logger.Errorf("reqBody: %+v, error: %v", reqBody, err)
 		e.ew.Error(w, err.Error(), http.StatusInternalServerError)
@@ -397,7 +397,7 @@ func (e *Endpoints) RandomMatchingDeck(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	matching, err := e.ss.MakeMatchingDeck(r.Context(), reqBody.UserId, reqBody.DeckId, models.CoolDown(time.Now()), reqBody.Size)
+	matching, err := e.ss.MakeMatchingDeck(r.Context(), reqBody.UserId, reqBody.DeckId, models.CoolDown(time.Now().UTC()), reqBody.Size)
 	if err != nil {
 		e.logger.Errorf("reqBody: %+v, error: %v", reqBody, err)
 		e.ew.Error(w, err.Error(), http.StatusInternalServerError)
@@ -448,7 +448,7 @@ func (e *Endpoints) RandomText(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	text, err := e.ss.MakeText(r.Context(), reqBody.UserId, models.CoolDown(time.Now()), reqBody.Size)
+	text, err := e.ss.MakeText(r.Context(), reqBody.UserId, models.CoolDown(time.Now().UTC()), reqBody.Size)
 	if err != nil {
 		e.logger.Errorf("reqBody: %+v, error: %v", reqBody, err)
 		e.ew.Error(w, err.Error(), http.StatusInternalServerError)
@@ -499,7 +499,7 @@ func (e *Endpoints) RandomTextDeck(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	text, err := e.ss.MakeTextDeck(r.Context(), reqBody.UserId, reqBody.DeckId, models.CoolDown(time.Now()), reqBody.Size)
+	text, err := e.ss.MakeTextDeck(r.Context(), reqBody.UserId, reqBody.DeckId, models.CoolDown(time.Now().UTC()), reqBody.Size)
 	if err != nil {
 		e.logger.Errorf("reqBody: %+v, error: %v", reqBody, err)
 		e.ew.Error(w, err.Error(), http.StatusInternalServerError)

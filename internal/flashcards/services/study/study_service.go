@@ -7,6 +7,7 @@ import (
 	"math/rand"
 	"regexp"
 	"slices"
+	"time"
 
 	"github.com/ogniloud/madr/internal/flashcards/models"
 	"github.com/ogniloud/madr/internal/flashcards/services/deck"
@@ -86,7 +87,7 @@ func (s *Service) ConvertIdsToCards(ctx context.Context, uid models.UserId, down
 	for _, id := range ids {
 		ltn, err := s.dsrv.GetLeitnerByUserIdCardId(ctx, uid, id)
 		if err != nil {
-			return nil, err
+			return nil, fmt.Errorf("get leitner error: %w", err)
 		}
 
 		ltns = append(ltns, ltn)
@@ -97,7 +98,7 @@ func (s *Service) ConvertIdsToCards(ctx context.Context, uid models.UserId, down
 	})
 
 	if len(ltns) == 0 {
-		return nil, nil
+		return nil, ErrNoCards
 	}
 
 	// shuffle and choose next card
@@ -218,6 +219,10 @@ func (s *Service) Rate(ctx context.Context, uid models.UserId, id models.Flashca
 			l.Box++
 		}
 	}
+
+	l.CoolDown.NextState(l.Box, func(box models.Box) time.Time {
+		return time.Now().Add(time.Minute * time.Duration(l.Box)).UTC()
+	})
 
 	if err := s.dsrv.UpdateLeitner(ctx, l); err != nil {
 		return fmt.Errorf("update leitner failed: %w", err)

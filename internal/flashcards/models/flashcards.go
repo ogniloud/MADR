@@ -1,6 +1,8 @@
 package models
 
-import "time"
+import (
+	"time"
+)
 
 type (
 	DeckId      = int
@@ -95,7 +97,8 @@ func (cd *CoolDown) IsPassedNow() bool {
 
 // IsPassed returns true if state of cd is not less than t.
 func (cd *CoolDown) IsPassed(t CoolDown) bool {
-	return time.Time(*cd).Compare(time.Time(t)) == -1
+	t1 := time.Time(*cd)
+	return t1.Before(time.Time(t))
 }
 
 // UserLeitner is a configuration of Leitner's system for each user.
