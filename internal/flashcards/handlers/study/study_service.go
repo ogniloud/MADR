@@ -59,27 +59,27 @@ func (e *Endpoints) RandomCard(w http.ResponseWriter, r *http.Request) {
 	respBody := models.RandomCardResponse{}
 
 	if err := ioutil.FromJSON(&reqBody, r.Body); err != nil {
-		e.logger.Errorf("reqBody: %v, error: %v", reqBody, err)
+		e.logger.Errorf("reqBody: %+v, error: %v", reqBody, err)
 		e.ew.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
 	cardId, err := e.ss.GetNextRandom(r.Context(), reqBody.UserId, models.CoolDown(time.Now()))
 	if err != nil {
-		e.logger.Errorf("reqBody: %v, error: %v", reqBody, err)
+		e.logger.Errorf("reqBody: %+v, error: %v", reqBody, err)
 		e.ew.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
 	respBody.Flashcard, err = e.ds.GetFlashcardById(r.Context(), cardId)
 	if err != nil {
-		e.logger.Errorf("reqBody: %v, error: %v", reqBody, err)
+		e.logger.Errorf("reqBody: %+v, error: %v", reqBody, err)
 		e.ew.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
 	if err := ioutil.ToJSON(&respBody, w); err != nil {
-		e.logger.Errorf("reqBody: %v, error: %v", reqBody, err)
+		e.logger.Errorf("reqBody: %+v, error: %v", reqBody, err)
 		e.ew.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
@@ -115,14 +115,14 @@ func (e *Endpoints) RandomNCards(w http.ResponseWriter, r *http.Request) {
 	respBody := models.RandomNCardsResponse{}
 
 	if err := ioutil.FromJSON(&reqBody, r.Body); err != nil {
-		e.logger.Errorf("reqBody: %v, error: %v", reqBody, err)
+		e.logger.Errorf("reqBody: %+v, error: %v", reqBody, err)
 		e.ew.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
 	cardIds, err := e.ss.GetNextRandomN(r.Context(), reqBody.UserId, models.CoolDown(time.Now()), reqBody.N)
 	if err != nil {
-		e.logger.Errorf("reqBody: %v, error: %v", reqBody, err)
+		e.logger.Errorf("reqBody: %+v, error: %v", reqBody, err)
 		e.ew.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
@@ -130,7 +130,7 @@ func (e *Endpoints) RandomNCards(w http.ResponseWriter, r *http.Request) {
 	for _, cardId := range cardIds {
 		card, err := e.ds.GetFlashcardById(r.Context(), cardId)
 		if err != nil {
-			e.logger.Errorf("reqBody: %v, error: %v", reqBody, err)
+			e.logger.Errorf("reqBody: %+v, error: %v", reqBody, err)
 			e.ew.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
@@ -139,7 +139,7 @@ func (e *Endpoints) RandomNCards(w http.ResponseWriter, r *http.Request) {
 	respBody.Flashcards = cards
 
 	if err := ioutil.ToJSON(&respBody, w); err != nil {
-		e.logger.Errorf("reqBody: %v, error: %v", reqBody, err)
+		e.logger.Errorf("reqBody: %+v, error: %v", reqBody, err)
 		e.ew.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
@@ -175,27 +175,27 @@ func (e *Endpoints) RandomCardDeck(w http.ResponseWriter, r *http.Request) {
 	respBody := models.RandomCardDeckResponse{}
 
 	if err := ioutil.FromJSON(&reqBody, r.Body); err != nil {
-		e.logger.Errorf("reqBody: %v, error: %v", reqBody, err)
+		e.logger.Errorf("reqBody: %+v, error: %v", reqBody, err)
 		e.ew.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
 	cardId, err := e.ss.GetNextRandomDeck(r.Context(), reqBody.UserId, reqBody.DeckId, models.CoolDown(time.Now()))
 	if err != nil {
-		e.logger.Errorf("reqBody: %v, error: %v", reqBody, err)
+		e.logger.Errorf("reqBody: %+v, error: %v", reqBody, err)
 		e.ew.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
 	respBody.Flashcard, err = e.ds.GetFlashcardById(r.Context(), cardId)
 	if err != nil {
-		e.logger.Errorf("reqBody: %v, error: %v", reqBody, err)
+		e.logger.Errorf("reqBody: %+v, error: %v", reqBody, err)
 		e.ew.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
 	if err := ioutil.ToJSON(&respBody, w); err != nil {
-		e.logger.Errorf("reqBody: %v, error: %v", reqBody, err)
+		e.logger.Errorf("reqBody: %+v, error: %v", reqBody, err)
 		e.ew.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
@@ -231,14 +231,14 @@ func (e *Endpoints) RandomNCardsDeck(w http.ResponseWriter, r *http.Request) {
 	respBody := models.RandomNCardsDeckResponse{}
 
 	if err := ioutil.FromJSON(&reqBody, r.Body); err != nil {
-		e.logger.Errorf("reqBody: %v, error: %v", reqBody, err)
+		e.logger.Errorf("reqBody: %+v, error: %v", reqBody, err)
 		e.ew.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
 	cardIds, err := e.ss.GetNextRandomDeckN(r.Context(), reqBody.UserId, reqBody.DeckId, models.CoolDown(time.Now()), reqBody.N)
 	if err != nil {
-		e.logger.Errorf("reqBody: %v, error: %v", reqBody, err)
+		e.logger.Errorf("reqBody: %+v, error: %v", reqBody, err)
 		e.ew.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
@@ -246,7 +246,7 @@ func (e *Endpoints) RandomNCardsDeck(w http.ResponseWriter, r *http.Request) {
 	for _, cardId := range cardIds {
 		card, err := e.ds.GetFlashcardById(r.Context(), cardId)
 		if err != nil {
-			e.logger.Errorf("reqBody: %v, error: %v", reqBody, err)
+			e.logger.Errorf("reqBody: %+v, error: %v", reqBody, err)
 			e.ew.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
@@ -255,7 +255,7 @@ func (e *Endpoints) RandomNCardsDeck(w http.ResponseWriter, r *http.Request) {
 	respBody.Flashcards = cards
 
 	if err := ioutil.ToJSON(&respBody, w); err != nil {
-		e.logger.Errorf("reqBody: %v, error: %v", reqBody, err)
+		e.logger.Errorf("reqBody: %+v, error: %v", reqBody, err)
 		e.ew.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
@@ -290,7 +290,7 @@ func (e *Endpoints) Rate(w http.ResponseWriter, r *http.Request) {
 	reqBody := models.RateRequest{}
 
 	if err := ioutil.FromJSON(&reqBody, r.Body); err != nil {
-		e.logger.Errorf("reqBody: %v, error: %v", reqBody, err)
+		e.logger.Errorf("reqBody: %+v, error: %v", reqBody, err)
 		e.ew.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
@@ -303,7 +303,7 @@ func (e *Endpoints) Rate(w http.ResponseWriter, r *http.Request) {
 
 	err := e.ss.Rate(r.Context(), reqBody.UserId, reqBody.FlashcardId, reqBody.Mark)
 	if err != nil {
-		e.logger.Errorf("reqBody: %v, error: %v", reqBody, err)
+		e.logger.Errorf("reqBody: %+v, error: %v", reqBody, err)
 		e.ew.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
@@ -341,14 +341,14 @@ func (e *Endpoints) RandomMatching(w http.ResponseWriter, r *http.Request) {
 	respBody := models.RandomMatchingResponse{}
 
 	if err := ioutil.FromJSON(&reqBody, r.Body); err != nil {
-		e.logger.Errorf("reqBody: %v, error: %v", reqBody, err)
+		e.logger.Errorf("reqBody: %+v, error: %v", reqBody, err)
 		e.ew.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
 	matching, err := e.ss.MakeMatching(r.Context(), reqBody.UserId, models.CoolDown(time.Now()), reqBody.Size)
 	if err != nil {
-		e.logger.Errorf("reqBody: %v, error: %v", reqBody, err)
+		e.logger.Errorf("reqBody: %+v, error: %v", reqBody, err)
 		e.ew.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
@@ -356,7 +356,7 @@ func (e *Endpoints) RandomMatching(w http.ResponseWriter, r *http.Request) {
 	respBody.Matching = matching
 
 	if err := ioutil.ToJSON(&respBody, w); err != nil {
-		e.logger.Errorf("reqBody: %v, error: %v", reqBody, err)
+		e.logger.Errorf("reqBody: %+v, error: %v", reqBody, err)
 		e.ew.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
@@ -392,14 +392,14 @@ func (e *Endpoints) RandomMatchingDeck(w http.ResponseWriter, r *http.Request) {
 	respBody := models.RandomMatchingDeckResponse{}
 
 	if err := ioutil.FromJSON(&reqBody, r.Body); err != nil {
-		e.logger.Errorf("reqBody: %v, error: %v", reqBody, err)
+		e.logger.Errorf("reqBody: %+v, error: %v", reqBody, err)
 		e.ew.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
 	matching, err := e.ss.MakeMatchingDeck(r.Context(), reqBody.UserId, reqBody.DeckId, models.CoolDown(time.Now()), reqBody.Size)
 	if err != nil {
-		e.logger.Errorf("reqBody: %v, error: %v", reqBody, err)
+		e.logger.Errorf("reqBody: %+v, error: %v", reqBody, err)
 		e.ew.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
@@ -407,7 +407,7 @@ func (e *Endpoints) RandomMatchingDeck(w http.ResponseWriter, r *http.Request) {
 	respBody.Matching = matching
 
 	if err := ioutil.ToJSON(&respBody, w); err != nil {
-		e.logger.Errorf("reqBody: %v, error: %v", reqBody, err)
+		e.logger.Errorf("reqBody: %+v, error: %v", reqBody, err)
 		e.ew.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
@@ -443,14 +443,14 @@ func (e *Endpoints) RandomText(w http.ResponseWriter, r *http.Request) {
 	respBody := models.RandomTextResponse{}
 
 	if err := ioutil.FromJSON(&reqBody, r.Body); err != nil {
-		e.logger.Errorf("reqBody: %v, error: %v", reqBody, err)
+		e.logger.Errorf("reqBody: %+v, error: %v", reqBody, err)
 		e.ew.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
 	text, err := e.ss.MakeText(r.Context(), reqBody.UserId, models.CoolDown(time.Now()), reqBody.Size)
 	if err != nil {
-		e.logger.Errorf("reqBody: %v, error: %v", reqBody, err)
+		e.logger.Errorf("reqBody: %+v, error: %v", reqBody, err)
 		e.ew.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
@@ -458,7 +458,7 @@ func (e *Endpoints) RandomText(w http.ResponseWriter, r *http.Request) {
 	respBody.Text = text
 
 	if err := ioutil.ToJSON(&respBody, w); err != nil {
-		e.logger.Errorf("reqBody: %v, error: %v", reqBody, err)
+		e.logger.Errorf("reqBody: %+v, error: %v", reqBody, err)
 		e.ew.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
@@ -494,14 +494,14 @@ func (e *Endpoints) RandomTextDeck(w http.ResponseWriter, r *http.Request) {
 	respBody := models.RandomTextDeckResponse{}
 
 	if err := ioutil.FromJSON(&reqBody, r.Body); err != nil {
-		e.logger.Errorf("reqBody: %v, error: %v", reqBody, err)
+		e.logger.Errorf("reqBody: %+v, error: %v", reqBody, err)
 		e.ew.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
 	text, err := e.ss.MakeTextDeck(r.Context(), reqBody.UserId, reqBody.DeckId, models.CoolDown(time.Now()), reqBody.Size)
 	if err != nil {
-		e.logger.Errorf("reqBody: %v, error: %v", reqBody, err)
+		e.logger.Errorf("reqBody: %+v, error: %v", reqBody, err)
 		e.ew.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
@@ -509,7 +509,7 @@ func (e *Endpoints) RandomTextDeck(w http.ResponseWriter, r *http.Request) {
 	respBody.Text = text
 
 	if err := ioutil.ToJSON(&respBody, w); err != nil {
-		e.logger.Errorf("reqBody: %v, error: %v", reqBody, err)
+		e.logger.Errorf("reqBody: %+v, error: %v", reqBody, err)
 		e.ew.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
