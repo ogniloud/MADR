@@ -1,0 +1,87 @@
+.deck-detail {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+.deck-detail h2 {
+    margin: 0 0 20px;
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.deck-detail nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.deck-detail nav ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.deck-detail nav ul li {
+    display: inline-block;
+    margin-right: 10px;
+}
+
+.deck-detail nav ul li a {
+    text-decoration: none;
+    color: #333;
+    font-weight: 500;
+    padding: 5px 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+.deck-detail nav ul li a.active {
+    background-color: #eee;
+}
+
+.deck-detail .content {
+    flex-grow: 1;
+    padding: 20px;
+    border-radius: 4px;
+    background-color: #fff;
+}
+
+/* Browse Cards Styles */
+
+.browse-cards {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+}
+
+.browse-cards .card {
+    width: 45%;
+    margin-bottom: 10px;
+    padding: 15px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    text-align: center;
+}
+
+.browse-cards .card h3 {
+    font-size: 16px;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.browse-cards .card p {
+    margin-bottom: 0;
+}
+
+/* Exercise Cards Styles */
+
+.exercise-cards {
+    /* ... Add your styles for exercise cards here ... */
+}
