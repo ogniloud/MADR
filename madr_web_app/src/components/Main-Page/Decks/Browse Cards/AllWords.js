@@ -1,119 +1,149 @@
 import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
-import {jwtDecode}from 'jwt-decode';
-import './Styles/AllWords.css';
-const AllWords = () => {
-    const { deck_id } = useParams();
+import { jwtDecode } from 'jwt-decode';
 
-    const [word, setWord] = useState('');
-    const [answer, setAnswer] = useState('');
-    const [backsideType, setBacksideType] = useState(0);
-    const [backsideValue, setBacksideValue] = useState('');
+const WordMatch = () => {
+    const [flashcards, setFlashcards] = useState(null);
+    const [selectedPairs, setSelectedPairs] = useState({});
     const [successMessage, setSuccessMessage] = useState('');
     const [errorMessage, setErrorMessage] = useState('');
+    const [userId, setUserId] = useState(null);
 
     useEffect(() => {
-        // You can use deck_id here for any initialization or additional data fetching
-    }, [deck_id]);
+        fetchFlashcardsData();
+    }, []);
 
-    const handleAddFlashcard = async () => {
+    const fetchFlashcardsData = async () => {
         try {
             const token = localStorage.getItem('token');
             if (!token) {
-                // Handle case where the user is not authenticated
-                return;
-            }
-
-            // Additional validation
-            if (!word || !answer || !backsideValue) {
-                setErrorMessage('Please fill in all fields.');
+                console.error('Error: User not authenticated.');
                 return;
             }
 
             const decodedToken = jwtDecode(token);
             const user_id = decodedToken.user_id;
 
-            // Convert deck_id to a number
-            const deckIdAsNumber = Number(deck_id);
-
-            const requestBody = {
-                word,
-                answer: answer.replace(/^"|"$/g, ''), // Remove double quotes if present
-                backside: {
-                    type: Number(backsideType),
-                    value: backsideValue,
-                },
-                deck_id: deckIdAsNumber,
-                user_id,
-            };
-
-            console.log('Request Body:', JSON.stringify(requestBody));
-
-            const response = await fetch('http://localhost:8080/api/flashcards/add_card', {
-                method: 'PUT',
+            const responseFlashcards = await fetch('http://localhost:8080/api/study/random_matching_deck', {
+                method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify(requestBody),
+                body: JSON.stringify({
+                    size: 5,
+                    user_id: user_id,
+                }),
             });
 
-            console.log('Response:', response);
-
-            if (response.ok) {
-                setSuccessMessage('Flashcard added successfully!');
-                setErrorMessage('');
-
-                // Clear form fields after success
-                setWord('');
-                setAnswer('');
-                setBacksideType(0);
-                setBacksideValue('');
+            if (responseFlashcards.ok) {
+                const dataFlashcards = await responseFlashcards.json();
+                setFlashcards(dataFlashcards.flashcards);
+                setUserId(user_id);
             } else {
-                const errorData = await response.json();
-                setSuccessMessage('');
-                setErrorMessage(`Error: ${errorData.message}`);
+                console.error('Error fetching flashcards:', responseFlashcards.statusText);
             }
         } catch (error) {
-            console.error('Error adding flashcard:', error);
-            setSuccessMessage('');
-            setErrorMessage('An unexpected error occurred.');
+            console.error('Error fetching flashcards:', error);
         }
     };
+
+    const handlePairSelect = (flashcardId, side, value) => {
+        setSelectedPairs({
+            ...selectedPairs,
+            [flashcardId]: {
+                ...selectedPairs[flashcardId],
+                [side]: value,
+            },
+        });
+    };
+
+    const handleCheckAnswers = async () => {
+        try {
+            let totalCorrectAnswers = 0;
+
+            for (const flashcardId in selectedPairs) {
+                const { word, answer } = flashcards.find(card => card.flashcard_id === Number(flashcardId));
+                const selectedWord = selectedPairs[flashcardId].word;
+                const selectedAnswer = selectedPairs[flashcardId].answer;
+
+                if (selectedWord === answer && selectedAnswer === word) {
+                    totalCorrectAnswers++;
+                }
+            }
+
+            const mark = totalCorrectAnswers === Object.keys(selectedPairs).length ? 2 : 0;
+
+            for (const flashcardId in selectedPairs) {
+                const responseRate = await fetch('http://localhost:8080/api/study/rate', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        flashcard_id: Number(flashcardId), // Ensure flashcard_id is a number
+                        mark: mark,
+                        user_id: userId,
+                    }),
+                });
+
+                if (!responseRate.ok) {
+                    console.error('Error recording mark for flashcard', flashcardId, ':', responseRate.statusText);
+                }
+            }
+
+            setSuccessMessage(
+                totalCorrectAnswers === Object.keys(selectedPairs).length
+                    ? 'All answers are correct! Marks recorded.'
+                    : 'Some answers are incorrect. Try again.'
+            );
+            setErrorMessage('');
+        } catch (error) {
+            console.error('Error recording marks:', error);
+        }
+    };
+
     return (
-        <div >
-            <h2>All Words</h2>
-            <div>
-                <label>
-                    Word:
-                    <input type="text" value={word} onChange={(e) => setWord(e.target.value)} />
-                </label>
-            </div>
-            <div>
-                <label>
-                    Answer:
-                    <input type="text" value={answer} onChange={(e) => setAnswer(e.target.value)} />
-                </label>
-            </div>
-            <div>
-                <label>
-                    Backside Type:
-                    <select value={backsideType} onChange={(e) => setBacksideType(Number(e.target.value))}>
-                        <option value={0}>Type 0</option>
-                        {/* Add more options if needed */}
-                    </select>
-                </label>
-            </div>
-            <div>
-                <label>
-                    Backside Value:
-                    <input type="text" value={backsideValue} onChange={(e) => setBacksideValue(e.target.value)} />
-                </label>
-            </div>
-            <button onClick={handleAddFlashcard}>Add New Card</button>
-            {successMessage && <p style={{ color: 'green' }}>{successMessage}</p>}
-            {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>}
+        <div>
+            <h2>Word Matching Exercise</h2>
+            {flashcards ? (
+                <div>
+                    <div className="word-list">
+                        {flashcards.map((card) => (
+                            <div key={card.flashcard_id} className="word-item">
+                                <p>{card.word}</p>
+                            </div>
+                        ))}
+                    </div>
+                    <div className="matching-options">
+                        {flashcards.map((card) => (
+                            <div key={card.flashcard_id} className="option-item">
+                                <label>
+                                    <input
+                                        type="checkbox"
+                                        value={card.answer}
+                                        onChange={(e) => handlePairSelect(card.flashcard_id, 'word', e.target.value)}
+                                    />
+                                    {card.answer}
+                                </label>
+                                <label>
+                                    <input
+                                        type="checkbox"
+                                        value={card.word}
+                                        onChange={(e) => handlePairSelect(card.flashcard_id, 'answer', e.target.value)}
+                                    />
+                                    {card.word}
+                                </label>
+                            </div>
+                        ))}
+                    </div>
+                    <button onClick={handleCheckAnswers}>Check Answers</button>
+                    {successMessage && <p style={{ color: 'green' }}>{successMessage}</p>}
+                    {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>}
+                </div>
+            ) : (
+                <p>Loading...</p>
+            )}
         </div>
     );
 };
 
-export default AllWords;
+export default WordMatch;

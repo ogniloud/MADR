@@ -1,5 +1,26 @@
 /* CreateDecks.css */
 
+.create-decks-page-container{
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-around;
+    font-family: 'Poppins', sans-serif;
+}
+.cd-title{
+        position: absolute;
+        top:-25px;
+        right: -70px;
+        width: 100%;
+        height: 60px;
+        background-color: #97D7CB;
+        color: #fff;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 1em 2em;
+
+}
+
 .create-decks-container {
     max-width: 600px;
     margin: auto;

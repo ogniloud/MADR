@@ -26,8 +26,8 @@ const MainPage = () => {
         <div className="main-page">
             <nav className="upper-part">
                 <div className="user-info">
-                    <p>{userInfo && userInfo.username}</p>
-                    <button onClick={handleLogout}>Logout</button>
+                    <h2 className="title-user-name" >{userInfo && userInfo.username}</h2>
+                    <button className="logout-button" onClick={handleLogout}>Logout</button>
                 </div>
             </nav>
 

@@ -17,13 +17,8 @@ const WordMatch = () => {
             const token = localStorage.getItem('token');
             if (token) {
                 const decodedToken = jwtDecode(token);
-                if (decodedToken && decodedToken.user_id) {
-                    setUserId(decodedToken.user_id);
-                    console.log('Fetched userId:', decodedToken.user_id);
-                    fetchMatchingData();
-                } else {
-                    console.error('Error: Invalid token format or missing user_id.');
-                }
+                setUserId(decodedToken.user_id);
+                fetchMatchingData();
             } else {
                 console.error('Error: User not authenticated.');
             }
@@ -31,6 +26,7 @@ const WordMatch = () => {
             console.error('Error fetching user_id:', error);
         }
     };
+
     const fetchMatchingData = async () => {
         try {
             const responseMatchingData = await fetch('http://localhost:8080/api/study/random_matching', {
@@ -79,7 +75,6 @@ const WordMatch = () => {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
-                    flashcard_id: matchingData.flashcard.id, // Use the actual property you have for flashcard ID ((
                     mark: mark,
                     user_id: userId,
                 }),
@@ -135,3 +130,6 @@ const WordMatch = () => {
 };
 
 export default WordMatch;
+
+
+/// needed to be fixed

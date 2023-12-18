@@ -1,0 +1,107 @@
+/* Flashcards.css */
+
+.ex-flash {
+    margin: 20px;
+    flex-wrap: wrap;
+    justify-content: space-around;
+    font-family: 'Poppins', sans-serif;
+}
+
+.x-flash-title {
+    position: absolute;
+    top: -25px;
+    right: -70px;
+    width: 100%;
+    height: 60px;
+    background-color: #97D7CB;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1em 2em;
+}
+
+.flashcard-container {
+    margin-top: 18.5%;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: center;
+
+}
+
+.flashcard {
+    width: 250px; /* Approximation for 5 inches in pixels */
+    height: 390px; /* Approximation for 7 inches in pixels */
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    background-color: rgba(255, 255, 255, 0.9); /* Adjust the alpha value as needed */
+    cursor: pointer;
+    transition: transform 0.5s ease-in-out;
+    position: relative;
+
+}
+
+.flashcard:hover {
+    transform: scale(1.05);
+}
+
+.card-content {
+    padding: 20px;
+    text-align: center;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-weight: bold;
+    font-size: 50px;
+
+}
+
+.show-back {
+    transform: rotateY(180deg);
+}
+
+.back-content {
+    background-color: #ffd700; /* Change to your desired color */
+    color: #000; /* Adjust text color as needed */
+
+}
+
+.buttons-container {
+    display: flex;
+    justify-content: center;
+    margin-top: 10px;
+}
+
+button {
+    margin: 0 5px;
+    padding: 8px 15px;
+    font-size: 0.9em;
+    cursor: pointer;
+    font-family: 'Poppins', sans-serif;
+}
+
+.button:hover{
+    background-color: bisque;
+}
+
+button:nth-child(1) {
+    background-color: #ff6161;
+    color: #fff;
+}
+
+button:nth-child(2) {
+    background-color: #ffdb58;
+    color: #000;
+}
+
+button:nth-child(3) {
+    background-color: #a3ff84;
+    color: #000;
+}
+
+.flip-button:hover {
+    background-color: #45a049;
+}

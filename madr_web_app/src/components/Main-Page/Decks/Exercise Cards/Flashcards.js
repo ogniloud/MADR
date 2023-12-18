@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { jwtDecode } from 'jwt-decode';
+import './Styles/Flashcards.css'
 
 const Flashcards = () => {
     const { deck_id } = useParams();
@@ -78,8 +79,9 @@ const Flashcards = () => {
     };
 
     return (
-        <div>
-            <h2>Flashcards</h2>
+        <div className="ex-flash">
+            <div><h2 className="x-flash-title">Flashcards</h2></div>
+
             <div className="flashcard-container" onClick={handleCardClick}>
                 {flashcard && (
                     <div className={`flashcard ${flashcard.showBack ? 'show-back' : ''}`}>

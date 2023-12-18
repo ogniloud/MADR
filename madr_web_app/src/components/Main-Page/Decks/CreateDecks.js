@@ -69,50 +69,55 @@ const CreateDecks = ({ fetchUserDecks }) => {
     };
 
     return (
-        <div className="create-decks-container">
-            <h2>Create a New Deck</h2>
-            <div className="deck-form">
-                <label htmlFor="deckName">Deck Name:</label>
-                <input
-                    type="text"
-                    id="deckName"
-                    value={deckName}
-                    onChange={(e) => handleDeckNameChange(e.target.value)}
-                />
 
-                <h3>Flashcards:</h3>
-                {flashcards.map((flashcard, index) => (
-                    <div key={index} className="flashcard-form">
-                        <label htmlFor={`word${index}`}>Word:</label>
-                        <input
-                            type="text"
-                            id={`word${index}`}
-                            value={flashcard.word}
-                            onChange={(e) => handleFlashcardChange(index, 'word', e.target.value)}
-                        />
+        <div className="create-decks-page-container">
+            <div><h2 className="cd-title">Create Deck</h2></div>
 
-                        <label htmlFor={`answer${index}`}>Answer:</label>
-                        <input
-                            type="text"
-                            id={`answer${index}`}
-                            value={flashcard.answer}
-                            onChange={(e) => handleFlashcardChange(index, 'answer', e.target.value)}
-                        />
+            <div className="create-decks-container">
+                <h2 className="create-deck-title">Create a New Deck</h2>
+                <div className="deck-form">
+                    <label htmlFor="deckName">Deck Name:</label>
+                    <input
+                        type="text"
+                        id="deckName"
+                        value={deckName}
+                        onChange={(e) => handleDeckNameChange(e.target.value)}
+                    />
 
-                        <label htmlFor={`backside${index}`}>Backside:</label>
-                        <input
-                            type="text"
-                            id={`backside${index}`}
-                            value={flashcard.backside.value}
-                            onChange={(e) => handleFlashcardChange(index, 'backside', e.target.value)}
-                        />
-                    </div>
-                ))}
+                    <h3 className="flashcards-do">Flashcards:</h3>
+                    {flashcards.map((flashcard, index) => (
+                        <div key={index} className="flashcard-form">
+                            <label htmlFor={`word${index}`}>Word:</label>
+                            <input
+                                type="text"
+                                id={`word${index}`}
+                                value={flashcard.word}
+                                onChange={(e) => handleFlashcardChange(index, 'word', e.target.value)}
+                            />
 
-                {errorMessage && <div className="error-message">{errorMessage}</div>}
+                            <label htmlFor={`answer${index}`}>Answer:</label>
+                            <input
+                                type="text"
+                                id={`answer${index}`}
+                                value={flashcard.answer}
+                                onChange={(e) => handleFlashcardChange(index, 'answer', e.target.value)}
+                            />
 
-                <button onClick={addFlashcard}>Add Flashcard</button>
-                <button onClick={handleSubmit}>Create Deck</button>
+                            <label htmlFor={`backside${index}`}>Backside:</label>
+                            <input
+                                type="text"
+                                id={`backside${index}`}
+                                value={flashcard.backside.value}
+                                onChange={(e) => handleFlashcardChange(index, 'backside', e.target.value)}
+                            />
+                        </div>
+                    ))}
+
+                    {errorMessage && <div className="error-message">{errorMessage}</div>}
+
+                    <button onClick={addFlashcard}>Add Flashcard</button>
+                    <button onClick={handleSubmit}>Create Deck</button>
+                </div>
             </div>
         </div>
     );

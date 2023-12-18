@@ -47,11 +47,11 @@ const DecksPage = () => {
 
     return (
         <div>
-            <h2>All Decks</h2>
+            <h2 className="title-deck">All Decks</h2>
             <div className="deck-container">
                 {createdDecks.length > 0 &&
                     createdDecks.map((deck) => (
-                        <div key={deck.deck_id} className="deck-card">
+                        <div  key={deck.deck_id} className="deck-card">
                             <Link to={`/decks/${deck.deck_id}`}>
                                 <span>{deck.name}</span>
                             </Link>
@@ -59,7 +59,6 @@ const DecksPage = () => {
                     ))}
             </div>
 
-            {/* Use the Routes component to define routes */}
             <Routes>
                 <Route path="/:deckId/*" element={<DeckDetail />} />
             </Routes>
