@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { jwtDecode } from 'jwt-decode';
+import React, {useEffect, useState} from 'react';
+import {jwtDecode} from 'jwt-decode';
 
 const WordMatch = () => {
     const [matchingData, setMatchingData] = useState(null);
@@ -65,27 +65,28 @@ const WordMatch = () => {
                     isCorrect = false;
                     break;
                 }
-            }
 
-            const mark = isCorrect ? 2 : 0;
+                const mark = isCorrect ? 2 : 0;
 
-            const responseRate = await fetch('http://localhost:8080/api/study/rate', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    mark: mark,
-                    user_id: userId,
-                }),
-            });
+                const responseRate = await fetch('http://localhost:8080/api/study/rate', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        mark: mark,
+                        flashcard_id: matchingData.cards[property].id,
+                        user_id: userId,
+                    }),
+                });
 
-            if (responseRate.ok) {
-                setSuccessMessage(isCorrect ? 'Correct! Mark recorded.' : 'Incorrect. Try again.');
-                setErrorMessage('');
-                // Optionally, you can fetch new matching data here for the next round
-            } else {
-                console.error('Error recording mark:', responseRate.statusText);
+                if (responseRate.ok) {
+                    setSuccessMessage(isCorrect ? 'Correct! Mark recorded.' : 'Incorrect. Try again.');
+                    setErrorMessage('');
+                    // Optionally, you can fetch new matching data here for the next round
+                } else {
+                    console.error('Error recording mark:', responseRate.statusText);
+                }
             }
         } catch (error) {
             console.error('Error recording mark:', error);
