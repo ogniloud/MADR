@@ -68,7 +68,7 @@ func ParseBackside(b Backside) string {
 type Flashcard struct {
 	Id FlashcardId `json:"id"`
 	W  Word        `json:"word"`
-	A  Answer      `json:"asnwer"`
+	A  Answer      `json:"answer"`
 	B  Backside    `json:"backside"`
 
 	// DeckId shows which deck the flashcard belongs to.
