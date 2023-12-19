@@ -1,5 +1,6 @@
-import React, {useEffect, useState} from 'react';
-import {jwtDecode} from 'jwt-decode';
+import React, { useEffect, useState } from 'react';
+import { jwtDecode } from 'jwt-decode';
+import './Styles/WordMatch.css';
 
 const WordMatch = () => {
     const [matchingData, setMatchingData] = useState(null);
@@ -29,22 +30,28 @@ const WordMatch = () => {
 
     const fetchMatchingData = async () => {
         try {
-            const responseMatchingData = await fetch('http://localhost:8080/api/study/random_matching', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    size: 5,
-                    user_id: userId,
-                }),
-            });
+            const responseMatchingData = await fetch(
+                'http://localhost:8080/api/study/random_matching',
+                {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        size: 5,
+                        user_id: userId,
+                    }),
+                }
+            );
 
             if (responseMatchingData.ok) {
                 const dataMatchingData = await responseMatchingData.json();
                 setMatchingData(dataMatchingData.matching);
             } else {
-                console.error('Error fetching matching data:', responseMatchingData.statusText);
+                console.error(
+                    'Error fetching matching data:',
+                    responseMatchingData.statusText
+                );
             }
         } catch (error) {
             console.error('Error fetching matching data:', error);
@@ -55,73 +62,118 @@ const WordMatch = () => {
         setSelectedPairs({ ...selectedPairs, [property]: value });
     };
 
-
     const handleCheckAnswers = async () => {
+        console.log('selectedPairs:', selectedPairs);
+        console.log('matchingData.cards:', matchingData.cards);
+        console.log('matchingData.pairs:', matchingData.pairs);
         try {
-            let isCorrect = true;
+            const isCorrect = Object.keys(selectedPairs).every((property) => {
+                const selectedValue = selectedPairs[property].trim().toLowerCase();
+                const correctValue = matchingData.pairs[property].trim().toLowerCase();
+                return selectedValue === correctValue;
+            });
+
+
+            const mark = isCorrect ? 2 : 0;
 
             for (const property in selectedPairs) {
-                if (selectedPairs[property] !== matchingData.pairs[property]) {
-                    isCorrect = false;
-                    break;
-                }
+                const responseRate = await fetch(
+                    'http://localhost:8080/api/study/rate',
+                    {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            mark: mark,
+                            flashcard_id: matchingData.cards[property].id,
+                            user_id: userId,
+                        }),
+                    }
+                );
 
-                const mark = isCorrect ? 2 : 0;
-
-                const responseRate = await fetch('http://localhost:8080/api/study/rate', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        mark: mark,
-                        flashcard_id: matchingData.cards[property].id,
-                        user_id: userId,
-                    }),
-                });
-
-                if (responseRate.ok) {
-                    setSuccessMessage(isCorrect ? 'Correct! Mark recorded.' : 'Incorrect. Try again.');
-                    setErrorMessage('');
-                    // Optionally, you can fetch new matching data here for the next round
-                } else {
+                if (!responseRate.ok) {
                     console.error('Error recording mark:', responseRate.statusText);
+                    return;
                 }
             }
+
+            setSuccessMessage(
+                isCorrect ? 'Correct! Mark recorded.' : 'Incorrect. Try again.'
+            );
+            setErrorMessage('');
+
+            // Clear selected pairs and reset checkboxes
+            setSelectedPairs({});
+            document
+                .querySelectorAll('input[type="checkbox"]')
+                .forEach((checkbox) => {
+                    checkbox.checked = false;
+                });
+
+            // Optionally, you can fetch new matching data here for the next round
         } catch (error) {
             console.error('Error recording mark:', error);
         }
     };
 
     return (
-        <div>
-            <h2>Word Matching Exercise</h2>
+        <div className="wm-container">
+            <h2 className="wm-title">Word Match </h2>
+            <div>
+                <p className="wm-subtitle">Match the words with the suitable answers</p>
+            </div>
+
             {matchingData ? (
-                <div>
-                    <div className="word-list">
-                        {Object.keys(matchingData.cards).map((property, index) => (
-                            <div key={index} className="word-item">
-                                <p>{matchingData.cards[property].word}</p>
-                            </div>
-                        ))}
+                <div className="wm-exe-container">
+                    <div className="wm-ex-box">
+                        <div className="word-list">
+                            {Object.keys(matchingData.cards).map((property, index) => (
+                                <div key={index} className="word-item">
+                                    <label>
+                                        <input
+                                            type="checkbox"
+                                            value={matchingData.cards[property].word}
+                                            onChange={() =>
+                                                handlePairSelect(
+                                                    property,
+                                                    matchingData.cards[property].word
+                                                )
+                                            }
+                                        />
+                                        {matchingData.cards[property].word}
+                                    </label>
+                                </div>
+                            ))}
+                        </div>
+                        <div className="answer-list">
+                            {Object.keys(matchingData.pairs).map((property, index) => (
+                                <div key={index} className="answer-item">
+                                    <label>
+                                        <input
+                                            type="checkbox"
+                                            value={matchingData.pairs[property]}
+                                            onChange={() =>
+                                                handlePairSelect(
+                                                    property,
+                                                    matchingData.pairs[property]
+                                                )
+                                            }
+                                        />
+                                        {matchingData.pairs[property]}
+                                    </label>
+                                </div>
+                            ))}
+                        </div>
                     </div>
-                    <div className="matching-options">
-                        {Object.keys(matchingData.pairs).map((property, index) => (
-                            <div key={index} className="option-item">
-                                <label>
-                                    <input
-                                        type="checkbox"
-                                        value={matchingData.pairs[property]}
-                                        onChange={(e) => handlePairSelect(property, e.target.value)}
-                                    />
-                                    {matchingData.pairs[property]}
-                                </label>
-                            </div>
-                        ))}
+
+                    <div className="wm-button">
+                        <button onClick={handleCheckAnswers}>Check Answers</button>
+                        {successMessage && (
+                            <p style={{ color: 'green' }}>{successMessage}</p>
+                        )}
+                        {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>}
                     </div>
-                    <button onClick={handleCheckAnswers}>Check Answers</button>
-                    {successMessage && <p style={{ color: 'green' }}>{successMessage}</p>}
-                    {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>}
                 </div>
             ) : (
                 <p>Loading...</p>
@@ -131,6 +183,3 @@ const WordMatch = () => {
 };
 
 export default WordMatch;
-
-
-/// needed to be fixed
