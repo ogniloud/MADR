@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
-import {jwtDecode}from 'jwt-decode';
+import React, {useEffect, useState} from 'react';
+import {useParams} from 'react-router-dom';
+import {jwtDecode} from 'jwt-decode';
 import './Styles/AllWords.css';
+
 const AllWords = () => {
     const { deck_id } = useParams();
 
@@ -109,6 +110,7 @@ const AllWords = () => {
                 setSuccessMessage('');
                 setErrorMessage(`Error: ${errorData.message}`);
             }
+            window.location.reload()
         } catch (error) {
             console.error('Error adding flashcard:', error);
             setSuccessMessage('');
