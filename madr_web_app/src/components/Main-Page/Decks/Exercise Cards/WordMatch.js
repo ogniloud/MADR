@@ -68,22 +68,10 @@ const WordMatch = () => {
         console.log('matchingData.pairs:', matchingData.pairs);
         try {
             const isCorrect = Object.keys(selectedPairs).every((property) => {
-                const selectedValue = selectedPairs[property].trim().toLowerCase();
-
-                // Look up the corresponding card and pair values
-                const selectedCard = matchingData.cards[property];
-                const selectedPair = matchingData.pairs[property];
-
-                // Extract the words from the selected card and pair
-                const selectedCardWord = selectedCard.word.trim().toLowerCase();
-                const selectedPairWord = selectedPair.trim().toLowerCase();
-
-                return selectedValue === selectedCardWord || selectedValue === selectedPairWord;
+                return matchingData.cards[property].answer === selectedPairs[property]
 
                 console.log('isCorrect:', isCorrect);
                 console.log('mark:', mark);
-                console.log('selectedCardWord:', selectedCardWord);
-                console.log('selectedPairWord:', selectedPairWord);
             });
 
 
