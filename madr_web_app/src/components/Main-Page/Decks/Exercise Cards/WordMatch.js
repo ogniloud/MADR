@@ -69,28 +69,38 @@ const WordMatch = () => {
         try {
             const isCorrect = Object.keys(selectedPairs).every((property) => {
                 const selectedValue = selectedPairs[property].trim().toLowerCase();
-                const correctValue = matchingData.pairs[property].trim().toLowerCase();
-                return selectedValue === correctValue;
+
+                // Look up the corresponding card and pair values
+                const selectedCard = matchingData.cards[property];
+                const selectedPair = matchingData.pairs[property];
+
+                // Extract the words from the selected card and pair
+                const selectedCardWord = selectedCard.word.trim().toLowerCase();
+                const selectedPairWord = selectedPair.trim().toLowerCase();
+
+                return selectedValue === selectedCardWord || selectedValue === selectedPairWord;
+
+                console.log('isCorrect:', isCorrect);
+                console.log('mark:', mark);
+                console.log('selectedCardWord:', selectedCardWord);
+                console.log('selectedPairWord:', selectedPairWord);
             });
 
 
             const mark = isCorrect ? 2 : 0;
 
             for (const property in selectedPairs) {
-                const responseRate = await fetch(
-                    'http://localhost:8080/api/study/rate',
-                    {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify({
-                            mark: mark,
-                            flashcard_id: matchingData.cards[property].id,
-                            user_id: userId,
-                        }),
-                    }
-                );
+                const responseRate = await fetch('http://localhost:8080/api/study/rate', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        mark: mark,
+                        flashcard_id: matchingData.cards[property].id,
+                        user_id: userId,
+                    }),
+                });
 
                 if (!responseRate.ok) {
                     console.error('Error recording mark:', responseRate.statusText);
@@ -112,8 +122,11 @@ const WordMatch = () => {
                 });
 
             // Optionally, you can fetch new matching data here for the next round
+            fetchMatchingData();
         } catch (error) {
             console.error('Error recording mark:', error);
+            setErrorMessage('Error recording mark. Please try again.');
+            setSuccessMessage('');
         }
     };
 
