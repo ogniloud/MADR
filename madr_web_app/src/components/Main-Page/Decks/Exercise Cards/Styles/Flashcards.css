@@ -1,13 +1,14 @@
-/* Flashcards.css */
 
 .ex-flash {
     margin: 20px;
     flex-wrap: wrap;
     justify-content: space-around;
     font-family: 'Poppins', sans-serif;
+    height: 100%;
+    width: 100%;
 }
 
-.x-flash-title {
+.ex-flash-title {
     position: absolute;
     top: -25px;
     right: -70px;
@@ -21,7 +22,7 @@
     padding: 1em 2em;
 }
 
-.flashcard-container {
+.ex-flashcard-container {
     margin-top: 18.5%;
     display: flex;
     flex-wrap: wrap;
@@ -30,7 +31,7 @@
 
 }
 
-.flashcard {
+.ex-flashcard {
     width: 250px; /* Approximation for 5 inches in pixels */
     height: 390px; /* Approximation for 7 inches in pixels */
     border: 1px solid #ccc;
@@ -40,10 +41,16 @@
     cursor: pointer;
     transition: transform 0.5s ease-in-out;
     position: relative;
+    background-color: #8E6C90;
+    color: white;
 
 }
 
-.flashcard:hover {
+.ex-show-back{
+   background-color: #97D7CB;
+}
+
+.ex-flashcard:hover {
     transform: scale(1.05);
 }
 
@@ -55,53 +62,24 @@
     left: 50%;
     transform: translate(-50%, -50%);
     font-weight: bold;
-    font-size: 50px;
+    font-size: 20px;
 
 }
 
-.show-back {
-    transform: rotateY(180deg);
-}
-
-.back-content {
-    background-color: #ffd700; /* Change to your desired color */
-    color: #000; /* Adjust text color as needed */
-
-}
-
-.buttons-container {
+.ex-flashcard-buttons-container {
     display: flex;
     justify-content: center;
-    margin-top: 10px;
+    margin-top: 15px;
+    font-family: 'Poppins', sans-serif;
 }
 
-button {
+.ex-flashcard-button-1,
+.ex-flashcard-button-2,
+.ex-flashcard-button-3{
     margin: 0 5px;
     padding: 8px 15px;
     font-size: 0.9em;
     cursor: pointer;
-    font-family: 'Poppins', sans-serif;
-}
+    background-color: black;
 
-.button:hover{
-    background-color: bisque;
-}
-
-button:nth-child(1) {
-    background-color: #ff6161;
-    color: #fff;
-}
-
-button:nth-child(2) {
-    background-color: #ffdb58;
-    color: #000;
-}
-
-button:nth-child(3) {
-    background-color: #a3ff84;
-    color: #000;
-}
-
-.flip-button:hover {
-    background-color: #45a049;
 }

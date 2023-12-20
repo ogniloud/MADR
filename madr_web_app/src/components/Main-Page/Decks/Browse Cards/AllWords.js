@@ -11,9 +11,46 @@ const AllWords = () => {
     const [backsideValue, setBacksideValue] = useState('');
     const [successMessage, setSuccessMessage] = useState('');
     const [errorMessage, setErrorMessage] = useState('');
+    const [flashcards, setFlashcards] = useState([]);
 
     useEffect(() => {
+
+        loadFlashcards();
     }, [deck_id]);
+
+    const loadFlashcards = async () => {
+        try {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                // Handle case where the user is not authenticated
+                return;
+            }
+
+            const decodedToken = jwtDecode(token);
+            const user_id = decodedToken.user_id;
+
+            const requestBody = {
+                deck_id: Number(deck_id),
+            };
+
+            const response = await fetch('http://localhost:8080/api/flashcards/cards', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(requestBody),
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                setFlashcards(data.flashcards);
+            } else {
+                console.error('Error loading flashcards:', response.statusText);
+            }
+        } catch (error) {
+            console.error('Error loading flashcards:', error);
+        }
+    };
 
     const handleAddFlashcard = async () => {
         try {
@@ -79,33 +116,45 @@ const AllWords = () => {
         }
     };
     return (
-            <div className="all-words-container">
-                <h2 className="aw-title">All Words</h2>
-                <div className="flashcard-aw">
-                    <label>
-                        Word:
-                        <input type="text" value={word} onChange={(e) => setWord(e.target.value)} />
-                    </label>
-                    <label>
-                        Answer:
-                        <input type="text" value={answer} onChange={(e) => setAnswer(e.target.value)} />
-                    </label>
-                    <label>
-                        Backside Type:
-                        <select value={backsideType} onChange={(e) => setBacksideType(Number(e.target.value))}>
-                            <option value={0}>Type 0</option>
-                            {/* Add more options if needed */}
-                        </select>
-                    </label>
-                    <label>
-                        Backside Value:
-                        <input type="text" value={backsideValue} onChange={(e) => setBacksideValue(e.target.value)} />
-                    </label>
-                </div>
-                <button onClick={handleAddFlashcard}>Add New Card</button>
-                {successMessage && <p className="success-message">{successMessage}</p>}
-                {errorMessage && <p className="error-message">{errorMessage}</p>}
+        <div className="all-words-container">
+            <div>
+                <h2 className="all-words-title"> All Words</h2>
             </div>
+            <div className="all-words-flashcard-list">
+                <h3 className="all-words-subtitle">Browse Cards</h3>
+                <div className="all-words-flashcard-grid">
+                    {flashcards.map((flashcard, index) => (
+                        <div key={flashcard.id} className="all-words-flashcard-item">
+                            {flashcard.word}
+                        </div>
+                    ))}
+                </div>
+            </div>
+            <div className="all-words-add-flashcards">
+                <h3 className="all-words-box-title"> Create New Cards </h3>
+                <label>
+                    Word:
+                    <input type="text" value={word} onChange={(e) => setWord(e.target.value)}/>
+                </label>
+                <label>
+                    Answer:
+                    <input type="text" value={answer} onChange={(e) => setAnswer(e.target.value)}/>
+                </label>
+                <label>
+                    Backside Type:
+                    <select value={backsideType} onChange={(e) => setBacksideType(Number(e.target.value))}>
+                        <option value={0}>Type 0</option>
+                    </select>
+                </label>
+                <label>
+                    Backside Value:
+                    <input type="text" value={backsideValue} onChange={(e) => setBacksideValue(e.target.value)}/>
+                </label>
+            </div>
+            <button className='all-words-submit-button' onClick={handleAddFlashcard}>Add New Card</button>
+            {successMessage && <p className="all-words-success-message">{successMessage}</p>}
+            {errorMessage && <p className="all-words-error-message">{errorMessage}</p>}
+        </div>
     );
 };
 

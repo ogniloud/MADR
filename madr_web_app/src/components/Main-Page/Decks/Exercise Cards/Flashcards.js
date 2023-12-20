@@ -80,19 +80,19 @@ const Flashcards = () => {
 
     return (
         <div className="ex-flash">
-            <div><h2 className="x-flash-title">Flashcards</h2></div>
+            <div><h2 className="ex-flash-title">Flashcards</h2></div>
 
-            <div className="flashcard-container" onClick={handleCardClick}>
+            <div className="ex-flashcard-container" onClick={handleCardClick}>
                 {flashcard && (
-                    <div className={`flashcard ${flashcard.showBack ? 'show-back' : ''}`}>
+                    <div className={`ex-flashcard ${flashcard.showBack ? 'ex-show-back' : ''}`}>
                         <div className="card-content">{flashcard.showBack ? flashcard.backside.value : flashcard.word}</div>
                     </div>
                 )}
             </div>
-            <div className="buttons-container">
-                <button onClick={() => handleMark(0)}>Can't recall it</button>
-                <button onClick={() => handleMark(1)}>Yeah but...</button>
-                <button onClick={() => handleMark(2)}>Yeah, perfectly</button>
+            <div className="ex-flashcard-buttons-container">
+                <button className="ex-flashcard-button-1" onClick={() => handleMark(0)}>Can't recall it</button>
+                <button className="ex-flashcard-button-1" onClick={() => handleMark(1)}>Yeah but...</button>
+                <button className="ex-flashcard-button-1" onClick={() => handleMark(2)}>Yeah, perfectly</button>
             </div>
             <p>Cards Seen: {cardsSeen}</p>
         </div>

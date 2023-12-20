@@ -6,7 +6,7 @@
     font-family: 'Poppins', sans-serif;
 }
 
-.aw-title{
+.all-words-title{
     position: absolute;
     top:-25px;
     right: -70px;
@@ -20,43 +20,96 @@
     padding: 1em 2em;
 }
 
-.flashcard-aw {
+.all-words-add-flashcards {
     position: relative;
-    margin-top: 20%;
+    margin-top: 5%;
     border: 1px solid #ccc;
     padding: 20px;
     border-radius: 8px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     background-color: rgba(255, 255, 255, 0.9);
+    left: 200px;
+    transition: background-color 0.3s ease, transform 0.3s ease;
 }
 
-label {
-    display: block;
-    margin-bottom: 10px;
+.all-words-box-title{
+    position: relative;
+    margin-top:30px;
 }
 
-input,
-select {
-    width: 100%;
-    padding: 8px;
-    margin-top: 4px;
-    margin-bottom: 12px;
-    box-sizing: border-box;
+.all-words-add-flashcards:hover {
+    background-color: #97D7CB;
+    transform: translateY(-4px); /* Lift the box on hover */
 }
 
-button {
-    top:12px;
-    background-color: #4caf50;
+
+.all-words-submit-button {
+    margin-top: 400px;
+    margin-right: -520px;
+    position: absolute;
+    border-radius: 12px;
+    background-color: black;
+    width: 320px;
+    height: 40px;
     color: white;
-    padding: 10px 15px;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
+
 }
 
-button:hover {
-    background-color: #45a049;
+
+.all-words-success-message,
+.all-words-error-message {
+    position: absolute;
+    margin-top: 450px;
+    margin-right: -520px;
+
 }
+
+
+.all-words-submit-button:hover{
+    background-color: #D45A35;
+}
+
+
+.all-words-subtitle{
+    position: relative;
+    right:280px;
+
+}
+
+.all-words-flashcard-grid {
+
+    position: absolute;
+    left: 140px;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+}
+
+.all-words-flashcard-item {
+    background-color: #fff;
+    border: 1px solid #ddd;
+    padding: 10px;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+.all-words-flashcard-item:hover {
+    background-color: #f9f9f9;
+    transform: translateY(-4px);
+}
+
+
+
+
+
+
+
+
+
+
+
 
 .success-message {
     color: green;

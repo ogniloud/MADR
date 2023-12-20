@@ -123,17 +123,20 @@ const WordMatch = () => {
         <div className="wm-container">
             <h2 className="wm-title">Word Match </h2>
             <div>
-                <p className="wm-subtitle">Match the words with the suitable answers</p>
+                <p className="wm-subtitle">Match the words with suitable answers</p>
             </div>
 
             {matchingData ? (
                 <div className="wm-exe-container">
                     <div className="wm-ex-box">
-                        <div className="word-list">
+                        <div className="wm-word-list">
+                            <div>
+                                <h3 className="wm-word"> Word keys </h3>
+                            </div>
                             {Object.keys(matchingData.cards).map((property, index) => (
-                                <div key={index} className="word-item">
+                                <div key={index} className="wm-word-item">
                                     <label>
-                                        <input
+                                        <input className="wm-checkboxes-word"
                                             type="checkbox"
                                             value={matchingData.cards[property].word}
                                             onChange={() =>
@@ -145,11 +148,14 @@ const WordMatch = () => {
                                 </div>
                             ))}
                         </div>
-                        <div className="answer-list">
+                        <div className="wm-answer-list">
+                            <div>
+                                <h3 className="wm-word"> Answer keys </h3>
+                            </div>
                             {Object.keys(matchingData.pairs).map((property, index) => (
-                                <div key={index} className="answer-item">
+                                <div key={index} className="wm-answer-item">
                                     <label>
-                                        <input
+                                        <input className="wm-checkboxes-answer"
                                             type="checkbox"
                                             value={matchingData.pairs[property]}
                                             onChange={() =>
@@ -167,11 +173,11 @@ const WordMatch = () => {
                     </div>
 
                     <div className="wm-button">
-                        <button onClick={handleCheckAnswers}>Check Answers</button>
+                        <button className="wm-submit-button" onClick={handleCheckAnswers}>Check Answers</button>
                         {successMessage && (
-                            <p style={{ color: 'green' }}>{successMessage}</p>
+                            <p className="wm-successMessage" style={{ color: 'green' }}>{successMessage}</p>
                         )}
-                        {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>}
+                        {errorMessage && <p className="wm-errorMessage" style={{ color: 'red' }}>{errorMessage}</p>}
                     </div>
                 </div>
             ) : (
