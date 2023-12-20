@@ -1,0 +1,618 @@
+{
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "schemes": [
+    "http"
+  ],
+  "swagger": "2.0",
+  "info": {
+    "description": "Documentation for MADR API.",
+    "title": "describes models for application.",
+    "contact": {
+      "name": "Artyom Blaginin",
+      "email": "pelageech@mail.ru"
+    },
+    "version": "0.0.1"
+  },
+  "basePath": "/",
+  "paths": {
+    "/api/flashcards/add_card": {
+      "put": {
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "http"
+        ],
+        "summary": "Puts a card to the deck.",
+        "operationId": "AddCard",
+        "parameters": [
+          {
+            "description": "Add flashcard to the deck request.",
+            "name": "request",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "description": "Add flashcard to the deck request.",
+              "type": "object",
+              "$ref": "#/definitions/addFlashcardToDeckRequest"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "$ref": "#/responses/addFlashcardToDeckCreatedResponse"
+          },
+          "400": {
+            "$ref": "#/responses/addFlashcardToDeckBadRequestError"
+          },
+          "500": {
+            "$ref": "#/responses/addFlashcardToDeckInternalServerError"
+          }
+        }
+      }
+    },
+    "/api/flashcards/cards": {
+      "post": {
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "http"
+        ],
+        "summary": "Returns flashcards containing in the deck.",
+        "operationId": "CardsByDeckId",
+        "parameters": [
+          {
+            "description": "Get flashcards by deck id request.",
+            "name": "request",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "description": "Get flashcards by deck id request.",
+              "type": "object",
+              "$ref": "#/definitions/getFlashcardsByDeckIdRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/responses/getFlashcardsByDeckIdOkResponse"
+          },
+          "400": {
+            "$ref": "#/responses/getFlashcardsByDeckIdBadRequestError"
+          },
+          "500": {
+            "$ref": "#/responses/getFlashcardsByDeckIdInternalServerError"
+          }
+        }
+      }
+    },
+    "/api/flashcards/delete_card": {
+      "delete": {
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "http"
+        ],
+        "summary": "Deletes a card from the deck.",
+        "operationId": "DeleteCard",
+        "parameters": [
+          {
+            "description": "Delete card from deck request.",
+            "name": "request",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "description": "Delete card from deck request.",
+              "type": "object",
+              "$ref": "#/definitions/deleteFlashcardFromDeckRequest"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "$ref": "#/responses/deleteFlashcardFromDeckNoContentResponse"
+          },
+          "400": {
+            "$ref": "#/responses/deleteFlashcardFromDeckBadRequestError"
+          },
+          "500": {
+            "$ref": "#/responses/deleteFlashcardFromDeckInternalServerError"
+          }
+        }
+      }
+    },
+    "/api/flashcards/delete_deck": {
+      "delete": {
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "http"
+        ],
+        "summary": "Deletes a deck from user's collection.",
+        "operationId": "DeleteDeck",
+        "parameters": [
+          {
+            "description": "Delete deck request.",
+            "name": "request",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "description": "Delete deck request.",
+              "type": "object",
+              "$ref": "#/definitions/deleteDeckRequest"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "$ref": "#/responses/deleteDeckNoContentResponse"
+          },
+          "400": {
+            "$ref": "#/responses/deleteDeckBadRequestError"
+          },
+          "500": {
+            "$ref": "#/responses/deleteDeckInternalServerError"
+          }
+        }
+      }
+    },
+    "/api/flashcards/load": {
+      "post": {
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "http"
+        ],
+        "summary": "Loads decks that the user has.",
+        "operationId": "LoadDecks",
+        "parameters": [
+          {
+            "description": "Load decks request.",
+            "name": "request",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "description": "Load decks request.",
+              "type": "object",
+              "$ref": "#/definitions/loadDecksRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/responses/loadDecksOkResponse"
+          },
+          "400": {
+            "$ref": "#/responses/loadDecksBadRequestError"
+          },
+          "500": {
+            "$ref": "#/responses/loadDecksInternalServerError"
+          }
+        }
+      }
+    },
+    "/api/flashcards/new_deck": {
+      "put": {
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "http"
+        ],
+        "summary": "Creates a new deck with flashcards.",
+        "operationId": "NewDeck",
+        "parameters": [
+          {
+            "description": "New deck with flashcards request.",
+            "name": "request",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "description": "New deck with flashcards request.",
+              "type": "object",
+              "$ref": "#/definitions/newDeckWithFlashcardsRequest"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "$ref": "#/responses/newDeckWithFlashcardsCreatedResponse"
+          },
+          "400": {
+            "$ref": "#/responses/newDeckWithFlashcardsBadRequestError"
+          },
+          "500": {
+            "$ref": "#/responses/newDeckWithFlashcardsInternalServerError"
+          }
+        }
+      }
+    },
+    "/api/signin": {
+      "post": {
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "http"
+        ],
+        "summary": "Signs in a user.",
+        "operationId": "SignIn",
+        "parameters": [
+          {
+            "description": "Sign in request.",
+            "name": "request",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "description": "Sign in request.",
+              "type": "object",
+              "$ref": "#/definitions/signInRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/responses/signInOkResponse"
+          },
+          "400": {
+            "$ref": "#/responses/signInBadRequestError"
+          },
+          "401": {
+            "$ref": "#/responses/signInUnauthorizedError"
+          },
+          "500": {
+            "$ref": "#/responses/signInInternalServerError"
+          }
+        }
+      }
+    },
+    "/api/signup": {
+      "post": {
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "http"
+        ],
+        "summary": "Creates a new user.",
+        "operationId": "SignUp",
+        "parameters": [
+          {
+            "description": "Sign up request.",
+            "name": "request",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "description": "Sign up request.",
+              "type": "object",
+              "$ref": "#/definitions/signUpRequest"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "$ref": "#/responses/signUpCreatedResponse"
+          },
+          "400": {
+            "$ref": "#/responses/signUpBadRequestError"
+          },
+          "409": {
+            "$ref": "#/responses/signUpConflictError"
+          },
+          "500": {
+            "$ref": "#/responses/signUpInternalServerError"
+          }
+        }
+      }
+    },
+    "/api/study/random": {
+      "post": {
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "http"
+        ],
+        "summary": "Returns a random card from all the decks.",
+        "operationId": "RandomCard",
+        "parameters": [
+          {
+            "description": "Random Card request.",
+            "name": "request",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "description": "Random Card request.",
+              "type": "object",
+              "$ref": "#/definitions/randomCardRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/responses/randomCardOkResponse"
+          },
+          "400": {
+            "$ref": "#/responses/randomCardBadRequestError"
+          },
+          "500": {
+            "$ref": "#/responses/randomCardInternalServerError"
+          }
+        }
+      }
+    },
+    "/api/study/random_deck": {
+      "post": {
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "http"
+        ],
+        "summary": "Returns a random card from the decks.",
+        "operationId": "RandomCardDeck",
+        "parameters": [
+          {
+            "description": "Random Card Deck request.",
+            "name": "request",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "description": "Random Card Deck request.",
+              "type": "object",
+              "$ref": "#/definitions/randomCardDeckRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/responses/randomCardDeckOkResponse"
+          },
+          "400": {
+            "$ref": "#/responses/randomCardDeckBadRequestError"
+          },
+          "500": {
+            "$ref": "#/responses/randomCardDeckInternalServerError"
+          }
+        }
+      }
+    },
+    "/api/study/rate": {
+      "post": {
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "http"
+        ],
+        "summary": "Rates the card and puts a new temperature for the card in a leitner's system.",
+        "operationId": "Rate",
+        "parameters": [
+          {
+            "description": "Rate request.",
+            "name": "request",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "description": "Rate request.",
+              "type": "object",
+              "$ref": "#/definitions/rateRequest"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "$ref": "#/responses/rateNoContentResponse"
+          },
+          "400": {
+            "$ref": "#/responses/rateBadRequestError"
+          },
+          "500": {
+            "$ref": "#/responses/rateInternalServerError"
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "addFlashcardToDeckRequest": {
+      "description": "AddFlashcardToDeckRequest is a struct that defines the request body for the\nadding cards to the deck handler.",
+      "x-go-name": "AddFlashcardToDeckRequest",
+      "x-go-package": "github.com/ogniloud/madr/internal/flashcards/models"
+    },
+    "deleteDeckRequest": {
+      "description": "DeleteDeckRequest is a struct that defines the request body for the\ndeleting the deck handler.",
+      "x-go-name": "DeleteDeckRequest",
+      "x-go-package": "github.com/ogniloud/madr/internal/flashcards/models"
+    },
+    "deleteFlashcardFromDeckRequest": {
+      "description": "DeleteFlashcardFromDeckRequest is a struct that defines the request body for the\ndeleting cards from the deck handler.",
+      "x-go-name": "DeleteFlashcardFromDeckRequest",
+      "x-go-package": "github.com/ogniloud/madr/internal/flashcards/models"
+    },
+    "getFlashcardsByDeckIdRequest": {
+      "description": "GetFlashcardsByDeckIdRequest is a struct that defines the request body for the\nloading cards from the deck handler.",
+      "x-go-name": "GetFlashcardsByDeckIdRequest",
+      "x-go-package": "github.com/ogniloud/madr/internal/flashcards/models"
+    },
+    "loadDecksRequest": {
+      "description": "LoadDecksRequest is a struct that defines the request body for the\nloading deck handler.",
+      "x-go-name": "LoadDecksRequest",
+      "x-go-package": "github.com/ogniloud/madr/internal/flashcards/models"
+    },
+    "newDeckWithFlashcardsRequest": {
+      "description": "NewDeckWithFlashcardsRequest is a struct that defines the request body for the\ncreating a new deck handler.",
+      "x-go-name": "NewDeckWithFlashcardsRequest",
+      "x-go-package": "github.com/ogniloud/madr/internal/flashcards/models"
+    },
+    "randomCardDeckRequest": {
+      "description": "RandomCardDeckRequest is a struct that defines the request body for the\ngetting a random card from the deck.",
+      "x-go-name": "RandomCardDeckRequest",
+      "x-go-package": "github.com/ogniloud/madr/internal/flashcards/models"
+    },
+    "randomCardRequest": {
+      "description": "RandomCardRequest is a struct that defines the request body for the\ngetting a random card from all the decks.",
+      "x-go-name": "RandomCardRequest",
+      "x-go-package": "github.com/ogniloud/madr/internal/flashcards/models"
+    },
+    "rateRequest": {
+      "description": "RateRequest is a struct that defines the request body for the\nrating a card.",
+      "x-go-name": "RateRequest",
+      "x-go-package": "github.com/ogniloud/madr/internal/flashcards/models"
+    },
+    "signInRequest": {
+      "x-go-name": "SignInRequest",
+      "x-go-package": "github.com/ogniloud/madr/internal/models"
+    },
+    "signUpRequest": {
+      "x-go-name": "SignUpRequest",
+      "x-go-package": "github.com/ogniloud/madr/internal/models"
+    }
+  },
+  "responses": {
+    "addFlashcardToDeckBadRequestError": {
+      "description": ""
+    },
+    "addFlashcardToDeckCreatedResponse": {
+      "description": ""
+    },
+    "addFlashcardToDeckInternalServerError": {
+      "description": ""
+    },
+    "deleteDeckBadRequestError": {
+      "description": ""
+    },
+    "deleteDeckInternalServerError": {
+      "description": ""
+    },
+    "deleteDeckNoContentResponse": {
+      "description": ""
+    },
+    "deleteFlashcardFromDeckBadRequestError": {
+      "description": ""
+    },
+    "deleteFlashcardFromDeckInternalServerError": {
+      "description": ""
+    },
+    "deleteFlashcardFromDeckNoContentResponse": {
+      "description": ""
+    },
+    "getFlashcardsByDeckIdBadRequestError": {
+      "description": ""
+    },
+    "getFlashcardsByDeckIdInternalServerError": {
+      "description": ""
+    },
+    "getFlashcardsByDeckIdOkResponse": {
+      "description": ""
+    },
+    "loadDecksBadRequestError": {
+      "description": ""
+    },
+    "loadDecksOkResponse": {
+      "description": ""
+    },
+    "newDeckWithFlashcardsBadRequestError": {
+      "description": ""
+    },
+    "newDeckWithFlashcardsCreatedResponse": {
+      "description": ""
+    },
+    "newDeckWithFlashcardsInternalServerError": {
+      "description": ""
+    },
+    "randomCardBadRequestError": {
+      "description": ""
+    },
+    "randomCardDeckBadRequestError": {
+      "description": ""
+    },
+    "randomCardDeckInternalServerError": {
+      "description": ""
+    },
+    "randomCardDeckOkResponse": {
+      "description": ""
+    },
+    "randomCardInternalServerError": {
+      "description": ""
+    },
+    "randomCardOkResponse": {
+      "description": ""
+    },
+    "rateBadRequestError": {
+      "description": ""
+    },
+    "rateInternalServerError": {
+      "description": ""
+    },
+    "rateNoContentResponse": {
+      "description": ""
+    },
+    "signInBadRequestError": {
+      "description": ""
+    },
+    "signInInternalServerError": {
+      "description": ""
+    },
+    "signInOkResponse": {
+      "description": ""
+    },
+    "signInUnauthorizedError": {
+      "description": ""
+    },
+    "signUpBadRequestError": {
+      "description": ""
+    },
+    "signUpConflictError": {
+      "description": ""
+    },
+    "signUpCreatedResponse": {
+      "description": ""
+    },
+    "signUpInternalServerError": {
+      "description": ""
+    }
+  }
+}

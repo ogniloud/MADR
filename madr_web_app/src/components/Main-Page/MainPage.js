@@ -1,47 +1,51 @@
-import React, { useState } from 'react';
-import { Link, Route, Routes } from 'react-router-dom';
-import DecksPage from './Decks/DeckPage';
+import React, { useState, useEffect } from 'react';
+import { Link, Route, Routes, useNavigate } from 'react-router-dom';
 import Feed from './Feeds/FeedsPage';
-import AllCards from './AllCards';
-import UserProfile from './UserProfile';
 import CreateDeck from './Decks/CreateDecks';
+import { jwtDecode } from 'jwt-decode';
 import './Styles/MainPage.css'
 
-
 const MainPage = () => {
-  // State to manage created decks
-  const [createdDecks, setCreatedDecks] = useState([]);
+    const [userInfo, setUserInfo] = useState(null);
+    const navigate = useNavigate();
 
-  // Function to add a new deck
-  const addDeck = (newDeck) => {
-    setCreatedDecks([...createdDecks, newDeck]);
-  };
+    useEffect(() => {
+        const token = localStorage.getItem('token');
+        if (token) {
+            const decodedToken = jwtDecode(token);
+            setUserInfo(decodedToken);
+        }
+    }, []);
 
-  return (
-    <div className="main-page">
-      <nav className='upper-part'>
-        <Link className='decks-bar' to="/decks">Decks</Link>
-        <Link className='feed-bar' to="/feed">Feed</Link>
-        <Link className='profile-bar' to="/profile">Profile</Link>
-      </nav>
+    const handleLogout = () => {
+        localStorage.removeItem('token');
+        navigate('/signin');
+    };
 
-      <Routes>
-        <Route path="decks" element={<DecksPage createdDecks={createdDecks} />} />
-        <Route path="feed" element={<Feed />} />
-        <Route path="profile" element={<UserProfile />} />
-      </Routes>
+    return (
+        <div className="main-page">
+            <nav className="upper-part">
+                <div className="user-info">
+                    <h2 className="title-user-name" >{userInfo && userInfo.username}</h2>
+                    <button className="logout-button" onClick={handleLogout}>Logout</button>
+                </div>
+            </nav>
 
-      <div className='lower-part'>
-        <Link className='create-deck' to="/create-deck">Create Deck</Link>
-        <Link className='all-cards' to="/all-cards">All Cards</Link>
-      </div>
+            <Routes>
+                <Route path="/create-deck" element={<CreateDeck />} />
+                <Route path="/feed" element={<Feed />} />
+            </Routes>
 
-      <Routes>
-        <Route path="create-deck" element={<CreateDeck addDeck={addDeck} />} />
-        <Route path="all-cards" element={<AllCards addDeck={addDeck} />} />
-      </Routes>
-    </div>
-  );
+            <div className="lower-part">
+                <Link className="create-deck" to="/create-deck">
+                    Create Deck
+                </Link>
+                <Link className="all-cards" to="/decks">
+                    All Decks
+                </Link>
+            </div>
+        </div>
+    );
 };
 
 export default MainPage;

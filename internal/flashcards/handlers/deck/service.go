@@ -58,6 +58,7 @@ func (d Endpoints) LoadDecks(w http.ResponseWriter, r *http.Request) {
 	respBody := models.LoadDecksResponse{}
 
 	if err := ioutil.FromJSON(&reqBody, r.Body); err != nil {
+		d.logger.Errorf("reqBody: %+v, error: %v", reqBody, err)
 		d.ew.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
@@ -108,6 +109,7 @@ func (d Endpoints) GetFlashcardsByDeckId(w http.ResponseWriter, r *http.Request)
 	respBody := models.GetFlashcardsByDeckIdResponse{}
 
 	if err := ioutil.FromJSON(&reqBody, r.Body); err != nil {
+		d.logger.Errorf("reqBody: %+v, error: %v", reqBody, err)
 		d.ew.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
@@ -168,6 +170,7 @@ func (d Endpoints) AddFlashcardToDeck(w http.ResponseWriter, r *http.Request) {
 	reqBody := models.AddFlashcardToDeckRequest{}
 
 	if err := ioutil.FromJSON(&reqBody, r.Body); err != nil {
+		d.logger.Errorf("reqBody: %+v, error: %v", reqBody, err)
 		d.ew.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
@@ -187,7 +190,7 @@ func (d Endpoints) AddFlashcardToDeck(w http.ResponseWriter, r *http.Request) {
 		UserId:      reqBody.UserId,
 		FlashcardId: id[0],
 		Box:         0,
-		CoolDown:    models.CoolDown(time.Now()),
+		CoolDown:    models.CoolDown(time.Now().UTC()),
 	}})
 	if err != nil {
 		d.logger.Errorf("error while creating leitner: %v", err)
@@ -226,6 +229,7 @@ func (d Endpoints) AddFlashcardToDeck(w http.ResponseWriter, r *http.Request) {
 func (d Endpoints) DeleteFlashcardFromDeck(w http.ResponseWriter, r *http.Request) {
 	reqBody := models.DeleteFlashcardFromDeckRequest{}
 	if err := ioutil.FromJSON(&reqBody, r.Body); err != nil {
+		d.logger.Errorf("reqBody: %+v, error: %v", reqBody, err)
 		d.ew.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
@@ -268,6 +272,7 @@ func (d Endpoints) DeleteFlashcardFromDeck(w http.ResponseWriter, r *http.Reques
 func (d Endpoints) NewDeckWithFlashcards(w http.ResponseWriter, r *http.Request) {
 	reqBody := models.NewDeckWithFlashcardsRequest{}
 	if err := ioutil.FromJSON(&reqBody, r.Body); err != nil {
+		d.logger.Errorf("reqBody: %+v, error: %v", reqBody, err)
 		d.ew.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
@@ -324,6 +329,7 @@ func (d Endpoints) NewDeckWithFlashcards(w http.ResponseWriter, r *http.Request)
 func (d Endpoints) DeleteDeck(w http.ResponseWriter, r *http.Request) {
 	reqBody := models.DeleteDeckRequest{}
 	if err := ioutil.FromJSON(&reqBody, r.Body); err != nil {
+		d.logger.Errorf("reqBody: %+v, error: %v", reqBody, err)
 		d.ew.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
@@ -366,11 +372,13 @@ func (d Endpoints) DeleteDeck(w http.ResponseWriter, r *http.Request) {
 func (d Endpoints) GetFlashcardById(w http.ResponseWriter, r *http.Request) {
 	id, err := strconv.Atoi(chi.URLParam(r, "id"))
 	if err != nil {
+		d.logger.Errorf("reqBody: %+v, error: %v", id, err)
 		d.ew.Error(w, "bad request", http.StatusBadRequest)
 		return
 	}
 
 	if id < 0 {
+		d.logger.Errorf("reqBody: %+v, error: %v", id, err)
 		d.ew.Error(w, "id must be >= 0", http.StatusBadRequest)
 		return
 	}

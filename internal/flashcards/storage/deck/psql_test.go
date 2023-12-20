@@ -38,7 +38,7 @@ func (s *PSQLSuite) SetupSuite() {
 }
 
 func (s *PSQLSuite) TearDownSuite() {
-	_ = s.repo.Conn.Close(context.Background())
+	s.repo.Conn.Close()
 }
 
 func (s *PSQLSuite) TestDeckStorage_GetDecksByUserId() {

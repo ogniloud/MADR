@@ -7,6 +7,7 @@ import (
 	"math/rand"
 	"regexp"
 	"slices"
+	"time"
 
 	"github.com/ogniloud/madr/internal/flashcards/models"
 	"github.com/ogniloud/madr/internal/flashcards/services/deck"
@@ -86,7 +87,7 @@ func (s *Service) ConvertIdsToCards(ctx context.Context, uid models.UserId, down
 	for _, id := range ids {
 		ltn, err := s.dsrv.GetLeitnerByUserIdCardId(ctx, uid, id)
 		if err != nil {
-			return nil, err
+			return nil, fmt.Errorf("get leitner error: %w", err)
 		}
 
 		ltns = append(ltns, ltn)
@@ -97,7 +98,7 @@ func (s *Service) ConvertIdsToCards(ctx context.Context, uid models.UserId, down
 	})
 
 	if len(ltns) == 0 {
-		return nil, nil
+		return nil, ErrNoCards
 	}
 
 	// shuffle and choose next card
@@ -199,12 +200,12 @@ func (s *Service) GetNextRandomDeck(ctx context.Context, uid models.UserId, id m
 func (s *Service) Rate(ctx context.Context, uid models.UserId, id models.FlashcardId, mark models.Mark) error {
 	l, err := s.dsrv.GetLeitnerByUserIdCardId(ctx, uid, id)
 	if err != nil {
-		return err
+		return fmt.Errorf("leitner not found: %w", err)
 	}
 
 	box, err := s.dsrv.UserMaxBox(ctx, uid)
 	if err != nil {
-		return err
+		return fmt.Errorf("user max box: %w", err)
 	}
 
 	switch mark {
@@ -219,7 +220,15 @@ func (s *Service) Rate(ctx context.Context, uid models.UserId, id models.Flashca
 		}
 	}
 
-	return s.dsrv.UpdateLeitner(ctx, l)
+	l.CoolDown.NextState(l.Box, func(box models.Box) time.Time {
+		return time.Now().Add(time.Minute * time.Duration(l.Box)).UTC()
+	})
+
+	if err := s.dsrv.UpdateLeitner(ctx, l); err != nil {
+		return fmt.Errorf("update leitner failed: %w", err)
+	}
+
+	return nil
 }
 
 // let p = [.5 .7 .8 .9 .95] and r is a random float

@@ -89,10 +89,13 @@ func (d *Storage) GetLeitnerByUserIdCardId(ctx context.Context, id models.UserId
 
 	l := models.UserLeitner{}
 
-	err := row.Scan(&l.Id, &l.UserId, &l.FlashcardId, &l.Box, &l.CoolDown)
+	t := time.Time{}
+	err := row.Scan(&l.Id, &l.UserId, &l.FlashcardId, &l.Box, &t)
 	if err != nil {
 		return models.UserLeitner{}, fmt.Errorf("psql error: %w", err)
 	}
+
+	l.CoolDown = models.CoolDown(t)
 
 	return l, nil
 }
@@ -127,10 +130,10 @@ func (d *Storage) PutAllFlashcards(ctx context.Context, id models.DeckId, cards 
 
 	s := fmt.Sprintf(`INSERT INTO flashcard (word, backside, deck_id, answer) VALUES %v RETURNING card_id;`, values.String())
 	rows, err := d.Conn.Query(ctx, s, args...)
-
 	if err != nil {
 		return nil, fmt.Errorf("psql error: %w", err)
 	}
+	defer rows.Close()
 
 	temp := 0
 	ids := make([]models.FlashcardId, 0, len(cards))
@@ -178,10 +181,10 @@ func (d *Storage) PutAllUserLeitner(ctx context.Context, uls []models.UserLeitne
 
 	s := fmt.Sprintf(`INSERT INTO user_leitner (user_id, card_id, box, cool_down) VALUES %v RETURNING leitner_id;`, values.String())
 	rows, err := d.Conn.Query(ctx, s, args...)
-
 	if err != nil {
 		return nil, fmt.Errorf("psql error: %w", err)
 	}
+	defer rows.Close()
 
 	temp := 0
 	ids := make([]models.LeitnerId, 0, len(uls))
@@ -214,7 +217,7 @@ func (d *Storage) DeleteUserDeck(ctx context.Context, userId models.UserId, deck
 func (d *Storage) UpdateLeitner(ctx context.Context, ul models.UserLeitner) error {
 	row := d.Conn.QueryRow(ctx,
 		`UPDATE user_leitner SET user_id=$1, card_id=$2, box=$3, cool_down=$4 WHERE leitner_id=$5 RETURNING leitner_id`,
-		ul.UserId, ul.FlashcardId, ul.Box, ul.CoolDown, ul.Id)
+		ul.UserId, ul.FlashcardId, ul.Box, time.Time(ul.CoolDown), ul.Id)
 
 	return row.Scan(&ul.Id)
 }
