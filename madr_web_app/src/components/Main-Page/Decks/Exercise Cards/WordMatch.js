@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import { jwtDecode } from 'jwt-decode';
+import React, {useEffect, useState} from 'react';
+import {jwtDecode} from 'jwt-decode';
 import './Styles/WordMatch.css';
 
 const WordMatch = () => {
@@ -130,6 +130,7 @@ const WordMatch = () => {
         }
     };
 
+    let s = "";
     return (
         <div className="wm-container">
             <h2 className="wm-title">Word Match </h2>
@@ -148,10 +149,7 @@ const WordMatch = () => {
                                             type="checkbox"
                                             value={matchingData.cards[property].word}
                                             onChange={() =>
-                                                handlePairSelect(
-                                                    property,
-                                                    matchingData.cards[property].word
-                                                )
+                                                s = matchingData.cards[property].word
                                             }
                                         />
                                         {matchingData.cards[property].word}
@@ -168,7 +166,7 @@ const WordMatch = () => {
                                             value={matchingData.pairs[property]}
                                             onChange={() =>
                                                 handlePairSelect(
-                                                    property,
+                                                    s,
                                                     matchingData.pairs[property]
                                                 )
                                             }
