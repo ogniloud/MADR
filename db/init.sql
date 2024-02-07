@@ -35,4 +35,30 @@ CREATE TABLE IF NOT EXISTS user_leitner (
     cool_down TIMESTAMP NOT NULL,
     FOREIGN KEY (user_id) REFERENCES user_credentials(user_id),
     FOREIGN KEY (card_id) REFERENCES flashcard(card_id)
-)
+);
+
+-- Groups
+
+CREATE TABLE IF NOT EXISTS groups (
+    group_id SERIAL PRIMARY KEY,
+    creator_id SERIAL,
+    name VARCHAR(50),
+
+    FOREIGN KEY (creator_id) REFERENCES user_credentials(user_id)
+);
+
+CREATE TABLE IF NOT EXISTS group_decks (
+    group_id SERIAL,
+    deck_id SERIAL, -- колода, которую видят все члены группы
+
+    FOREIGN KEY (group_id) REFERENCES groups(group_id),
+    FOREIGN KEY (deck_id) REFERENCES deck_config(deck_id)
+);
+
+CREATE TABLE IF NOT EXISTS group_members (
+    group_id SERIAL,
+    user_id SERIAL, -- юзер является членом группы group_id
+
+    FOREIGN KEY (group_id) REFERENCES groups(group_id),
+    FOREIGN KEY (user_id) REFERENCES user_credentials(user_id)
+);
