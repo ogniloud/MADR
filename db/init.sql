@@ -43,6 +43,7 @@ CREATE TABLE IF NOT EXISTS groups (
     group_id SERIAL PRIMARY KEY,
     creator_id SERIAL,
     name VARCHAR(50),
+    time_created TIMESTAMP,
 
     FOREIGN KEY (creator_id) REFERENCES user_credentials(user_id)
 );
@@ -50,6 +51,7 @@ CREATE TABLE IF NOT EXISTS groups (
 CREATE TABLE IF NOT EXISTS group_decks (
     group_id SERIAL,
     deck_id SERIAL, -- колода, которую видят все члены группы
+    time_shared TIMESTAMP, -- время шаринга колодой
 
     FOREIGN KEY (group_id) REFERENCES groups(group_id),
     FOREIGN KEY (deck_id) REFERENCES deck_config(deck_id)
@@ -58,6 +60,7 @@ CREATE TABLE IF NOT EXISTS group_decks (
 CREATE TABLE IF NOT EXISTS group_members (
     group_id SERIAL,
     user_id SERIAL, -- юзер является членом группы group_id
+    time_joined TIMESTAMP,
 
     FOREIGN KEY (group_id) REFERENCES groups(group_id),
     FOREIGN KEY (user_id) REFERENCES user_credentials(user_id)
