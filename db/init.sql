@@ -91,6 +91,15 @@ CREATE TABLE IF NOT EXISTS public_shared (
     FOREIGN KEY (deck_id) REFERENCES deck_config(deck_id)
 );
 
+CREATE TABLE IF NOT EXISTS followers (
+    user_id SERIAL,
+    follower_id SERIAL, -- фолловер отслеживает действия юзера в фиде
+    time_followed TIMESTAMP,
+
+    FOREIGN KEY (user_id) REFERENCES user_credentials(user_id),
+    FOREIGN KEY (follower_id) REFERENCES user_credentials(user_id)
+);
+
 -- Сценарии колод
 --
 -- 1. Создание
