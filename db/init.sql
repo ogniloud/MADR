@@ -66,6 +66,15 @@ CREATE TABLE IF NOT EXISTS group_members (
     FOREIGN KEY (user_id) REFERENCES user_credentials(user_id)
 );
 
+CREATE TABLE IF NOT EXISTS group_invites (
+    group_id SERIAL,
+    user_id SERIAL, -- юзер получил инвайт группы, но ещё его не принял
+    time_sent TIMESTAMP,
+
+    FOREIGN KEY (group_id) REFERENCES groups(group_id),
+    FOREIGN KEY (user_id) REFERENCES user_credentials(user_id)
+);
+
 --
 CREATE TABLE IF NOT EXISTS links (
     deck_id SERIAL, -- дека откопирована от copied_from
