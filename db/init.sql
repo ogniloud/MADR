@@ -42,7 +42,7 @@ CREATE TABLE IF NOT EXISTS user_leitner (
 CREATE TABLE IF NOT EXISTS groups (
     group_id SERIAL PRIMARY KEY,
     creator_id SERIAL,
-    name VARCHAR(50),
+    name VARCHAR(50) NOT NULL,
     time_created TIMESTAMP,
 
     FOREIGN KEY (creator_id) REFERENCES user_credentials(user_id)
@@ -52,6 +52,7 @@ CREATE TABLE IF NOT EXISTS group_decks (
     group_id SERIAL,
     deck_id SERIAL, -- колода, которую видят все члены группы
     time_shared TIMESTAMP, -- время шаринга колодой
+    UNIQUE(group_id, deck_id)
 
     FOREIGN KEY (group_id) REFERENCES groups(group_id),
     FOREIGN KEY (deck_id) REFERENCES deck_config(deck_id)
@@ -61,6 +62,7 @@ CREATE TABLE IF NOT EXISTS group_members (
     group_id SERIAL,
     user_id SERIAL, -- юзер является членом группы group_id
     time_joined TIMESTAMP,
+    UNIQUE(group_id, user_id),
 
     FOREIGN KEY (group_id) REFERENCES groups(group_id),
     FOREIGN KEY (user_id) REFERENCES user_credentials(user_id)
@@ -70,6 +72,7 @@ CREATE TABLE IF NOT EXISTS group_invites (
     group_id SERIAL,
     user_id SERIAL, -- юзер получил инвайт группы, но ещё его не принял
     time_sent TIMESTAMP,
+    UNIQUE(group_id, user_id),
 
     FOREIGN KEY (group_id) REFERENCES groups(group_id),
     FOREIGN KEY (user_id) REFERENCES user_credentials(user_id)
@@ -77,7 +80,7 @@ CREATE TABLE IF NOT EXISTS group_invites (
 
 --
 CREATE TABLE IF NOT EXISTS links (
-    deck_id SERIAL, -- дека откопирована от copied_from
+    deck_id SERIAL PRIMARY KEY, -- дека откопирована от copied_from
     copied_from SERIAL,
     updatable BOOLEAN, -- можно ли обновлять колоду
 
@@ -87,14 +90,14 @@ CREATE TABLE IF NOT EXISTS links (
 );
 
 CREATE TABLE IF NOT EXISTS group_shared (
-    deck_id SERIAL,
+    deck_id SERIAL PRIMARY KEY,
     time_shared TIMESTAMP,
 
     FOREIGN KEY (deck_id) REFERENCES deck_config(deck_id)
 );
 
 CREATE TABLE IF NOT EXISTS public_shared (
-    deck_id SERIAL,
+    deck_id SERIAL PRIMARY KEY,
     time_shared TIMESTAMP,
 
     FOREIGN KEY (deck_id) REFERENCES deck_config(deck_id)
@@ -104,6 +107,7 @@ CREATE TABLE IF NOT EXISTS followers (
     user_id SERIAL,
     follower_id SERIAL, -- фолловер отслеживает действия юзера в фиде
     time_followed TIMESTAMP,
+    UNIQUE(user_id, follower_id)
 
     FOREIGN KEY (user_id) REFERENCES user_credentials(user_id),
     FOREIGN KEY (follower_id) REFERENCES user_credentials(user_id)
