@@ -3,7 +3,6 @@ package sql
 import (
 	"context"
 	"fmt"
-	"time"
 
 	"github.com/jackc/pgx/v5"
 
@@ -174,8 +173,8 @@ func (d *Storage) GetInvitesByUserId(ctx context.Context, id models.UserId) (map
 
 func (d *Storage) CreateGroup(ctx context.Context, id models.UserId, name string) (models.GroupId, error) {
 	row := d.Conn.QueryRow(ctx,
-		`INSERT INTO groups (creator_id, name, time_created) VALUES ($1, $2, $3) RETURNING group_id`,
-		id, name, time.Time{},
+		`INSERT INTO groups (creator_id, name, time_created) VALUES ($1, $2, now()) RETURNING group_id`,
+		id, name,
 	)
 
 	groupId := 0
@@ -216,7 +215,7 @@ func (d *Storage) AcceptInvite(ctx context.Context, id models.UserId, groupId mo
 	}
 
 	row = d.Conn.QueryRow(ctx,
-		`INSERT INTO group_members VALUES ($1, $2, $3) RETURNING group_id`, groupId, id, time.Time{})
+		`INSERT INTO group_members VALUES ($1, $2, now()) RETURNING group_id`, groupId, id)
 
 	err = row.Scan(&groupId)
 	if err != nil {
@@ -236,7 +235,7 @@ func (d *Storage) SendInvite(ctx context.Context, creatorId models.UserId, invit
 	}
 
 	row := d.Conn.QueryRow(ctx,
-		`INSERT INTO group_invites VALUES ($1, $2, $3) RETURNING group_id`, groupId, invitee, time.Time{})
+		`INSERT INTO group_invites VALUES ($1, $2, now()) RETURNING group_id`, groupId, invitee)
 	return row.Scan(&groupId)
 }
 
