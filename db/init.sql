@@ -52,7 +52,7 @@ CREATE TABLE IF NOT EXISTS group_decks (
     group_id SERIAL,
     deck_id SERIAL, -- колода, которую видят все члены группы
     time_shared TIMESTAMP, -- время шаринга колодой
-    UNIQUE(group_id, deck_id)
+    UNIQUE(group_id, deck_id),
 
     FOREIGN KEY (group_id) REFERENCES groups(group_id),
     FOREIGN KEY (deck_id) REFERENCES deck_config(deck_id)
@@ -107,7 +107,7 @@ CREATE TABLE IF NOT EXISTS followers (
     user_id SERIAL,
     follower_id SERIAL, -- фолловер отслеживает действия юзера в фиде
     time_followed TIMESTAMP,
-    UNIQUE(user_id, follower_id)
+    UNIQUE(user_id, follower_id),
 
     FOREIGN KEY (user_id) REFERENCES user_credentials(user_id),
     FOREIGN KEY (follower_id) REFERENCES user_credentials(user_id)
