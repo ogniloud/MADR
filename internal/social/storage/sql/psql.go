@@ -3,6 +3,7 @@ package sql
 import (
 	"context"
 	"fmt"
+	"time"
 
 	"github.com/jackc/pgx/v5"
 
@@ -117,7 +118,7 @@ func (d *Storage) GetDecksByGroupId(ctx context.Context, id models.GroupId) (mod
 	return nil, nil
 }
 
-func (d *Storage) GetInvitesByGroupId(ctx context.Context, id models.GroupId) ([]models.InviteInfo, error) {
+func (d *Storage) GetInvitesByGroupId(ctx context.Context, id models.GroupId) (map[models.UserId]models.InviteInfo, error) {
 	rows, err := d.Conn.Query(ctx, `
 	SELECT *
 	FROM group_invites
@@ -128,11 +129,11 @@ func (d *Storage) GetInvitesByGroupId(ctx context.Context, id models.GroupId) ([
 
 	defer rows.Close()
 
-	invites := make([]models.InviteInfo, 0)
+	invites := make(map[models.UserId]models.InviteInfo)
 
 	cfg := models.InviteInfo{}
 	_, err = pgx.ForEachRow(rows, []any{&cfg.GroupId, &cfg.InvitedId, &cfg.TimeInvited}, func() error {
-		invites = append(invites, cfg)
+		invites[cfg.InvitedId] = cfg
 
 		return nil
 	})
@@ -141,5 +142,105 @@ func (d *Storage) GetInvitesByGroupId(ctx context.Context, id models.GroupId) ([
 		return nil, err
 	}
 
-	return invites[:len(invites):len(invites)], nil
+	return invites, nil
+}
+
+func (d *Storage) GetInvitesByUserId(ctx context.Context, id models.UserId) (map[models.GroupId]models.InviteInfo, error) {
+	rows, err := d.Conn.Query(ctx, `
+	SELECT *
+	FROM group_invites
+	WHERE user_id=$1`, id)
+	if err != nil {
+		return nil, err
+	}
+
+	defer rows.Close()
+
+	invites := make(map[models.GroupId]models.InviteInfo)
+
+	cfg := models.InviteInfo{}
+	_, err = pgx.ForEachRow(rows, []any{&cfg.GroupId, &cfg.InvitedId, &cfg.TimeInvited}, func() error {
+		invites[cfg.GroupId] = cfg
+
+		return nil
+	})
+
+	if err != nil {
+		return nil, err
+	}
+
+	return invites, nil
+}
+
+func (d *Storage) CreateGroup(ctx context.Context, id models.UserId, name string) (models.GroupId, error) {
+	row := d.Conn.QueryRow(ctx,
+		`INSERT INTO groups (creator_id, name, time_create) VALUES ($1, $2, $3) RETURNING group_id`,
+		id, name, time.Time{},
+	)
+
+	group_id := 0
+
+	err := row.Scan(&id)
+	if err != nil {
+		return 0, fmt.Errorf("psql error: %w", err)
+	}
+
+	return group_id, nil
+}
+
+func (d *Storage) DeleteGroup(ctx context.Context, id models.UserId, group_id models.GroupId) error {
+	row := d.Conn.QueryRow(ctx,
+		`DELETE FROM groups WHERE creator_id=$1 AND group_id=$2 RETURNING name`, id, group_id)
+
+	s := ""
+	return row.Scan(&s)
+}
+
+func (d *Storage) AcceptInvite(ctx context.Context, id models.UserId, group_id models.GroupId) error {
+	invites, err := d.GetInvitesByUserId(ctx, id)
+	if err != nil {
+		return fmt.Errorf("No invites sent to user %v, error: %w", id, err)
+	}
+
+	_, present := invites[group_id]
+	if !present {
+		return fmt.Errorf("No invites from the group %v", group_id)
+	}
+
+	row := d.Conn.QueryRow(ctx,
+		`DELETE FROM group_invites WHERE user_id=$1 AND group_id=$2 RETURNING user_id`, id, group_id)
+
+	err = row.Scan(&id)
+	if err != nil {
+		return err
+	}
+
+	row = d.Conn.QueryRow(ctx,
+		`INSERT INTO group_members VALUES ($1, $2, $3) RETURNING group_id`, group_id, id, time.Time{})
+
+	err = row.Scan(&group_id)
+	if err != nil {
+		return err
+	}
+
+	return d.ShareAllGroupDecks(ctx, id, group_id)
+}
+
+func (d *Storage) SendInvite(ctx context.Context, creator_id models.UserId, invitee models.UserId, group_id models.GroupId) error {
+	group, err := d.GetGroupByGroupId(ctx, group_id)
+	if err != nil {
+		return fmt.Errorf("Couldn't get the group the invite is supposed to be sent from, error: %w", err)
+	}
+	if group.CreatorId != creator_id {
+		return fmt.Errorf("The user doesn't have rights to send invites to the group")
+	}
+
+	row := d.Conn.QueryRow(ctx,
+		`INSERT INTO group_invites VALUES ($1, $2, $3) RETURNING group_id`, group_id, invitee, time.Time{})
+	return row.Scan(&group_id)
+}
+
+func (d *Storage) ShareAllGroupDecks(ctx context.Context, id models.UserId, group_id models.GroupId) error {
+	// TODO
+	return nil
 }
