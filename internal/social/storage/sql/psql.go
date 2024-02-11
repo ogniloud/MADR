@@ -174,7 +174,7 @@ func (d *Storage) GetInvitesByUserId(ctx context.Context, id models.UserId) (map
 
 func (d *Storage) CreateGroup(ctx context.Context, id models.UserId, name string) (models.GroupId, error) {
 	row := d.Conn.QueryRow(ctx,
-		`INSERT INTO groups (creator_id, name, time_create) VALUES ($1, $2, $3) RETURNING group_id`,
+		`INSERT INTO groups (creator_id, name, time_created) VALUES ($1, $2, $3) RETURNING group_id`,
 		id, name, time.Time{},
 	)
 
