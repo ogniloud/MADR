@@ -20,9 +20,27 @@ type Storage interface {
 	// GetGroupByGroupId returns the group with the given id
 	GetGroupByGroupId(ctx context.Context, id models.GroupId) (models.GroupConfig, error)
 
-	// GetDecksByGroupId returns the decks shared within the group
+	// TODO
 	GetDecksByGroupId(ctx context.Context, id models.GroupId) (models.Decks, error)
 
-	// GetInvitesByGroupId returns the users invited into the group
-	GetInvitesByGroupId(ctx context.Context, id models.GroupId) ([]models.InviteInfo, error)
+	// GetInvitesByGroupId returns invites from the given group
+	GetInvitesByGroupId(ctx context.Context, id models.GroupId) (map[models.UserId]models.InviteInfo, error)
+
+	// GetInvitesByUserId returns invites to the given user
+	GetInvitesByUserId(ctx context.Context, id models.GroupId) (map[models.GroupId]models.InviteInfo, error)
+
+	// Creates new group with id being the owner
+	CreateGroup(ctx context.Context, id models.UserId, name string) (models.GroupId, error)
+
+	// Deletes the group where id belongs to its creator
+	DeleteGroup(ctx context.Context, id models.UserId, group_id models.GroupId) error
+
+	// User accepts an invite to a group and becomes a member of the group
+	AcceptInvite(ctx context.Context, id models.UserId, group_id models.GroupId) error
+
+	// Sends invite to group to the user
+	SendInvite(ctx context.Context, creator_id models.UserId, invitee models.UserId, group_id models.GroupId) error
+
+	// TODO
+	ShareAllGroupDecks(ctx context.Context, id models.UserId, group_id models.GroupId) error
 }
