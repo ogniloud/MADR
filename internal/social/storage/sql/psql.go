@@ -178,37 +178,37 @@ func (d *Storage) CreateGroup(ctx context.Context, id models.UserId, name string
 		id, name, time.Time{},
 	)
 
-	group_id := 0
+	groupId := 0
 
 	err := row.Scan(&id)
 	if err != nil {
 		return 0, fmt.Errorf("psql error: %w", err)
 	}
 
-	return group_id, nil
+	return groupId, nil
 }
 
-func (d *Storage) DeleteGroup(ctx context.Context, id models.UserId, group_id models.GroupId) error {
+func (d *Storage) DeleteGroup(ctx context.Context, id models.UserId, groupId models.GroupId) error {
 	row := d.Conn.QueryRow(ctx,
-		`DELETE FROM groups WHERE creator_id=$1 AND group_id=$2 RETURNING name`, id, group_id)
+		`DELETE FROM groups WHERE creator_id=$1 AND group_id=$2 RETURNING name`, id, groupId)
 
 	s := ""
 	return row.Scan(&s)
 }
 
-func (d *Storage) AcceptInvite(ctx context.Context, id models.UserId, group_id models.GroupId) error {
+func (d *Storage) AcceptInvite(ctx context.Context, id models.UserId, groupId models.GroupId) error {
 	invites, err := d.GetInvitesByUserId(ctx, id)
 	if err != nil {
-		return fmt.Errorf("No invites sent to user %v, error: %w", id, err)
+		return fmt.Errorf("no invites sent to user %v, error: %w", id, err)
 	}
 
-	_, present := invites[group_id]
+	_, present := invites[groupId]
 	if !present {
-		return fmt.Errorf("No invites from the group %v", group_id)
+		return fmt.Errorf("no invites from the group %v", groupId)
 	}
 
 	row := d.Conn.QueryRow(ctx,
-		`DELETE FROM group_invites WHERE user_id=$1 AND group_id=$2 RETURNING user_id`, id, group_id)
+		`DELETE FROM group_invites WHERE user_id=$1 AND group_id=$2 RETURNING user_id`, id, groupId)
 
 	err = row.Scan(&id)
 	if err != nil {
@@ -216,31 +216,31 @@ func (d *Storage) AcceptInvite(ctx context.Context, id models.UserId, group_id m
 	}
 
 	row = d.Conn.QueryRow(ctx,
-		`INSERT INTO group_members VALUES ($1, $2, $3) RETURNING group_id`, group_id, id, time.Time{})
+		`INSERT INTO group_members VALUES ($1, $2, $3) RETURNING group_id`, groupId, id, time.Time{})
 
-	err = row.Scan(&group_id)
+	err = row.Scan(&groupId)
 	if err != nil {
 		return err
 	}
 
-	return d.ShareAllGroupDecks(ctx, id, group_id)
+	return d.ShareAllGroupDecks(ctx, id, groupId)
 }
 
-func (d *Storage) SendInvite(ctx context.Context, creator_id models.UserId, invitee models.UserId, group_id models.GroupId) error {
-	group, err := d.GetGroupByGroupId(ctx, group_id)
+func (d *Storage) SendInvite(ctx context.Context, creatorId models.UserId, invitee models.UserId, groupId models.GroupId) error {
+	group, err := d.GetGroupByGroupId(ctx, groupId)
 	if err != nil {
-		return fmt.Errorf("Couldn't get the group the invite is supposed to be sent from, error: %w", err)
+		return fmt.Errorf("couldn't get the group the invite is supposed to be sent from, error: %w", err)
 	}
-	if group.CreatorId != creator_id {
-		return fmt.Errorf("The user doesn't have rights to send invites to the group")
+	if group.CreatorId != creatorId {
+		return fmt.Errorf("the user doesn't have rights to send invites to the group")
 	}
 
 	row := d.Conn.QueryRow(ctx,
-		`INSERT INTO group_invites VALUES ($1, $2, $3) RETURNING group_id`, group_id, invitee, time.Time{})
-	return row.Scan(&group_id)
+		`INSERT INTO group_invites VALUES ($1, $2, $3) RETURNING group_id`, groupId, invitee, time.Time{})
+	return row.Scan(&groupId)
 }
 
-func (d *Storage) ShareAllGroupDecks(ctx context.Context, id models.UserId, group_id models.GroupId) error {
+func (d *Storage) ShareAllGroupDecks(ctx context.Context, id models.UserId, groupId models.GroupId) error {
 	// TODO
 	return nil
 }
