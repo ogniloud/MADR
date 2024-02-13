@@ -89,13 +89,6 @@ CREATE TABLE IF NOT EXISTS links (
     CHECK ( deck_id != links.copied_from )
 );
 
-CREATE TABLE IF NOT EXISTS group_shared (
-    deck_id SERIAL PRIMARY KEY,
-    time_shared TIMESTAMP,
-
-    FOREIGN KEY (deck_id) REFERENCES deck_config(deck_id)
-);
-
 CREATE TABLE IF NOT EXISTS public_shared (
     deck_id SERIAL PRIMARY KEY,
     time_shared TIMESTAMP,

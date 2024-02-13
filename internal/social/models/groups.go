@@ -8,6 +8,7 @@ import (
 
 type (
 	GroupId = int
+	DeckId  = int
 	UserId  = models.UserId
 	Decks   = models.Decks
 )

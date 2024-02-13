@@ -112,9 +112,24 @@ func (d *Storage) GetGroupByGroupId(ctx context.Context, id models.GroupId) (mod
 	return group, nil
 }
 
-func (d *Storage) GetDecksByGroupId(ctx context.Context, id models.GroupId) (models.Decks, error) {
-	// TODO
-	return nil, nil
+func (d *Storage) GetDecksByGroupId(ctx context.Context, id models.GroupId) ([]models.DeckId, error) {
+	rows, err := d.Conn.Query(ctx, `SELECT deck_id FROM group_decks WHERE group_id = $1`, id)
+	if err != nil {
+		return nil, fmt.Errorf("group decks not loaded: %w", err)
+	}
+	defer rows.Close()
+
+	vals, err := rows.Values()
+	if err != nil {
+		return nil, fmt.Errorf("group deck rows read fail: %w", err)
+	}
+
+	ids := make([]models.DeckId, len(vals))
+	for k, v := range vals {
+		ids[k], _ = v.(models.DeckId)
+	}
+
+	return ids, nil
 }
 
 func (d *Storage) GetInvitesByGroupId(ctx context.Context, id models.GroupId) (map[models.UserId]models.InviteInfo, error) {
