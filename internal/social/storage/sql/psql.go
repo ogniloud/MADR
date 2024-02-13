@@ -199,7 +199,10 @@ func (d *Storage) CreateGroup(ctx context.Context, id models.UserId, name string
 		return 0, fmt.Errorf("psql error: %w", err)
 	}
 
-	d.addMember(ctx, id, groupId)
+	err = d.addMember(ctx, id, groupId)
+	if err != nil {
+		return 0, err
+	}
 
 	return groupId, nil
 }
