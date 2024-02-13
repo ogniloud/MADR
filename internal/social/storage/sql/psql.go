@@ -199,6 +199,8 @@ func (d *Storage) CreateGroup(ctx context.Context, id models.UserId, name string
 		return 0, fmt.Errorf("psql error: %w", err)
 	}
 
+	d.addMember(ctx, id, groupId)
+
 	return groupId, nil
 }
 
@@ -229,10 +231,14 @@ func (d *Storage) AcceptInvite(ctx context.Context, id models.UserId, groupId mo
 		return err
 	}
 
-	row = d.Conn.QueryRow(ctx,
+	return d.addMember(ctx, id, groupId)
+}
+
+func (d *Storage) addMember(ctx context.Context, id models.UserId, groupId models.GroupId) error {
+	row := d.Conn.QueryRow(ctx,
 		`INSERT INTO group_members VALUES ($1, $2, now()) RETURNING group_id`, groupId, id)
 
-	err = row.Scan(&groupId)
+	err := row.Scan(&groupId)
 	if err != nil {
 		return err
 	}
