@@ -2,6 +2,7 @@ package sql
 
 import (
 	"context"
+	"errors"
 	"fmt"
 
 	"github.com/jackc/pgx/v5"
@@ -256,6 +257,17 @@ func (d *Storage) ShareAllGroupDecks(ctx context.Context, id models.UserId, grou
 }
 
 func (d *Storage) DeepCopyDeck(ctx context.Context, copier models.UserId, deckId models.DeckId) (models.DeckId, error) {
+	row := d.Conn.QueryRow(ctx, `SELECT deck_id FROM copied_by WHERE copier_id=$1 AND deck_id=$2`, copier, deckId)
+	{
+		id := 0
+		err := row.Scan(&id)
+		if err == nil {
+			return 0, errors.New("deck already copied")
+		} else if !errors.Is(err, pgx.ErrNoRows) {
+			return 0, fmt.Errorf("fatal db error: %w", err)
+		}
+	}
+
 	tx, err := d.Conn.Begin(ctx)
 	if err != nil {
 		return 0, fmt.Errorf("copy transaction fail: %w", err)
@@ -271,7 +283,7 @@ WHERE f.deck_id = $1`, deckId)
 
 	// scan name in order to insert a new deck record
 	name := "default_copied_deck_name"
-	row := tx.QueryRow(ctx, `SELECT name FROM deck_config WHERE deck_id=$1`, deckId)
+	row = tx.QueryRow(ctx, `SELECT name FROM deck_config WHERE deck_id=$1`, deckId)
 	err = row.Scan(&name)
 	if err != nil {
 		d.Conn.Logger().Errorf("Name wasn't selected: %v", err)
