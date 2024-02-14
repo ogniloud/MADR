@@ -79,14 +79,23 @@ CREATE TABLE IF NOT EXISTS group_invites (
 );
 
 --
-CREATE TABLE IF NOT EXISTS links (
-    deck_id SERIAL PRIMARY KEY, -- дека откопирована от copied_from
-    copied_from SERIAL,
-    updatable BOOLEAN, -- можно ли обновлять колоду
+-- CREATE TABLE IF NOT EXISTS links (
+--     deck_id SERIAL PRIMARY KEY, -- дека откопирована от copied_from
+--     copied_from SERIAL,
+--     updatable BOOLEAN, -- можно ли обновлять колоду
+--
+--     FOREIGN KEY (deck_id) REFERENCES deck_config(deck_id),
+--     FOREIGN KEY (copied_from) REFERENCES deck_config(deck_id),
+--     CHECK ( deck_id != links.copied_from )
+-- );
 
-    FOREIGN KEY (deck_id) REFERENCES deck_config(deck_id),
-    FOREIGN KEY (copied_from) REFERENCES deck_config(deck_id),
-    CHECK ( deck_id != links.copied_from )
+CREATE TABLE IF NOT EXISTS copied_by (
+    copier_id INT PRIMARY KEY, -- кто скопировал деку
+    deck_id INT, -- какая дека скопирована
+    time_copied TIMESTAMP,
+
+    FOREIGN KEY (copier_id) REFERENCES user_credentials(user_id),
+    FOREIGN KEY (deck_id) REFERENCES deck_config(deck_id)
 );
 
 CREATE TABLE IF NOT EXISTS public_shared (
@@ -141,3 +150,4 @@ CREATE TABLE IF NOT EXISTS followers (
 --  Удалить можно только свои колоды или скопированные из фида.
 --  Колоды групповые удалять нельзя (если не создатель).
 --  Если человек, удаляющий колоду, создатель... ЗАВЕРШИТЬ.
+

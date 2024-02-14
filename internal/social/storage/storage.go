@@ -21,7 +21,7 @@ type Storage interface {
 	GetGroupByGroupId(ctx context.Context, id models.GroupId) (models.GroupConfig, error)
 
 	// TODO
-	GetDecksByGroupId(ctx context.Context, id models.GroupId) (models.Decks, error)
+	GetDecksByGroupId(ctx context.Context, id models.GroupId) ([]models.DeckId, error)
 
 	// GetInvitesByGroupId returns invites from the given group
 	GetInvitesByGroupId(ctx context.Context, id models.GroupId) (map[models.UserId]models.InviteInfo, error)
@@ -43,4 +43,6 @@ type Storage interface {
 
 	// TODO
 	ShareAllGroupDecks(ctx context.Context, id models.UserId, group_id models.GroupId) error
+
+	DeepCopyDeck(ctx context.Context, copier models.UserId, deckId models.DeckId) (models.DeckId, error)
 }
