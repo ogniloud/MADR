@@ -301,6 +301,11 @@ WHERE f.deck_id = $1`, deckId)
 		return 0, err
 	}
 
+	if err := tx.Commit(ctx); err != nil {
+		d.Conn.Logger().Errorf("deep copy not commited: %v", err)
+		return 0, fmt.Errorf("deep copy not commited: %w", err)
+	}
+
 	return id, nil
 }
 
