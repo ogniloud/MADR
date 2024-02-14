@@ -1,5 +1,6 @@
-import React from 'react';
-import { useParams, Link, Route, Routes } from 'react-router-dom';
+import React, {useState, useEffect} from 'react';
+import { useParams, Link, Route, Routes, useNavigate } from 'react-router-dom';
+import { jwtDecode } from 'jwt-decode';
 import AllWords from './Browse Cards/AllWords';
 import TheHottest from './Browse Cards/TheHottest';
 import Warm from './Browse Cards/Warm';
@@ -12,6 +13,18 @@ import './DeckDetails.css';
 
 const DeckDetail = () => {
     const { deck_id } = useParams();
+    const navigate = useNavigate();
+    const [deckToDelete, setDeckToDelete] = useState(null);
+    const decodedToken = jwtDecode(localStorage.getItem('token'));
+    const userId = decodedToken.user_id;
+
+    useEffect(() => {
+        if (deck_id) {
+            setDeckToDelete(deck_id);
+        }
+    }, [deck_id]);
+
+
 
     return (
         <div className="deck-details-container">
