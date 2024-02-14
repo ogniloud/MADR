@@ -256,16 +256,24 @@ func (d *Storage) ShareAllGroupDecks(ctx context.Context, id models.UserId, grou
 	return nil
 }
 
-func (d *Storage) DeepCopyDeck(ctx context.Context, copier models.UserId, deckId models.DeckId) (models.DeckId, error) {
+func (d *Storage) CheckIfCopied(ctx context.Context, copier models.UserId, deckId models.DeckId) (bool, error) {
 	row := d.Conn.QueryRow(ctx, `SELECT deck_id FROM copied_by WHERE copier_id=$1 AND deck_id=$2`, copier, deckId)
-	{
-		id := 0
-		err := row.Scan(&id)
-		if err == nil {
-			return 0, errors.New("deck already copied")
-		} else if !errors.Is(err, pgx.ErrNoRows) {
-			return 0, fmt.Errorf("fatal db error: %w", err)
-		}
+	id := 0
+
+	if err := row.Scan(&id); err == nil {
+		return true, nil
+	} else if !errors.Is(err, pgx.ErrNoRows) {
+		return false, fmt.Errorf("fatal db error: %w", err)
+	}
+
+	return false, nil
+}
+
+func (d *Storage) DeepCopyDeck(ctx context.Context, copier models.UserId, deckId models.DeckId) (models.DeckId, error) {
+	if ok, err := d.CheckIfCopied(ctx, copier, deckId); ok {
+		return 0, errors.New("deck already copied")
+	} else if err != nil {
+		return 0, err
 	}
 
 	tx, err := d.Conn.Begin(ctx)
@@ -283,7 +291,7 @@ WHERE f.deck_id = $1`, deckId)
 
 	// scan name in order to insert a new deck record
 	name := "default_copied_deck_name"
-	row = tx.QueryRow(ctx, `SELECT name FROM deck_config WHERE deck_id=$1`, deckId)
+	row := tx.QueryRow(ctx, `SELECT name FROM deck_config WHERE deck_id=$1`, deckId)
 	err = row.Scan(&name)
 	if err != nil {
 		d.Conn.Logger().Errorf("Name wasn't selected: %v", err)
