@@ -281,14 +281,6 @@ func (d *Storage) DeepCopyDeck(ctx context.Context, copier models.UserId, deckId
 		return 0, fmt.Errorf("copy transaction fail: %w", err)
 	}
 
-	// copy all the flashcards
-	_, err = tx.Exec(ctx, `INSERT INTO flashcard(word, backside, deck_id, answer)
-SELECT f.word, f.backside, f.deck_id, f.answer FROM flashcard AS f
-WHERE f.deck_id = $1`, deckId)
-	if err != nil {
-		return 0, fmt.Errorf("couldn't copy flashcards: %w", err)
-	}
-
 	// scan name in order to insert a new deck record
 	name := "default_copied_deck_name"
 	row := tx.QueryRow(ctx, `SELECT name FROM deck_config WHERE deck_id=$1`, deckId)
@@ -297,8 +289,10 @@ WHERE f.deck_id = $1`, deckId)
 		d.Conn.Logger().Errorf("Name wasn't selected: %v", err)
 	}
 
-	// create a new record about copying
-	_, err = tx.Exec(ctx, `INSERT INTO copied_by VALUES ($1, $2, now())`, copier, deckId)
+	// insert a new deck and return an id
+	id := 0
+	row = tx.QueryRow(ctx, `INSERT INTO deck_config(user_id, name) VALUES ($1, $2) RETURNING deck_id`, copier, name)
+	err = row.Scan(&id)
 	if err != nil {
 		defer func() {
 			if err := tx.Rollback(ctx); err != nil {
@@ -308,10 +302,16 @@ WHERE f.deck_id = $1`, deckId)
 		return 0, err
 	}
 
-	// insert a new deck and return an id
-	id := 0
-	row = tx.QueryRow(ctx, `INSERT INTO deck_config(user_id, name) VALUES ($1, $2) RETURNING deck_id`, copier, name)
-	err = row.Scan(&id)
+	// copy all the flashcards
+	_, err = tx.Exec(ctx, `INSERT INTO flashcard(word, backside, deck_id, answer)
+SELECT f.word, f.backside, $1, f.answer FROM flashcard AS f
+WHERE f.deck_id = $2`, id, deckId)
+	if err != nil {
+		return 0, fmt.Errorf("couldn't copy flashcards: %w", err)
+	}
+
+	// create a new record about copying
+	_, err = tx.Exec(ctx, `INSERT INTO copied_by VALUES ($1, $2, now())`, copier, deckId)
 	if err != nil {
 		defer func() {
 			if err := tx.Rollback(ctx); err != nil {
