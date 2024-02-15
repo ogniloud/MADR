@@ -3,6 +3,7 @@ package deck
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"strings"
 	"time"
@@ -200,10 +201,43 @@ func (d *Storage) PutAllUserLeitner(ctx context.Context, uls []models.UserLeitne
 }
 
 func (d *Storage) DeleteFlashcardFromDeck(ctx context.Context, cardId models.FlashcardId) error {
-	row := d.Conn.QueryRow(ctx,
+	tx, err := d.Conn.Begin(ctx)
+	if err != nil {
+		return fmt.Errorf("delete card transaction failed: %w", err)
+	}
+
+	_, err = tx.Exec(ctx, `DELETE FROM user_leitner WHERE card_id=$1`, cardId)
+	if err != nil {
+		d.Conn.Logger().Errorf("delete leitners failed: %v, rollback...", err)
+		defer func() {
+			if err := tx.Rollback(ctx); err != nil {
+				d.Conn.Logger().Errorf("rollback failed: %v", err)
+			}
+		}()
+
+		return err
+	}
+
+	row := tx.QueryRow(ctx,
 		`DELETE FROM flashcard WHERE card_id=$1 RETURNING card_id`, cardId)
 
-	return row.Scan(&cardId)
+	if err := row.Scan(&cardId); err != nil && !errors.Is(err, pgx.ErrNoRows) {
+		d.Conn.Logger().Errorf("delete flashcards failed: %v, rollback...", err)
+		defer func() {
+			if err := tx.Rollback(ctx); err != nil {
+				d.Conn.Logger().Errorf("rollback failed: %v", err)
+			}
+		}()
+
+		return err
+	}
+
+	if err := tx.Commit(ctx); err != nil {
+		d.Conn.Logger().Errorf("commit failed: %v", err)
+		return fmt.Errorf("commit failed: %v", err)
+	}
+
+	return nil
 }
 
 func (d *Storage) DeleteUserDeck(ctx context.Context, userId models.UserId, deckId models.DeckId) error {
