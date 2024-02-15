@@ -1,6 +1,7 @@
-import React, {useEffect, useState} from 'react';
-import {useParams} from 'react-router-dom';
-import {jwtDecode} from 'jwt-decode';
+// AllWords.js
+import React, { useEffect, useState } from 'react';
+import { useParams } from 'react-router-dom';
+import { jwtDecode } from 'jwt-decode';
 import './Styles/AllWords.css';
 
 const AllWords = () => {
@@ -15,7 +16,6 @@ const AllWords = () => {
     const [flashcards, setFlashcards] = useState([]);
 
     useEffect(() => {
-
         loadFlashcards();
     }, [deck_id]);
 
@@ -117,16 +117,63 @@ const AllWords = () => {
             setErrorMessage('An unexpected error occurred.');
         }
     };
+
+    // deleting cards
+
+    const handleDeleteWord = async (flashcardId) => {
+        try {
+            const response = await fetch('http://localhost:8080/api/flashcards/delete_card', {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    flashcard_id: flashcardId,
+                    user_id: getUserId(),
+                }),
+            });
+
+            if (response.ok) {
+                // Remove the deleted flashcard from the list
+                setFlashcards(prevFlashcards => prevFlashcards.filter(flashcard => flashcard.id !== flashcardId));
+                setSuccessMessage('Word deleted successfully');
+            } else {
+                console.error('Error deleting word:', response.statusText);
+                setErrorMessage('Error deleting word');
+            }
+        } catch (error) {
+            console.error('Error deleting word:', error);
+            setErrorMessage('Error deleting word');
+        }
+    };
+
+    const getUserId = () => {
+        const token = localStorage.getItem('token');
+        if (token) {
+            const decodedToken = jwtDecode(token);
+            return decodedToken.user_id;
+        }
+        return null;
+    };
+
+    const handleContextMenu = (e, flashcardId) => {
+        e.preventDefault();
+        if (window.confirm('Are you sure you want to delete this word?')) {
+            handleDeleteWord(flashcardId);
+        }
+    };
+
     return (
         <div className="all-words-container">
             <div>
                 <h2 className="all-words-title"> All Words</h2>
             </div>
+
             <div className="all-words-flashcard-list">
                 <h3 className="all-words-subtitle">Browse Cards</h3>
                 <div className="all-words-flashcard-grid">
-                    {flashcards.map((flashcard, index) => (
-                        <div key={flashcard.id} className="all-words-flashcard-item">
+                    {flashcards.map((flashcard) => (
+                        <div key={flashcard.id} className="all-words-flashcard-item" onContextMenu={(e) => handleContextMenu(e, flashcard.id)}>
                             {flashcard.word}
                         </div>
                     ))}
