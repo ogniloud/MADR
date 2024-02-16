@@ -90,7 +90,7 @@ CREATE TABLE IF NOT EXISTS group_invites (
 -- );
 
 CREATE TABLE IF NOT EXISTS copied_by (
-    copier_id INT PRIMARY KEY, -- кто скопировал деку
+    copier_id INT, -- кто скопировал деку
     deck_id INT, -- какая дека скопирована
     time_copied TIMESTAMP,
 
