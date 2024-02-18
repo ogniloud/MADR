@@ -27,7 +27,7 @@ type Storage interface {
 	GetInvitesByGroupId(ctx context.Context, id models.GroupId) (map[models.UserId]models.InviteInfo, error)
 
 	// GetInvitesByUserId returns invites to the given user
-	GetInvitesByUserId(ctx context.Context, id models.GroupId) (map[models.GroupId]models.InviteInfo, error)
+	GetInvitesByUserId(ctx context.Context, id models.UserId) (map[models.GroupId]models.InviteInfo, error)
 
 	// Creates new group with id being the owner
 	CreateGroup(ctx context.Context, id models.UserId, name string) (models.GroupId, error)
