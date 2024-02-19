@@ -255,3 +255,12 @@ func (d *Storage) UpdateLeitner(ctx context.Context, ul models.UserLeitner) erro
 
 	return row.Scan(&ul.Id)
 }
+
+func (d *Storage) DeleteLeitner(ctx context.Context, id models.LeitnerId) error {
+	_, err := d.Conn.Exec(ctx, `DELETE FROM user_leitner WHERE leitner_id=$1`, id)
+	if err != nil {
+		return fmt.Errorf("failed to delete leitner: %w", err)
+	}
+
+	return nil
+}
