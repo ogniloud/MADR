@@ -28,7 +28,7 @@ type FlashcardCRUD interface {
 	// GetFlashcardById returns models.Flashcard by its id.
 	GetFlashcardById(ctx context.Context, id models.FlashcardId) (models.Flashcard, error)
 
-	//todo: update
+	UpdateFlashcard(ctx context.Context, card models.Flashcard) error
 
 	// DeleteFlashcardFromDeck deletes a record from models.Flashcard storage about flashcard.
 	DeleteFlashcardFromDeck(ctx context.Context, cardId models.FlashcardId) error
@@ -41,7 +41,7 @@ type DeckCRUD interface {
 	// GetDecksByUserId returns all decks the user has.
 	GetDecksByUserId(ctx context.Context, id models.UserId) (models.Decks, error)
 
-	//todo: update
+	UpdateDeck(ctx context.Context, deck models.DeckConfig) error
 
 	// DeleteUserDeck removes the entry from models.DeckConfig that user with userId has a deck.
 	DeleteUserDeck(ctx context.Context, userId models.UserId, id models.DeckId) error
@@ -58,5 +58,5 @@ type LeitnerCRUD interface {
 	// UpdateLeitner updates a record in the database when the models.LeitnerId matches.
 	UpdateLeitner(ctx context.Context, ul models.UserLeitner) error
 
-	//todo: delete
+	DeleteLeitner(ctx context.Context, id models.LeitnerId) error
 }
