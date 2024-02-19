@@ -241,11 +241,29 @@ func (d *Storage) DeleteFlashcardFromDeck(ctx context.Context, cardId models.Fla
 }
 
 func (d *Storage) DeleteUserDeck(ctx context.Context, userId models.UserId, deckId models.DeckId) error {
-	row := d.Conn.QueryRow(ctx,
-		`DELETE FROM deck_config WHERE user_id=$1 AND deck_id=$2 RETURNING name`, userId, deckId)
+	tx, err := d.Conn.Begin(ctx)
+	if err != nil {
+		return fmt.Errorf("delete user deck tx begin failed: %w", err)
+	}
 
-	s := ""
-	return row.Scan(&s)
+	_, err = tx.Exec(ctx, `DELETE FROM user_leitner USING flashcard 
+       WHERE flashcard.deck_id=$1 AND user_leitner.user_id=$2 AND flashcard.card_id=user_leitner.card_id`, deckId, userId)
+	if err != nil {
+		return fmt.Errorf("delete leitners failed: %w", err)
+	}
+
+	_, err = tx.Exec(ctx, `DELETE FROM flashcard WHERE flashcard.deck_id=$1`, deckId)
+	if err != nil {
+		return fmt.Errorf("delete falshcards failed: %w", err)
+	}
+
+	_, err = d.Conn.Exec(ctx,
+		`DELETE FROM deck_config WHERE user_id=$1 AND deck_id=$2 RETURNING name`, userId, deckId)
+	if err != nil {
+		return fmt.Errorf("delete deck failed: %w", err)
+	}
+
+	return nil
 }
 
 func (d *Storage) UpdateLeitner(ctx context.Context, ul models.UserLeitner) error {
