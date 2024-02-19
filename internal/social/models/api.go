@@ -18,7 +18,7 @@ type GetCreatedGroupsByUserIdResponse struct {
 	// Groups is a map from group id to group config.
 	//
 	// required: true
-	Groups Groups `json:"decks"`
+	Groups Groups `json:"groups"`
 }
 
 // GetGroupsByUserIdRequest is a struct that defines the request body for
@@ -33,13 +33,13 @@ type GetGroupsByUserIdRequest struct {
 	UserId UserId `json:"user_id"`
 }
 
-// GetGroupsByUserIdRequest is a struct that defines the request body for
+// GetGroupsByUserIdResponse is a struct that defines the request body for
 // loading groups the user is a member of.
 type GetGroupsByUserIdResponse struct {
 	// Groups is a map from group id to group config.
 	//
 	// required: true
-	Groups Groups `json:"decks"`
+	Groups Groups `json:"groups"`
 }
 
 // GetUsersByGroupIdRequest is a struct that defines the request body for
@@ -54,7 +54,7 @@ type GetUsersByGroupIdRequest struct {
 	GroupId GroupId `json:"group_id"`
 }
 
-// GetUsersByGroupIdRequest is a struct that defines the request body for
+// GetUsersByGroupIdResponse is a struct that defines the request body for
 // loading members of a group.
 type GetUsersByGroupIdResponse struct {
 	// Members is a map from user id to member info.
@@ -75,7 +75,7 @@ type GetGroupByGroupIdRequest struct {
 	GroupId GroupId `json:"group_id"`
 }
 
-// GetGroupByGroupIdRequest is a struct that defines the request body for
+// GetGroupByGroupIdResponse is a struct that defines the request body for
 // loading members of a group.
 type GetGroupByGroupIdResponse struct {
 	// GroupConfig is a struct containing the info about a group.
@@ -96,7 +96,7 @@ type GetDecksByGroupIdRequest struct {
 	GroupId GroupId `json:"group_id"`
 }
 
-// GetDecksByGroupIdRequest is a struct that defines the request body for
+// GetDecksByGroupIdResponse is a struct that defines the request body for
 // loading decks of a group.
 type GetDecksByGroupIdResponse struct {
 	// Decks is an array of deck ids.
@@ -117,7 +117,7 @@ type GetInvitesByGroupIdRequest struct {
 	GroupId GroupId `json:"group_id"`
 }
 
-// GetInvitesByGroupIdRequest is a struct that defines the request body for
+// GetInvitesByGroupIdResponse is a struct that defines the request body for
 // loading invites to a group.
 type GetInvitesByGroupIdResponse struct {
 	// Invites is a map from user id to invite information.
@@ -138,7 +138,7 @@ type GetInvitesByUserIdRequest struct {
 	UserId UserId `json:"user_id"`
 }
 
-// GetInvitesByUserIdRequest is a struct that defines the request body for
+// GetInvitesByUserIdResponse is a struct that defines the request body for
 // loading invites to a user.
 type GetInvitesByUserIdResponse struct {
 	// Invites is a map from group id to invite information.
@@ -161,11 +161,11 @@ type CreateGroupRequest struct {
 	// Name is the new group's name
 	//
 	// required: true
-	// example: fefhjkehsfuhgwefvgewhufgvhejwgvfhewghfjewfhjewsvfhgewhf
+	// example: Eduard
 	Name string `json:"name"`
 }
 
-// CreateGroupRequest is a struct that defines the request body for
+// CreateGroupResponse is a struct that defines the request body for
 // creating a new group.
 type CreateGroupResponse struct {
 	// GroupId is an ID of a group in the storage.
@@ -193,7 +193,7 @@ type DeleteGroupRequest struct {
 	GroupId GroupId `json:"group_id"`
 }
 
-// DeleteGroupRequest is a struct that defines the request body for
+// DeleteGroupResponse is a struct that defines the request body for
 // creating a new group.
 type DeleteGroupResponse struct{}
 
@@ -215,7 +215,7 @@ type AcceptInviteRequest struct {
 	GroupId GroupId `json:"group_id"`
 }
 
-// AcceptInviteRequest is a struct that defines the request body for
+// AcceptInviteResponse is a struct that defines the request body for
 // sending an invite to group.
 type AcceptInviteResponse struct{}
 
@@ -243,7 +243,7 @@ type SendInviteRequest struct {
 	GroupId GroupId `json:"group_id"`
 }
 
-// SendInviteRequest is a struct that defines the request body for
+// SendInviteResponse is a struct that defines the request body for
 // sending an invite to group.
 type SendInviteResponse struct{}
 
@@ -265,7 +265,7 @@ type ShareAllGroupDecksRequest struct {
 	GroupId GroupId `json:"group_id"`
 }
 
-// ShareAllGroupDecksRequest is a struct that defines the request body for
+// ShareAllGroupDecksResponse is a struct that defines the request body for
 // sharing all the group decks to a new user.
 type ShareAllGroupDecksResponse struct{}
 
@@ -287,7 +287,7 @@ type DeepCopyDeckRequest struct {
 	DeckId DeckId `json:"deck_id"`
 }
 
-// DeepCopyDeckRequest is a struct that defines the request body for
+// DeepCopyDeckResponse is a struct that defines the request body for
 // deep copying a deck (with all its contents recursively copied).
 type DeepCopyDeckResponse struct {
 	// DeckId is an ID of the newly copied deck.
