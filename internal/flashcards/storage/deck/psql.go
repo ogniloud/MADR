@@ -282,3 +282,13 @@ func (d *Storage) DeleteLeitner(ctx context.Context, id models.LeitnerId) error 
 
 	return nil
 }
+
+func (d *Storage) UpdateDeck(ctx context.Context, deck models.DeckConfig) error {
+	_, err := d.Conn.Exec(ctx, `UPDATE deck_config SET user_id=$1, name=$2 
+                   WHERE deck_id=$3`, deck.UserId, deck.Name, deck.DeckId)
+	if err != nil {
+		return fmt.Errorf("update deck failed: %w", err)
+	}
+
+	return nil
+}
