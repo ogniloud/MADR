@@ -28,7 +28,11 @@ type FlashcardCRUD interface {
 	// GetFlashcardById returns models.Flashcard by its id.
 	GetFlashcardById(ctx context.Context, id models.FlashcardId) (models.Flashcard, error)
 
-	UpdateFlashcard(ctx context.Context, card models.Flashcard) error
+	UpdateFlashcard(ctx context.Context,
+		id models.FlashcardId,
+		w models.Word,
+		b models.Backside,
+		a models.Answer) error
 
 	// DeleteFlashcardFromDeck deletes a record from models.Flashcard storage about flashcard.
 	DeleteFlashcardFromDeck(ctx context.Context, cardId models.FlashcardId) error

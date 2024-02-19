@@ -292,3 +292,17 @@ func (d *Storage) UpdateDeck(ctx context.Context, deck models.DeckConfig) error 
 
 	return nil
 }
+
+func (d *Storage) UpdateFlashcard(ctx context.Context,
+	id models.FlashcardId,
+	w models.Word,
+	b models.Backside,
+	a models.Answer) error {
+	_, err := d.Conn.Exec(ctx, `UPDATE flashcard SET word=$1, backside=$2, answer=$3
+WHERE card_id=$4`, w, b, a, id)
+	if err != nil {
+		return fmt.Errorf("update flashcard failed: %w", err)
+	}
+
+	return nil
+}
