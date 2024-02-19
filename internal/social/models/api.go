@@ -1,5 +1,7 @@
 package models
 
+import "github.com/ogniloud/madr/internal/models"
+
 // GetCreatedGroupsByUserIdRequest is a struct that defines the request body for
 // loading groups the user is a creator of.
 //
@@ -252,7 +254,7 @@ type SendInviteResponse struct{}
 //
 //swagger:model shareAllGroupDecksRequest
 type ShareAllGroupDecksRequest struct {
-	// CreatorId is an ID of the user in a storage.
+	// UserId is an ID of the user in a storage.
 	//
 	// required: true
 	// example: 189
@@ -295,4 +297,32 @@ type DeepCopyDeckResponse struct {
 	// required: true
 	// example: 189
 	DeckId DeckId `json:"deck_id"`
+}
+
+// FollowersRequest contains an id of the user to get their followers.
+type FollowersRequest struct {
+	// UserId is an ID of the user in a storage.
+	//
+	// required: true
+	// example: 189
+	UserId UserId `json:"userId"`
+}
+
+// FollowersResponse contains ids and names of the followers.
+type FollowersResponse struct {
+	UserInfo []models.UserInfo `json:"user_info"`
+}
+
+// FollowingsRequest contains an id of the user to get their followings.
+type FollowingsRequest struct {
+	// UserId is an ID of the user in a storage.
+	//
+	// required: true
+	// example: 189
+	UserId UserId `json:"userId"`
+}
+
+// FollowingsResponse contains ids and names of the followings.
+type FollowingsResponse struct {
+	UserInfo []models.UserInfo `json:"user_info"`
 }

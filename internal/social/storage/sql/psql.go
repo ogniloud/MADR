@@ -8,6 +8,7 @@ import (
 	"github.com/jackc/pgx/v5"
 
 	"github.com/ogniloud/madr/internal/db"
+	usermodels "github.com/ogniloud/madr/internal/models"
 	"github.com/ogniloud/madr/internal/social/models"
 )
 
@@ -327,6 +328,60 @@ WHERE f.deck_id = $2`, id, deckId)
 	}
 
 	return id, nil
+}
+
+func (d *Storage) GetFollowersByUserId(ctx context.Context, id models.UserId) ([]usermodels.UserInfo, error) {
+	rows, err := d.Conn.Query(ctx, `SELECT (follower_id, user_credentials.username, user_credentials.email) FROM followers 
+    JOIN user_credentials ON followers.follower_id = user_credentials.user_id 
+                   WHERE followers.user_id=$1`, id)
+	if err != nil {
+		d.Conn.Logger().Errorf("couldn't get followers: %v", err)
+		return nil, fmt.Errorf("couldn't get followers: %w", err)
+	}
+	defer func() { _ = rows.Close }()
+
+	var info usermodels.UserInfo
+	var infos []usermodels.UserInfo
+	_, err = pgx.ForEachRow(rows, []any{&info.ID, &info.Username, &info.Email}, func() error {
+		infos = append(infos, info)
+		return nil
+	})
+	if err != nil {
+		d.Conn.Logger().Errorf("foreach followers error: %v", err)
+		return nil, fmt.Errorf("foreach followers error: %w", err)
+	}
+
+	infos2 := make([]usermodels.UserInfo, len(infos))
+	copy(infos2, infos)
+
+	return infos2, nil
+}
+
+func (d *Storage) GetFollowingsByUserId(ctx context.Context, id models.UserId) ([]usermodels.UserInfo, error) {
+	rows, err := d.Conn.Query(ctx, `SELECT (followers.user_id, user_credentials.username, user_credentials.email) FROM followers 
+    JOIN user_credentials ON followers.user_id = user_credentials.user_id 
+                   WHERE followers.follower_id=$1`, id)
+	if err != nil {
+		d.Conn.Logger().Errorf("couldn't get followers: %v", err)
+		return nil, fmt.Errorf("couldn't get followers: %w", err)
+	}
+	defer func() { _ = rows.Close }()
+
+	var info usermodels.UserInfo
+	var infos []usermodels.UserInfo
+	_, err = pgx.ForEachRow(rows, []any{&info.ID, &info.Username, &info.Email}, func() error {
+		infos = append(infos, info)
+		return nil
+	})
+	if err != nil {
+		d.Conn.Logger().Errorf("foreach followers error: %v", err)
+		return nil, fmt.Errorf("foreach followers error: %w", err)
+	}
+
+	infos2 := make([]usermodels.UserInfo, len(infos))
+	copy(infos2, infos)
+
+	return infos2, nil
 }
 
 func (d *Storage) addMember(ctx context.Context, id models.UserId, groupId models.GroupId) error {

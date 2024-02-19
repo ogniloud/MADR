@@ -3,6 +3,7 @@ package storage
 import (
 	"context"
 
+	usermodels "github.com/ogniloud/madr/internal/models"
 	"github.com/ogniloud/madr/internal/social/models"
 )
 
@@ -45,4 +46,8 @@ type Storage interface {
 	ShareAllGroupDecks(ctx context.Context, id models.UserId, group_id models.GroupId) error
 
 	DeepCopyDeck(ctx context.Context, copier models.UserId, deckId models.DeckId) (models.DeckId, error)
+
+	GetFollowersByUserId(ctx context.Context, id models.UserId) ([]usermodels.UserInfo, error)
+
+	GetFollowingsByUserId(ctx context.Context, id models.UserId) ([]usermodels.UserInfo, error)
 }
