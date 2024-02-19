@@ -28,6 +28,20 @@ func (_m *Storage) DeleteFlashcardFromDeck(ctx context.Context, cardId int) erro
 	return r0
 }
 
+// DeleteLeitner provides a mock function with given fields: ctx, id
+func (_m *Storage) DeleteLeitner(ctx context.Context, id int) error {
+	ret := _m.Called(ctx, id)
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(context.Context, int) error); ok {
+		r0 = rf(ctx, id)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
+}
+
 // DeleteUserDeck provides a mock function with given fields: ctx, userId, id
 func (_m *Storage) DeleteUserDeck(ctx context.Context, userId int, id int) error {
 	ret := _m.Called(ctx, userId, id)
@@ -240,6 +254,34 @@ func (_m *Storage) PutNewDeck(ctx context.Context, config models.DeckConfig) (in
 	}
 
 	return r0, r1
+}
+
+// UpdateDeck provides a mock function with given fields: ctx, deck
+func (_m *Storage) UpdateDeck(ctx context.Context, deck models.DeckConfig) error {
+	ret := _m.Called(ctx, deck)
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(context.Context, models.DeckConfig) error); ok {
+		r0 = rf(ctx, deck)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
+}
+
+// UpdateFlashcard provides a mock function with given fields: ctx, id, w, b, a
+func (_m *Storage) UpdateFlashcard(ctx context.Context, id int, w string, b models.Backside, a string) error {
+	ret := _m.Called(ctx, id, w, b, a)
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(context.Context, int, string, models.Backside, string) error); ok {
+		r0 = rf(ctx, id, w, b, a)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
 }
 
 // UpdateLeitner provides a mock function with given fields: ctx, ul
