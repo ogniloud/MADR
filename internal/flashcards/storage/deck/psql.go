@@ -241,11 +241,29 @@ func (d *Storage) DeleteFlashcardFromDeck(ctx context.Context, cardId models.Fla
 }
 
 func (d *Storage) DeleteUserDeck(ctx context.Context, userId models.UserId, deckId models.DeckId) error {
-	row := d.Conn.QueryRow(ctx,
-		`DELETE FROM deck_config WHERE user_id=$1 AND deck_id=$2 RETURNING name`, userId, deckId)
+	tx, err := d.Conn.Begin(ctx)
+	if err != nil {
+		return fmt.Errorf("delete user deck tx begin failed: %w", err)
+	}
 
-	s := ""
-	return row.Scan(&s)
+	_, err = tx.Exec(ctx, `DELETE FROM user_leitner USING flashcard 
+       WHERE flashcard.deck_id=$1 AND user_leitner.user_id=$2 AND flashcard.card_id=user_leitner.card_id`, deckId, userId)
+	if err != nil {
+		return fmt.Errorf("delete leitners failed: %w", err)
+	}
+
+	_, err = tx.Exec(ctx, `DELETE FROM flashcard WHERE flashcard.deck_id=$1`, deckId)
+	if err != nil {
+		return fmt.Errorf("delete falshcards failed: %w", err)
+	}
+
+	_, err = d.Conn.Exec(ctx,
+		`DELETE FROM deck_config WHERE user_id=$1 AND deck_id=$2 RETURNING name`, userId, deckId)
+	if err != nil {
+		return fmt.Errorf("delete deck failed: %w", err)
+	}
+
+	return nil
 }
 
 func (d *Storage) UpdateLeitner(ctx context.Context, ul models.UserLeitner) error {
@@ -254,4 +272,37 @@ func (d *Storage) UpdateLeitner(ctx context.Context, ul models.UserLeitner) erro
 		ul.UserId, ul.FlashcardId, ul.Box, time.Time(ul.CoolDown), ul.Id)
 
 	return row.Scan(&ul.Id)
+}
+
+func (d *Storage) DeleteLeitner(ctx context.Context, id models.LeitnerId) error {
+	_, err := d.Conn.Exec(ctx, `DELETE FROM user_leitner WHERE leitner_id=$1`, id)
+	if err != nil {
+		return fmt.Errorf("failed to delete leitner: %w", err)
+	}
+
+	return nil
+}
+
+func (d *Storage) UpdateDeck(ctx context.Context, deck models.DeckConfig) error {
+	_, err := d.Conn.Exec(ctx, `UPDATE deck_config SET user_id=$1, name=$2 
+                   WHERE deck_id=$3`, deck.UserId, deck.Name, deck.DeckId)
+	if err != nil {
+		return fmt.Errorf("update deck failed: %w", err)
+	}
+
+	return nil
+}
+
+func (d *Storage) UpdateFlashcard(ctx context.Context,
+	id models.FlashcardId,
+	w models.Word,
+	b models.Backside,
+	a models.Answer) error {
+	_, err := d.Conn.Exec(ctx, `UPDATE flashcard SET word=$1, backside=$2, answer=$3
+WHERE card_id=$4`, w, b, a, id)
+	if err != nil {
+		return fmt.Errorf("update flashcard failed: %w", err)
+	}
+
+	return nil
 }
