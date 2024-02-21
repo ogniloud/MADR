@@ -50,4 +50,8 @@ type Storage interface {
 	GetFollowersByUserId(ctx context.Context, id models.UserId) ([]usermodels.UserInfo, error)
 
 	GetFollowingsByUserId(ctx context.Context, id models.UserId) ([]usermodels.UserInfo, error)
+
+	Follow(ctx context.Context, follower models.UserId, author models.UserId) error
+
+	Unfollow(ctx context.Context, follower models.UserId, author models.UserId) error
 }
