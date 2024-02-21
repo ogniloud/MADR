@@ -395,3 +395,23 @@ func (d *Storage) addMember(ctx context.Context, id models.UserId, groupId model
 
 	return d.ShareAllGroupDecks(ctx, id, groupId)
 }
+
+func (d *Storage) Follow(ctx context.Context, follower models.UserId, author models.UserId) error {
+	_, err := d.Conn.Exec(ctx, `INSERT INTO followers VALUES ($1, $2, now())`, author, follower)
+	if err != nil {
+		d.Conn.Logger().Errorf("follow error: %v", err)
+		return fmt.Errorf("follow error: %w", err)
+	}
+
+	return nil
+}
+
+func (d *Storage) Unfollow(ctx context.Context, follower models.UserId, author models.UserId) error {
+	_, err := d.Conn.Exec(ctx, `DELETE FROM followers WHERE user_id=$1 AND follower_id=$2`, author, follower)
+	if err != nil {
+		d.Conn.Logger().Errorf("follow error: %v", err)
+		return fmt.Errorf("follow error: %w", err)
+	}
+
+	return nil
+}
