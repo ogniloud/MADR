@@ -326,3 +326,39 @@ type FollowingsRequest struct {
 type FollowingsResponse struct {
 	UserInfo []models.UserInfo `json:"user_info"`
 }
+
+// FollowRequest contains an id of the user that following to author
+type FollowRequest struct {
+	// FollowerId is an ID of the user following the author.
+	//
+	// required: true
+	// example: 189
+	FollowerId UserId `json:"follower_id"`
+
+	// AuthorId is an ID of the supplier of content.
+	//
+	// required: true
+	// example: 189
+	AuthorId UserId `json:"author_id"`
+}
+
+// FollowResponse contains ids and names of the followings.
+type FollowResponse struct{}
+
+// UnfollowRequest contains an id of the user that unfollowing from the author
+type UnfollowRequest struct {
+	// FollowerId is an ID of the follower.
+	//
+	// required: true
+	// example: 189
+	FollowerId UserId `json:"follower_id"`
+
+	// AuthorId is an ID of the supplier of content.
+	//
+	// required: true
+	// example: 183
+	AuthorId UserId `json:"author_id"`
+}
+
+// UnfollowResponse contains ids and names of the followings.
+type UnfollowResponse struct{}
