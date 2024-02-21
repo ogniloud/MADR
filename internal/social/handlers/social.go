@@ -78,3 +78,51 @@ func (e Endpoints) Followings(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 }
+
+func (e Endpoints) Follow(w http.ResponseWriter, r *http.Request) {
+	reqBody := models.FollowRequest{}
+
+	if err := ioutil.FromJSON(&reqBody, r.Body); err != nil {
+		e.logger.Errorf("json not parsed: %v", err)
+		e.ew.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	if reqBody.AuthorId == reqBody.FollowerId {
+		e.ew.Error(w, "author_id is equal follower_id", http.StatusBadRequest)
+		return
+	}
+
+	err := e.s.Follow(r.Context(), reqBody.FollowerId, reqBody.AuthorId)
+	if err != nil {
+		e.logger.Errorf("reqBody: %+v, error: %v", reqBody, err)
+		e.ew.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.WriteHeader(http.StatusNoContent)
+}
+
+func (e Endpoints) Unfollow(w http.ResponseWriter, r *http.Request) {
+	reqBody := models.FollowRequest{}
+
+	if err := ioutil.FromJSON(&reqBody, r.Body); err != nil {
+		e.logger.Errorf("json not parsed: %v", err)
+		e.ew.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	if reqBody.AuthorId == reqBody.FollowerId {
+		e.ew.Error(w, "author_id is equal follower_id", http.StatusBadRequest)
+		return
+	}
+
+	err := e.s.Unfollow(r.Context(), reqBody.FollowerId, reqBody.AuthorId)
+	if err != nil {
+		e.logger.Errorf("reqBody: %+v, error: %v", reqBody, err)
+		e.ew.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.WriteHeader(http.StatusNoContent)
+}
