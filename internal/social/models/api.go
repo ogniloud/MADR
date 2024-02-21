@@ -305,7 +305,7 @@ type FollowersRequest struct {
 	//
 	// required: true
 	// example: 189
-	UserId UserId `json:"userId"`
+	UserId UserId `json:"user_id"`
 }
 
 // FollowersResponse contains ids and names of the followers.
@@ -319,7 +319,7 @@ type FollowingsRequest struct {
 	//
 	// required: true
 	// example: 189
-	UserId UserId `json:"userId"`
+	UserId UserId `json:"user_id"`
 }
 
 // FollowingsResponse contains ids and names of the followings.
