@@ -53,3 +53,11 @@
     transform: scale(1.05);
     box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
 }
+
+.deck-details-delete-button{
+    color: white;
+    font-size: 30px;
+    font-weight: 50;
+    font-family: "Google Sans", serif;
+    display: block;
+}

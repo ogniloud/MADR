@@ -83,3 +83,18 @@
     background-color: black;
 
 }
+
+.ex-flashcard-delete{
+    position: absolute;
+    margin: 0 5px;
+    padding: 8px 15px;
+    font-size: 0.9em;
+    cursor: pointer;
+    background-color: black;
+    width: 500px;
+    top:420px;
+
+
+}
+
+

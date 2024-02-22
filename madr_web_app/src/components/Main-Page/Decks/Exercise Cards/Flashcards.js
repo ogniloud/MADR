@@ -8,6 +8,7 @@ const Flashcards = () => {
     const [flashcard, setFlashcard] = useState(null);
     const [cardsSeen, setCardsSeen] = useState(0);
     const [userId, setUserId] = useState(null);
+    const [showDeleteButton, setShowDeleteButton] = useState(false);
 
     useEffect(() => {
         // Fetch the initial flashcard when the component mounts
@@ -70,6 +71,43 @@ const Flashcards = () => {
         }
     };
 
+
+    // deleting flashcards - on click
+
+    const handleDeleteFlashcard = async () => {
+        try {
+            const response = await fetch('http://localhost:8080/api/flashcards/delete_card', {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    flashcard_id: flashcard.id,
+                    user_id: userId,
+                }),
+            });
+
+            if (response.ok) {
+                // Fetch the next flashcard after successful deletion
+                fetchFlashcard();
+                alert('Flashcard deleted successfully');
+            } else {
+                console.error('Error deleting flashcard:', response.statusText);
+                alert('Error deleting flashcard');
+            }
+        } catch (error) {
+            console.error('Error deleting flashcard:', error);
+            alert('Error deleting flashcard');
+        }
+    };
+
+    const handleContextMenu = (e) => {
+        e.preventDefault();
+        if (window.confirm('Are you sure you want to delete this flashcard?')) {
+            handleDeleteFlashcard();
+        }
+    };
+
     const handleCardClick = () => {
         // Toggle between front and back of the card
         setFlashcard((prevFlashcard) => ({
@@ -81,11 +119,11 @@ const Flashcards = () => {
     return (
         <div className="ex-flash">
             <div><h2 className="ex-flash-title">Flashcards</h2></div>
-
-            <div className="ex-flashcard-container" onClick={handleCardClick}>
+            <div className="ex-flashcard-container" onClick={handleCardClick} onContextMenu={handleContextMenu}>
                 {flashcard && (
                     <div className={`ex-flashcard ${flashcard.showBack ? 'ex-show-back' : ''}`}>
-                        <div className="card-content">{flashcard.showBack ? flashcard.backside.value : flashcard.word}</div>
+                        <div
+                            className="card-content">{flashcard.showBack ? flashcard.backside.value : flashcard.word}</div>
                     </div>
                 )}
             </div>
