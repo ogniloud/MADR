@@ -22,6 +22,8 @@ import (
 	deckstorage "github.com/ogniloud/madr/internal/flashcards/storage/deck"
 	"github.com/ogniloud/madr/internal/handlers"
 	"github.com/ogniloud/madr/internal/ioutil"
+	handlers2 "github.com/ogniloud/madr/internal/social/handlers"
+	socialstorage "github.com/ogniloud/madr/internal/social/storage/sql"
 	"github.com/ogniloud/madr/internal/usercred"
 
 	"github.com/charmbracelet/log"
@@ -85,6 +87,7 @@ func main() {
 	// storage by package definition
 	credentials := usercred.New(psqlDB)
 	deckStorage := &deckstorage.Storage{Conn: psqlDB}
+	socialStorage := &socialstorage.Storage{Conn: psqlDB}
 
 	// get salt length from env
 	saltLengthString := os.Getenv("SALT_LENGTH")
@@ -140,6 +143,8 @@ func main() {
 	deckEndpoints := deck.New(deckService, ioutil.JSONErrorWriter{Logger: l}, l)
 	exerciseEndpoints := study.New(deckService, studyService, ioutil.JSONErrorWriter{Logger: l}, l)
 
+	socialEndpoints := handlers2.New(socialStorage, ioutil.JSONErrorWriter{Logger: l})
+
 	// Set up routes
 	r.Route("/api", func(r chi.Router) {
 		r.Post("/signup", endpoints.SignUp)
@@ -167,6 +172,13 @@ func main() {
 			r.Post("/rate", exerciseEndpoints.Rate)
 			r.Post("/random_matching", exerciseEndpoints.RandomMatching)
 			r.Post("/random_matching_deck", exerciseEndpoints.RandomMatchingDeck)
+		})
+
+		r.Route("/social", func(r chi.Router) {
+			r.Post("/follow", socialEndpoints.Follow)
+			r.Post("/unfollow", socialEndpoints.Unfollow)
+			r.Post("/followers", socialEndpoints.Followers)
+			r.Post("/followings", socialEndpoints.Followings)
 		})
 	})
 

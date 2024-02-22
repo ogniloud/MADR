@@ -3,6 +3,7 @@ package storage
 import (
 	"context"
 
+	usermodels "github.com/ogniloud/madr/internal/models"
 	"github.com/ogniloud/madr/internal/social/models"
 )
 
@@ -27,7 +28,7 @@ type Storage interface {
 	GetInvitesByGroupId(ctx context.Context, id models.GroupId) (map[models.UserId]models.InviteInfo, error)
 
 	// GetInvitesByUserId returns invites to the given user
-	GetInvitesByUserId(ctx context.Context, id models.GroupId) (map[models.GroupId]models.InviteInfo, error)
+	GetInvitesByUserId(ctx context.Context, id models.UserId) (map[models.GroupId]models.InviteInfo, error)
 
 	// Creates new group with id being the owner
 	CreateGroup(ctx context.Context, id models.UserId, name string) (models.GroupId, error)
@@ -45,4 +46,12 @@ type Storage interface {
 	ShareAllGroupDecks(ctx context.Context, id models.UserId, group_id models.GroupId) error
 
 	DeepCopyDeck(ctx context.Context, copier models.UserId, deckId models.DeckId) (models.DeckId, error)
+
+	GetFollowersByUserId(ctx context.Context, id models.UserId) ([]usermodels.UserInfo, error)
+
+	GetFollowingsByUserId(ctx context.Context, id models.UserId) ([]usermodels.UserInfo, error)
+
+	Follow(ctx context.Context, follower models.UserId, author models.UserId) error
+
+	Unfollow(ctx context.Context, follower models.UserId, author models.UserId) error
 }
