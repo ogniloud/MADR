@@ -30,7 +30,7 @@ type SwaggerLoadDecksBadRequestError struct {
 	Body ioutil.GenericError
 }
 
-// swagger:response signUpInternalServerError
+// swagger:response loadDecksInternalServerError
 type SwaggerLoadDecksInternalServerError struct {
 	// in: body
 	Body ioutil.GenericError
