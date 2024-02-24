@@ -27,7 +27,29 @@ func New(s IService, ew ioutil.ErrorWriter) Endpoints {
 	}
 }
 
-// Followers /api/social/followers
+// swagger:route POST /api/social/followers getFollowers
+// Returns a list of followers of the user.
+//
+//	Consumes:
+//	- application/json
+//
+//	Produces:
+//	- application/json
+//
+//	Scheme: http
+//
+//
+//	Parameters:
+//	+ name: request
+//	  in: body
+//	  description: request body
+//	  required: true
+//	  type: getFollowersRequest
+//
+//	Responses:
+//	200: getFollowersOkResponse
+//	400: getFollowersBadRequestResponse
+//	500: getFollowersInternalServerErrorResponse
 func (e Endpoints) Followers(w http.ResponseWriter, r *http.Request) {
 	reqBody := models.FollowersRequest{}
 	respBody := models.FollowersResponse{}
