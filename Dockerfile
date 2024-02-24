@@ -3,18 +3,12 @@ FROM golang:1.22.0-alpine AS build
 
 WORKDIR /usr/src/app
 
-#install go-swagger
-RUN go install github.com/go-swagger/go-swagger/cmd/swagger@latest
-
 # pre-copy/cache go.mod for pre-downloading dependencies and only redownloading them in subsequent builds if they change
 COPY go.mod go.sum ./
 RUN go mod download && go mod verify
 
 COPY . .
 RUN go build -C cmd/api-server -v -o /usr/local/bin/madr
-
-# generate swagger file
-RUN swagger generate spec -o ./swagger.yaml --scan-models
 
 FROM gcr.io/distroless/static-debian12
 
