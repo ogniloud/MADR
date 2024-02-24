@@ -12,6 +12,8 @@ import (
 	"github.com/ogniloud/madr/internal/social/models"
 )
 
+var ErrUserNotCreator = fmt.Errorf("the user is not a group creator")
+
 type Storage struct {
 	Conn *db.PSQLDatabase
 }
@@ -411,6 +413,35 @@ func (d *Storage) Unfollow(ctx context.Context, follower models.UserId, author m
 	if err != nil {
 		d.Conn.Logger().Errorf("follow error: %v", err)
 		return fmt.Errorf("follow error: %w", err)
+	}
+
+	return nil
+}
+
+func (d *Storage) ShareDeckGroup(ctx context.Context, userId models.UserId, groupId models.GroupId, deckId models.DeckId) error {
+	_, err := d.Conn.Query(ctx, `SELECT group_id FROM groups WHERE group_id=$1 AND creator_id=$2`, groupId, userId)
+	if errors.Is(err, pgx.ErrNoRows) {
+		return ErrUserNotCreator
+	} else if err != nil {
+		d.Conn.Logger().Errorf("share deck error: %v", err)
+		return fmt.Errorf("share deck error: %w", err)
+	}
+
+	_, err = d.Conn.Exec(ctx, `INSERT INTO group_decks VALUES ($1, $2, now())`, groupId, deckId)
+	if err != nil {
+		d.Conn.Logger().Errorf("group deck add error: %v", err)
+		return fmt.Errorf("group deck add error: %w", err)
+	}
+
+	_, err = d.Conn.Exec(ctx, `INSERT INTO user_leitner(user_id, card_id, box, cool_down)
+    (SELECT u, c, 0 as box, now() as cool_down FROM
+            (SELECT user_id as u FROM group_members WHERE group_id=$1 AND user_id != $2) as gmu
+            LEFT JOIN (SELECT flashcard.card_id as c FROM flashcard WHERE deck_id=$3) as fc ON TRUE
+            WHERE NOT u IN (SELECT copier_id FROM copied_by WHERE deck_id=$4)
+    );`, groupId, userId, deckId, deckId)
+	if err != nil {
+		d.Conn.Logger().Errorf("add user leitners to members failed: %v", err)
+		return fmt.Errorf("add user leitners to members failed: %w", err)
 	}
 
 	return nil
