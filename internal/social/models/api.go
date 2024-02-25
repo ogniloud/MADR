@@ -1,6 +1,9 @@
 package models
 
-import "github.com/ogniloud/madr/internal/models"
+import (
+	cardmodels "github.com/ogniloud/madr/internal/flashcards/models"
+	"github.com/ogniloud/madr/internal/models"
+)
 
 // GetCreatedGroupsByUserIdRequest is a struct that defines the request body for
 // loading groups the user is a creator of.
@@ -101,10 +104,10 @@ type GetDecksByGroupIdRequest struct {
 // GetDecksByGroupIdResponse is a struct that defines the request body for
 // loading decks of a group.
 type GetDecksByGroupIdResponse struct {
-	// Decks is an array of deck ids.
+	// Decks is a list of decks.
 	//
 	// required: true
-	Decks []DeckId `json:"decks"`
+	Decks []cardmodels.DeckConfig `json:"decks"`
 }
 
 // GetInvitesByGroupIdRequest is a struct that defines the request body for

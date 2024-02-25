@@ -8,6 +8,7 @@ import (
 	"github.com/jackc/pgx/v5"
 
 	"github.com/ogniloud/madr/internal/db"
+	cardmodels "github.com/ogniloud/madr/internal/flashcards/models"
 	usermodels "github.com/ogniloud/madr/internal/models"
 	"github.com/ogniloud/madr/internal/social/models"
 )
@@ -116,8 +117,10 @@ func (d *Storage) GetGroupByGroupId(ctx context.Context, id models.GroupId) (mod
 	return group, nil
 }
 
-func (d *Storage) GetDecksByGroupId(ctx context.Context, id models.GroupId) ([]models.DeckId, error) {
-	rows, err := d.Conn.Query(ctx, `SELECT deck_id FROM group_decks WHERE group_id = $1`, id)
+func (d *Storage) GetDecksByGroupId(ctx context.Context, id models.GroupId) ([]cardmodels.DeckConfig, error) {
+	rows, err := d.Conn.Query(ctx, `SELECT (dc.deck_id, user_id, name) FROM group_decks
+                 JOIN deck_config dc on dc.deck_id = group_decks.deck_id
+                 WHERE group_id = $1`, id)
 	if err != nil {
 		return nil, fmt.Errorf("group decks not loaded: %w", err)
 	}
@@ -128,9 +131,9 @@ func (d *Storage) GetDecksByGroupId(ctx context.Context, id models.GroupId) ([]m
 		return nil, fmt.Errorf("group deck rows read fail: %w", err)
 	}
 
-	ids := make([]models.DeckId, len(vals))
+	ids := make([]cardmodels.DeckConfig, len(vals))
 	for k, v := range vals {
-		ids[k], _ = v.(models.DeckId)
+		ids[k], _ = v.(cardmodels.DeckConfig)
 	}
 
 	return ids, nil
