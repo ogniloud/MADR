@@ -59,3 +59,28 @@ type SwaggerFollowingsInternalServerErrorResponse struct {
 	// in: body
 	Body ioutil.GenericError
 }
+
+// swagger:model followRequest
+// SwaggerFollowRequest is a struct that defines the request body for the Follow endpoint.
+type SwaggerFollowersRequest struct {
+	// in: body
+	Body FollowRequest
+}
+
+// swagger:response followNoContentResponse
+// SwaggerFollowNoContentResponse is a struct that defines the response body for the Follow endpoint.
+type SwaggerFollowNoContentResponse struct{}
+
+// swagger:response followBadRequestResponse
+// SwaggerFollowBadRequestResponse is a struct that defines the response body for the Follow endpoint.
+type SwaggerFollowBadRequestResponse struct {
+	// in: body
+	Body ioutil.GenericError
+}
+
+// swagger:response followInternalServerErrorResponse
+// SwaggerFollowInternalServerErrorResponse is a struct that defines the response body for the Follow endpoint.
+type SwaggerFollowInternalServerErrorResponse struct {
+	// in: body
+	Body ioutil.GenericError
+}
