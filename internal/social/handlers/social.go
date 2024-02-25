@@ -170,6 +170,29 @@ func (e Endpoints) Follow(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNoContent)
 }
 
+// swagger:route POST /api/social/unfollow unfollow
+// Unfollows the user.
+//
+//	Consumes:
+//	- application/json
+//
+//	Produces:
+//	- application/json
+//
+//	Scheme: http
+//
+//
+//	Parameters:
+//	+ name: request
+//	  in: body
+//	  description: request body
+//	  required: true
+//	  type: unfollowRequest
+//
+//	Responses:
+//	204: unfollowNoContentResponse
+//	400: unfollowBadRequestResponse
+//	500: unfollowInternalServerErrorResponse
 func (e Endpoints) Unfollow(w http.ResponseWriter, r *http.Request) {
 	reqBody := models.FollowRequest{}
 
