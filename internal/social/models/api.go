@@ -300,6 +300,8 @@ type DeepCopyDeckResponse struct {
 }
 
 // FollowersRequest contains an id of the user to get their followers.
+//
+//swagger:model getFollowersRequest
 type FollowersRequest struct {
 	// UserId is an ID of the user in a storage.
 	//
@@ -314,6 +316,8 @@ type FollowersResponse struct {
 }
 
 // FollowingsRequest contains an id of the user to get their followings.
+//
+//swagger:model getFollowingsRequest
 type FollowingsRequest struct {
 	// UserId is an ID of the user in a storage.
 	//
@@ -328,6 +332,8 @@ type FollowingsResponse struct {
 }
 
 // FollowRequest contains an id of the user that following to author
+//
+//swagger:model followRequest
 type FollowRequest struct {
 	// FollowerId is an ID of the user following the author.
 	//

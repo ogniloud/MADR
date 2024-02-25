@@ -63,39 +63,6 @@ definitions:
                 x-go-name: W
         type: object
         x-go-package: github.com/ogniloud/madr/internal/flashcards/models
-    FollowRequest:
-        description: FollowRequest contains an id of the user that following to author
-        properties:
-            author_id:
-                description: AuthorId is an ID of the supplier of content.
-                example: 189
-                format: int64
-                type: integer
-                x-go-name: AuthorId
-            follower_id:
-                description: FollowerId is an ID of the user following the author.
-                example: 189
-                format: int64
-                type: integer
-                x-go-name: FollowerId
-        required:
-            - follower_id
-            - author_id
-        type: object
-        x-go-package: github.com/ogniloud/madr/internal/social/models
-    FollowersRequest:
-        properties:
-            user_id:
-                description: UserId is an ID of the user in a storage.
-                example: 189
-                format: int64
-                type: integer
-                x-go-name: UserId
-        required:
-            - user_id
-        title: FollowersRequest contains an id of the user to get their followers.
-        type: object
-        x-go-package: github.com/ogniloud/madr/internal/social/models
     FollowersResponse:
         properties:
             user_info:
@@ -104,19 +71,6 @@ definitions:
                 type: array
                 x-go-name: UserInfo
         title: FollowersResponse contains ids and names of the followers.
-        type: object
-        x-go-package: github.com/ogniloud/madr/internal/social/models
-    FollowingsRequest:
-        properties:
-            user_id:
-                description: UserId is an ID of the user in a storage.
-                example: 189
-                format: int64
-                type: integer
-                x-go-name: UserId
-        required:
-            - user_id
-        title: FollowingsRequest contains an id of the user to get their followings.
         type: object
         x-go-package: github.com/ogniloud/madr/internal/social/models
     FollowingsResponse:
@@ -320,26 +274,6 @@ definitions:
                 x-go-name: T
         type: object
         x-go-package: github.com/ogniloud/madr/internal/flashcards/models
-    UnfollowRequest:
-        description: UnfollowRequest contains an id of the user that unfollowing from the author
-        properties:
-            author_id:
-                description: AuthorId is an ID of the supplier of content.
-                example: 183
-                format: int64
-                type: integer
-                x-go-name: AuthorId
-            follower_id:
-                description: FollowerId is an ID of the follower.
-                example: 189
-                format: int64
-                type: integer
-                x-go-name: FollowerId
-        required:
-            - follower_id
-            - author_id
-        type: object
-        x-go-package: github.com/ogniloud/madr/internal/social/models
     UserInfo:
         properties:
             Email:
@@ -528,11 +462,25 @@ definitions:
         x-go-name: DeleteGroupRequest
         x-go-package: github.com/ogniloud/madr/internal/social/models
     followRequest:
+        description: FollowRequest contains an id of the user that following to author
         properties:
-            Body:
-                $ref: '#/definitions/FollowRequest'
+            author_id:
+                description: AuthorId is an ID of the supplier of content.
+                example: 189
+                format: int64
+                type: integer
+                x-go-name: AuthorId
+            follower_id:
+                description: FollowerId is an ID of the user following the author.
+                example: 189
+                format: int64
+                type: integer
+                x-go-name: FollowerId
+        required:
+            - follower_id
+            - author_id
         type: object
-        x-go-name: SwaggerFollowersRequest
+        x-go-name: FollowRequest
         x-go-package: github.com/ogniloud/madr/internal/social/models
     getCreatedGroupsByUserId:
         description: |-
@@ -584,17 +532,31 @@ definitions:
         x-go-package: github.com/ogniloud/madr/internal/flashcards/models
     getFollowersRequest:
         properties:
-            Body:
-                $ref: '#/definitions/FollowersRequest'
+            user_id:
+                description: UserId is an ID of the user in a storage.
+                example: 189
+                format: int64
+                type: integer
+                x-go-name: UserId
+        required:
+            - user_id
+        title: FollowersRequest contains an id of the user to get their followers.
         type: object
-        x-go-name: SwaggerGetFollowersRequest
+        x-go-name: FollowersRequest
         x-go-package: github.com/ogniloud/madr/internal/social/models
     getFollowingsRequest:
         properties:
-            Body:
-                $ref: '#/definitions/FollowingsRequest'
+            user_id:
+                description: UserId is an ID of the user in a storage.
+                example: 189
+                format: int64
+                type: integer
+                x-go-name: UserId
+        required:
+            - user_id
+        title: FollowingsRequest contains an id of the user to get their followings.
         type: object
-        x-go-name: SwaggerFollowingsRequest
+        x-go-name: FollowingsRequest
         x-go-package: github.com/ogniloud/madr/internal/social/models
     getGroupByGroupIdRequest:
         description: |-
@@ -1070,13 +1032,6 @@ definitions:
         type: object
         x-go-name: SignUpRequest
         x-go-package: github.com/ogniloud/madr/internal/models
-    unfollowRequest:
-        properties:
-            Body:
-                $ref: '#/definitions/UnfollowRequest'
-        type: object
-        x-go-name: SwaggerUnfollowRequest
-        x-go-package: github.com/ogniloud/madr/internal/social/models
 info:
     contact:
         email: pelageech@mail.ru
@@ -1406,7 +1361,7 @@ paths:
                   name: request
                   required: true
                   schema:
-                    $ref: '#/definitions/unfollowRequest'
+                    $ref: '#/definitions/followRequest'
                     description: request body
                     type: object
             produces:
