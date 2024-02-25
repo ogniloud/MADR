@@ -54,4 +54,6 @@ type Storage interface {
 	Follow(ctx context.Context, follower models.UserId, author models.UserId) error
 
 	Unfollow(ctx context.Context, follower models.UserId, author models.UserId) error
+
+	ShareDeckGroup(ctx context.Context, userId models.UserId, groupId models.GroupId, deckId models.DeckId) error
 }

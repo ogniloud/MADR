@@ -362,3 +362,10 @@ type UnfollowRequest struct {
 
 // UnfollowResponse contains ids and names of the followings.
 type UnfollowResponse struct{}
+
+// ShareGroupDeckRequest contains values for sharing decks.
+type ShareGroupDeckRequest struct {
+	UserId  UserId  `json:"user_id"`
+	GroupId GroupId `json:"group_id"`
+	DeckId  DeckId  `json:"deck_id"`
+}
