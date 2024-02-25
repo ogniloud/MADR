@@ -320,6 +320,26 @@ definitions:
                 x-go-name: T
         type: object
         x-go-package: github.com/ogniloud/madr/internal/flashcards/models
+    UnfollowRequest:
+        description: UnfollowRequest contains an id of the user that unfollowing from the author
+        properties:
+            author_id:
+                description: AuthorId is an ID of the supplier of content.
+                example: 183
+                format: int64
+                type: integer
+                x-go-name: AuthorId
+            follower_id:
+                description: FollowerId is an ID of the follower.
+                example: 189
+                format: int64
+                type: integer
+                x-go-name: FollowerId
+        required:
+            - follower_id
+            - author_id
+        type: object
+        x-go-package: github.com/ogniloud/madr/internal/social/models
     UserInfo:
         properties:
             Email:
@@ -1050,6 +1070,13 @@ definitions:
         type: object
         x-go-name: SignUpRequest
         x-go-package: github.com/ogniloud/madr/internal/models
+    unfollowRequest:
+        properties:
+            Body:
+                $ref: '#/definitions/UnfollowRequest'
+        type: object
+        x-go-name: SwaggerUnfollowRequest
+        x-go-package: github.com/ogniloud/madr/internal/social/models
 info:
     contact:
         email: pelageech@mail.ru
@@ -1368,6 +1395,31 @@ paths:
                 "500":
                     $ref: '#/responses/getFollowingsInternalServerErrorResponse'
             summary: Returns a list of followings of the user.
+    /api/social/unfollow:
+        post:
+            consumes:
+                - application/json
+            operationId: unfollow
+            parameters:
+                - description: request body
+                  in: body
+                  name: request
+                  required: true
+                  schema:
+                    $ref: '#/definitions/unfollowRequest'
+                    description: request body
+                    type: object
+            produces:
+                - application/json
+                - 'Scheme: http'
+            responses:
+                "204":
+                    $ref: '#/responses/unfollowNoContentResponse'
+                "400":
+                    $ref: '#/responses/unfollowBadRequestResponse'
+                "500":
+                    $ref: '#/responses/unfollowInternalServerErrorResponse'
+            summary: Unfollows the user.
     /api/study/random:
         post:
             consumes:
@@ -1888,6 +1940,16 @@ responses:
         description: ""
         schema:
             $ref: '#/definitions/GenericError'
+    unfollowBadRequestResponse:
+        description: ""
+        schema:
+            $ref: '#/definitions/GenericError'
+    unfollowInternalServerErrorResponse:
+        description: ""
+        schema:
+            $ref: '#/definitions/GenericError'
+    unfollowNoContentResponse:
+        description: ""
 schemes:
     - http
 swagger: "2.0"
