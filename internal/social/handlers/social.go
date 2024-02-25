@@ -123,6 +123,29 @@ func (e Endpoints) Followings(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// swagger:route POST /api/social/follow follow
+// Follows the user.
+//
+//	Consumes:
+//	- application/json
+//
+//	Produces:
+//	- application/json
+//
+//	Scheme: http
+//
+//
+//	Parameters:
+//	+ name: request
+//	  in: body
+//	  description: request body
+//	  required: true
+//	  type: followRequest
+//
+//	Responses:
+//	204: followNoContentResponse
+//	400: followBadRequestResponse
+//	500: followInternalServerErrorResponse
 func (e Endpoints) Follow(w http.ResponseWriter, r *http.Request) {
 	reqBody := models.FollowRequest{}
 
