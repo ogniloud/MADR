@@ -24,7 +24,7 @@ import (
 //   in: query
 //   description: UserId.
 //   required: true
-//   type: int
+//   type: integer
 //
 // Responses:
 // 200: getUserInfoResponse

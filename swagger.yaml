@@ -1121,7 +1121,7 @@ paths:
                   in: query
                   name: id
                   required: true
-                  type: object
+                  type: integer
             produces:
                 - application/json
             responses:
@@ -1662,7 +1662,7 @@ paths:
                   in: query
                   name: id
                   required: true
-                  type: object
+                  type: integer
             produces:
                 - application/json
             responses:
