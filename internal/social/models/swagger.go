@@ -2,13 +2,6 @@ package models
 
 import "github.com/ogniloud/madr/internal/ioutil"
 
-// swagger:model getFollowersRequest
-// SwaggerGetFollowersRequest is a struct that defines the request body for the getFollowers endpoint.
-type SwaggerGetFollowersRequest struct {
-	// in: body
-	Body FollowersRequest
-}
-
 // swagger:response getFollowersOkResponse
 // SwaggerGetFollowersOkResponse is a struct that defines the response body for the getFollowers endpoint.
 type SwaggerGetFollowersOkResponse struct {
@@ -32,13 +25,6 @@ type SwaggerGetFollowersInternalServerErrorResponse struct {
 	Body ioutil.GenericError
 }
 
-// swagger:model getFollowingsRequest
-// SwaggerGetFollowingsRequest is a struct that defines the request body for the Followings endpoint.
-type SwaggerFollowingsRequest struct {
-	// in: body
-	Body FollowingsRequest
-}
-
 // swagger:response getFollowingsOkResponse
 // SwaggerGetFollowingsOkResponse is a struct that defines the response body for the Followings endpoint.
 type SwaggerFollowingsOkResponse struct {
@@ -60,13 +46,6 @@ type SwaggerFollowingsInternalServerErrorResponse struct {
 	Body ioutil.GenericError
 }
 
-// swagger:model followRequest
-// SwaggerFollowRequest is a struct that defines the request body for the Follow endpoint.
-type SwaggerFollowersRequest struct {
-	// in: body
-	Body FollowRequest
-}
-
 // swagger:response followNoContentResponse
 // SwaggerFollowNoContentResponse is a struct that defines the response body for the Follow endpoint.
 type SwaggerFollowNoContentResponse struct{}
@@ -83,13 +62,6 @@ type SwaggerFollowBadRequestResponse struct {
 type SwaggerFollowInternalServerErrorResponse struct {
 	// in: body
 	Body ioutil.GenericError
-}
-
-// swagger:model unfollowRequest
-// SwaggerUnfollowRequest is a struct that defines the request body for the Unfollow endpoint.
-type SwaggerUnfollowRequest struct {
-	// in: body
-	Body UnfollowRequest
 }
 
 // swagger:response unfollowNoContentResponse

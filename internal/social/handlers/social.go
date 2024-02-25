@@ -187,7 +187,7 @@ func (e Endpoints) Follow(w http.ResponseWriter, r *http.Request) {
 //	  in: body
 //	  description: request body
 //	  required: true
-//	  type: unfollowRequest
+//	  type: followRequest
 //
 //	Responses:
 //	204: unfollowNoContentResponse
