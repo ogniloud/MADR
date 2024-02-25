@@ -75,7 +75,29 @@ func (e Endpoints) Followers(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-// Followings /api/social/followings
+// swagger:route POST /api/social/followings getFollowings
+// Returns a list of followings of the user.
+//
+//	Consumes:
+//	- application/json
+//
+//	Produces:
+//	- application/json
+//
+//	Scheme: http
+//
+//
+//	Parameters:
+//	+ name: request
+//	  in: body
+//	  description: request body
+//	  required: true
+//	  type: getFollowingsRequest
+//
+//	Responses:
+//	200: getFollowingsOkResponse
+//	400: getFollowingsBadRequestResponse
+//	500: getFollowingsInternalServerErrorResponse
 func (e Endpoints) Followings(w http.ResponseWriter, r *http.Request) {
 	reqBody := models.FollowingsRequest{}
 	respBody := models.FollowingsResponse{}
