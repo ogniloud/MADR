@@ -360,7 +360,7 @@ func (d Endpoints) DeleteDeck(w http.ResponseWriter, r *http.Request) {
 //   in: query
 //   description: FlashcardId.
 //   required: true
-//   type: int
+//   type: integer
 //
 //
 // Responses:
