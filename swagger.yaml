@@ -1,0 +1,1893 @@
+basePath: /
+consumes:
+    - application/json
+definitions:
+    Backside:
+        description: |-
+            Backside is an abstract type for representation an answer
+            of describing the Word. That can be just a string (translation, definition)
+            or image, or sound - everything depends on Answer method.
+        properties:
+            type:
+                $ref: '#/definitions/BacksideType'
+            value:
+                type: string
+                x-go-name: Value
+        type: object
+        x-go-package: github.com/ogniloud/madr/internal/flashcards/models
+    BacksideType:
+        format: int64
+        title: BacksideType tells how to imagine a value of Backside.
+        type: integer
+        x-go-package: github.com/ogniloud/madr/internal/flashcards/models
+    DeckConfig:
+        description: DeckId is not a primary key, for each user a configuration can be different.
+        properties:
+            deck_id:
+                format: int64
+                type: integer
+                x-go-name: DeckId
+            name:
+                description: Name is a name of the deck which the user assigned to it.
+                type: string
+                x-go-name: Name
+            user_id:
+                description: UserId means that a user with UserId has the deck with id DeckId.
+                format: int64
+                type: integer
+                x-go-name: UserId
+        title: DeckConfig contains information about a particular deck.
+        type: object
+        x-go-package: github.com/ogniloud/madr/internal/flashcards/models
+    Flashcard:
+        description: |-
+            Flashcard is a model of real flashcards with front side with word
+            and back side containing some information that describes a word.
+        properties:
+            answer:
+                type: string
+                x-go-name: A
+            backside:
+                $ref: '#/definitions/Backside'
+            deck_id:
+                description: DeckId shows which deck the flashcard belongs to.
+                format: int64
+                type: integer
+                x-go-name: DeckId
+            id:
+                format: int64
+                type: integer
+                x-go-name: Id
+            word:
+                type: string
+                x-go-name: W
+        type: object
+        x-go-package: github.com/ogniloud/madr/internal/flashcards/models
+    FollowRequest:
+        description: FollowRequest contains an id of the user that following to author
+        properties:
+            author_id:
+                description: AuthorId is an ID of the supplier of content.
+                example: 189
+                format: int64
+                type: integer
+                x-go-name: AuthorId
+            follower_id:
+                description: FollowerId is an ID of the user following the author.
+                example: 189
+                format: int64
+                type: integer
+                x-go-name: FollowerId
+        required:
+            - follower_id
+            - author_id
+        type: object
+        x-go-package: github.com/ogniloud/madr/internal/social/models
+    FollowersRequest:
+        properties:
+            user_id:
+                description: UserId is an ID of the user in a storage.
+                example: 189
+                format: int64
+                type: integer
+                x-go-name: UserId
+        required:
+            - user_id
+        title: FollowersRequest contains an id of the user to get their followers.
+        type: object
+        x-go-package: github.com/ogniloud/madr/internal/social/models
+    FollowersResponse:
+        properties:
+            user_info:
+                items:
+                    $ref: '#/definitions/UserInfo'
+                type: array
+                x-go-name: UserInfo
+        title: FollowersResponse contains ids and names of the followers.
+        type: object
+        x-go-package: github.com/ogniloud/madr/internal/social/models
+    FollowingsRequest:
+        properties:
+            user_id:
+                description: UserId is an ID of the user in a storage.
+                example: 189
+                format: int64
+                type: integer
+                x-go-name: UserId
+        required:
+            - user_id
+        title: FollowingsRequest contains an id of the user to get their followings.
+        type: object
+        x-go-package: github.com/ogniloud/madr/internal/social/models
+    FollowingsResponse:
+        properties:
+            user_info:
+                items:
+                    $ref: '#/definitions/UserInfo'
+                type: array
+                x-go-name: UserInfo
+        title: FollowingsResponse contains ids and names of the followings.
+        type: object
+        x-go-package: github.com/ogniloud/madr/internal/social/models
+    GenericError:
+        properties:
+            message:
+                description: The error message.
+                example: Very useful error message
+                type: string
+                x-go-name: Message
+        title: GenericError is a generic error message returned by a server.
+        type: object
+        x-go-package: github.com/ogniloud/madr/internal/ioutil
+    GetFlashcardByIdResponse:
+        properties:
+            flashcard:
+                $ref: '#/definitions/Flashcard'
+        title: GetFlashcardByIdResponse is a response that contains a flashcard.
+        type: object
+        x-go-package: github.com/ogniloud/madr/internal/flashcards/models
+    GetFlashcardsByDeckIdResponse:
+        description: |-
+            GetFlashcardsByDeckIdResponse is a struct that defines the response body for
+            loading cards from the deck handler.
+        properties:
+            flashcards:
+                description: Flashcards is a slice of flashcards that is returned to the client.
+                items:
+                    $ref: '#/definitions/Flashcard'
+                type: array
+                x-go-name: Flashcards
+                x-property-array:
+                    - value1
+                    - value2
+                x-property-array-obj:
+                    - name: obj
+                      value: field
+                x-property-value: value
+        type: object
+        x-go-package: github.com/ogniloud/madr/internal/flashcards/models
+    LoadDecksResponse:
+        description: |-
+            LoadDecksResponse is a struct that defines the response body for
+            loading deck handler.
+        properties:
+            decks:
+                description: Decks is a slice of deck with their configs.
+                items:
+                    $ref: '#/definitions/DeckConfig'
+                type: array
+                x-go-name: Decks
+                x-property-array:
+                    - value1
+                    - value2
+                x-property-array-obj:
+                    - name: obj
+                      value: field
+                x-property-value: value
+        type: object
+        x-go-package: github.com/ogniloud/madr/internal/flashcards/models
+    Mark:
+        format: int64
+        title: Mark is a type of rating marks of flashcards in Leitner's system.
+        type: integer
+        x-go-package: github.com/ogniloud/madr/internal/flashcards/models
+    Matching:
+        description: |-
+            Matching is used for exercises connected with matching
+            words with their definitions or other answers.
+        properties:
+            cards:
+                additionalProperties:
+                    $ref: '#/definitions/Flashcard'
+                type: object
+                x-go-name: Cards
+            pairs:
+                additionalProperties:
+                    type: string
+                type: object
+                x-go-name: M
+        type: object
+        x-go-package: github.com/ogniloud/madr/internal/flashcards/models
+    RandomCardDeckResponse:
+        description: |-
+            RandomCardDeckResponse is a struct that defines the response body for
+            getting a random card from the deck.
+        properties:
+            flashcard:
+                $ref: '#/definitions/Flashcard'
+        type: object
+        x-go-package: github.com/ogniloud/madr/internal/flashcards/models
+    RandomCardResponse:
+        description: |-
+            RandomCardResponse is a struct that defines the response body for
+            getting a random card from all the decks.
+        properties:
+            flashcard:
+                $ref: '#/definitions/Flashcard'
+        type: object
+        x-go-package: github.com/ogniloud/madr/internal/flashcards/models
+    RandomMatchingDeckResponse:
+        description: |-
+            RandomMatchingDeckRequest is a struct that defines the request body for
+            getting a random matching from the deck.
+        properties:
+            matching:
+                $ref: '#/definitions/Matching'
+        type: object
+        x-go-package: github.com/ogniloud/madr/internal/flashcards/models
+    RandomMatchingResponse:
+        description: |-
+            RandomMatchingRequest is a struct that defines the request body for
+            getting a random matching from all the decks.
+        properties:
+            matching:
+                $ref: '#/definitions/Matching'
+        type: object
+        x-go-package: github.com/ogniloud/madr/internal/flashcards/models
+    RandomNCardsDeckResponse:
+        description: |-
+            RandomNCardsDeckResponse is a struct that defines the response body for
+            getting n random cards from the deck.
+        properties:
+            flashcards:
+                description: Flashcard is a flashcard that is returned to the user.
+                items:
+                    $ref: '#/definitions/Flashcard'
+                type: array
+                x-go-name: Flashcards
+        type: object
+        x-go-package: github.com/ogniloud/madr/internal/flashcards/models
+    RandomNCardsResponse:
+        description: |-
+            RandomNCardsResponse is a struct that defines the response body for
+            getting n random cards from all the decks.
+        properties:
+            flashcards:
+                description: Flashcard is a flashcard that is returned to the user.
+                items:
+                    $ref: '#/definitions/Flashcard'
+                type: array
+                x-go-name: Flashcards
+        type: object
+        x-go-package: github.com/ogniloud/madr/internal/flashcards/models
+    RandomTextDeckResponse:
+        description: |-
+            RandomTextDeckResponse is a struct that defines the response body for
+            getting a random text exercise from all the decks.
+        properties:
+            text:
+                $ref: '#/definitions/Text'
+        type: object
+        x-go-package: github.com/ogniloud/madr/internal/flashcards/models
+    RandomTextResponse:
+        description: |-
+            RandomTextResponse is a struct that defines the response body for
+            getting a random text exercise from all the decks.
+        properties:
+            text:
+                $ref: '#/definitions/Text'
+        type: object
+        x-go-package: github.com/ogniloud/madr/internal/flashcards/models
+    SignInResponse:
+        properties:
+            authorization:
+                description: Authorization token.
+                example: Bearer eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJleHAiOjkxOTU0Nzk4MDksInVzZXJfaWQiOjEsInVzZXJuYW1lIjoidXNlcjEyMyJ9.fHSoS6ZFf1TU4AmcqNeqpEDo6hdU6uLr2-PRAd0MKzAKDvDtGafuV6X6W8HSXAgwraXZ0_3qS8CmrUQW6am8Hg
+                type: string
+                x-go-name: Authorization
+        title: SignInResponse is a struct that defines the response body for the sign-in endpoint.
+        type: object
+        x-go-package: github.com/ogniloud/madr/internal/models
+    Text:
+        description: |-
+            Text is used for exercises connected with insertion
+            words in a sentence.
+        properties:
+            cards:
+                additionalProperties:
+                    $ref: '#/definitions/Flashcard'
+                type: object
+                x-go-name: Cards
+            options:
+                description: Options for filling the spaces
+                items:
+                    type: string
+                type: array
+                x-go-name: Opts
+            text:
+                description: 'The words to guess are escaped like this: <div style=\"display:none;\"> WORD </div>'
+                type: string
+                x-go-name: T
+        type: object
+        x-go-package: github.com/ogniloud/madr/internal/flashcards/models
+    UserInfo:
+        properties:
+            Email:
+                type: string
+            ID:
+                format: int64
+                type: integer
+            Username:
+                type: string
+        title: UserInfo is a struct that defines the user info model.
+        type: object
+        x-go-package: github.com/ogniloud/madr/internal/models
+    acceptInviteRequest:
+        description: |-
+            AcceptInviteRequest is a struct that defines the request body for
+            accepting an invite to group.
+        properties:
+            group_id:
+                description: GroupId is an ID of a group in the storage.
+                example: 189
+                format: int64
+                type: integer
+                x-go-name: GroupId
+            user_id:
+                description: UserId is an ID of the user in a storage.
+                example: 189
+                format: int64
+                type: integer
+                x-go-name: UserId
+        required:
+            - user_id
+            - group_id
+        type: object
+        x-go-name: AcceptInviteRequest
+        x-go-package: github.com/ogniloud/madr/internal/social/models
+    addFlashcardToDeckRequest:
+        description: |-
+            AddFlashcardToDeckRequest is a struct that defines the request body for
+            adding cards to the deck handler.
+        properties:
+            answer:
+                description: Answer is an answer for exercises.
+                example: '"aboba"'
+                type: string
+                x-go-name: Answer
+            backside:
+                $ref: '#/definitions/Backside'
+            deck_id:
+                description: DeckId is an ID of the deck which the flashcard will be added to.
+                example: 123
+                format: int64
+                type: integer
+                x-go-name: DeckId
+            user_id:
+                description: UserId is an ID of the user in a storage.
+                example: 189
+                format: int64
+                type: integer
+                x-go-name: UserId
+            word:
+                description: Word is a head side of the card.
+                example: Aboba
+                type: string
+                x-go-name: Word
+        required:
+            - user_id
+            - deck_id
+            - word
+            - backside
+            - answer
+        type: object
+        x-go-name: AddFlashcardToDeckRequest
+        x-go-package: github.com/ogniloud/madr/internal/flashcards/models
+    createGroupRequest:
+        description: |-
+            CreateGroupRequest is a struct that defines the request body for
+            creating a new group.
+        properties:
+            name:
+                description: Name is the new group's name
+                example: Eduard
+                type: string
+                x-go-name: Name
+            user_id:
+                description: UserId is an ID of the user in a storage.
+                example: 189
+                format: int64
+                type: integer
+                x-go-name: UserId
+        required:
+            - user_id
+            - name
+        type: object
+        x-go-name: CreateGroupRequest
+        x-go-package: github.com/ogniloud/madr/internal/social/models
+    deepCopyDeckRequest:
+        description: |-
+            DeepCopyDeckRequest is a struct that defines the request body for
+            deep copying a deck (with all its contents recursively copied).
+        properties:
+            copier_id:
+                description: CopierId is an ID of the user in a storage.
+                example: 189
+                format: int64
+                type: integer
+                x-go-name: CopierId
+            deck_id:
+                description: DeckId is an ID of the deck to copy.
+                example: 189
+                format: int64
+                type: integer
+                x-go-name: DeckId
+        required:
+            - copier_id
+            - deck_id
+        type: object
+        x-go-name: DeepCopyDeckRequest
+        x-go-package: github.com/ogniloud/madr/internal/social/models
+    deleteDeckRequest:
+        description: |-
+            DeleteDeckRequest is a struct that defines the request body for the
+            deleting the deck handler.
+        properties:
+            deck_id:
+                description: DeckId is an ID of the deck which will be deleted.
+                example: 123
+                format: int64
+                type: integer
+                x-go-name: DeckId
+            user_id:
+                description: UserId is an ID of the user in a storage.
+                example: 189
+                format: int64
+                type: integer
+                x-go-name: UserId
+        required:
+            - user_id
+            - deck_id
+        type: object
+        x-go-name: DeleteDeckRequest
+        x-go-package: github.com/ogniloud/madr/internal/flashcards/models
+    deleteFlashcardFromDeckRequest:
+        description: |-
+            DeleteFlashcardFromDeckRequest is a struct that defines the request body for
+            deleting cards from the deck handler.
+        properties:
+            flashcard_id:
+                description: FlashcardId is an ID of the flashcard.
+                example: 666
+                format: int64
+                type: integer
+                x-go-name: FlashcardId
+            user_id:
+                description: UserId is an ID of the user.
+                example: 189
+                format: int64
+                type: integer
+                x-go-name: UserId
+        required:
+            - user_id
+            - flashcard_id
+        type: object
+        x-go-name: DeleteFlashcardFromDeckRequest
+        x-go-package: github.com/ogniloud/madr/internal/flashcards/models
+    deleteGroupRequest:
+        description: |-
+            DeleteGroupRequest is a struct that defines the request body for
+            deleting a group.
+        properties:
+            group_id:
+                description: GroupId is an ID of a group in the storage.
+                example: 189
+                format: int64
+                type: integer
+                x-go-name: GroupId
+            user_id:
+                description: UserId is an ID of the user in a storage.
+                example: 189
+                format: int64
+                type: integer
+                x-go-name: UserId
+        required:
+            - user_id
+            - group_id
+        type: object
+        x-go-name: DeleteGroupRequest
+        x-go-package: github.com/ogniloud/madr/internal/social/models
+    followRequest:
+        properties:
+            Body:
+                $ref: '#/definitions/FollowRequest'
+        type: object
+        x-go-name: SwaggerFollowersRequest
+        x-go-package: github.com/ogniloud/madr/internal/social/models
+    getCreatedGroupsByUserId:
+        description: |-
+            GetCreatedGroupsByUserIdRequest is a struct that defines the request body for
+            loading groups the user is a creator of.
+        properties:
+            user_id:
+                description: UserId is an ID of the user in a storage.
+                example: 189
+                format: int64
+                type: integer
+                x-go-name: UserId
+        required:
+            - user_id
+        type: object
+        x-go-name: GetCreatedGroupsByUserIdRequest
+        x-go-package: github.com/ogniloud/madr/internal/social/models
+    getDecksByGroupIdRequest:
+        description: |-
+            GetDecksByGroupIdRequest is a struct that defines the request body for
+            loading decks of a group.
+        properties:
+            group_id:
+                description: GroupId is an ID of a group in the storage.
+                example: 189
+                format: int64
+                type: integer
+                x-go-name: GroupId
+        required:
+            - group_id
+        type: object
+        x-go-name: GetDecksByGroupIdRequest
+        x-go-package: github.com/ogniloud/madr/internal/social/models
+    getFlashcardsByDeckIdRequest:
+        description: |-
+            GetFlashcardsByDeckIdRequest is a struct that defines the request body for
+            loading cards from the deck handler.
+        properties:
+            deck_id:
+                description: DeckId defines the deck which flashcards will be loaded from.
+                example: 123
+                format: int64
+                type: integer
+                x-go-name: DeckId
+        required:
+            - deck_id
+        type: object
+        x-go-name: GetFlashcardsByDeckIdRequest
+        x-go-package: github.com/ogniloud/madr/internal/flashcards/models
+    getFollowersRequest:
+        properties:
+            Body:
+                $ref: '#/definitions/FollowersRequest'
+        type: object
+        x-go-name: SwaggerGetFollowersRequest
+        x-go-package: github.com/ogniloud/madr/internal/social/models
+    getFollowingsRequest:
+        properties:
+            Body:
+                $ref: '#/definitions/FollowingsRequest'
+        type: object
+        x-go-name: SwaggerFollowingsRequest
+        x-go-package: github.com/ogniloud/madr/internal/social/models
+    getGroupByGroupIdRequest:
+        description: |-
+            GetGroupByGroupIdRequest is a struct that defines the request body for
+            loading a config of the group.
+        properties:
+            group_id:
+                description: GroupId is an ID of a group in the storage.
+                example: 189
+                format: int64
+                type: integer
+                x-go-name: GroupId
+        required:
+            - group_id
+        type: object
+        x-go-name: GetGroupByGroupIdRequest
+        x-go-package: github.com/ogniloud/madr/internal/social/models
+    getGroupsByUserIdRequest:
+        description: |-
+            GetGroupsByUserIdRequest is a struct that defines the request body for
+            loading groups the user is a member of.
+        properties:
+            user_id:
+                description: UserId is an ID of the user in a storage.
+                example: 189
+                format: int64
+                type: integer
+                x-go-name: UserId
+        required:
+            - user_id
+        type: object
+        x-go-name: GetGroupsByUserIdRequest
+        x-go-package: github.com/ogniloud/madr/internal/social/models
+    getInvitesByGroupIdRequest:
+        description: |-
+            GetInvitesByGroupIdRequest is a struct that defines the request body for
+            loading invites to a group.
+        properties:
+            group_id:
+                description: GroupId is an ID of a group in the storage.
+                example: 189
+                format: int64
+                type: integer
+                x-go-name: GroupId
+        required:
+            - group_id
+        type: object
+        x-go-name: GetInvitesByGroupIdRequest
+        x-go-package: github.com/ogniloud/madr/internal/social/models
+    getInvitesByUserIdRequest:
+        description: |-
+            GetInvitesByUserIdRequest is a struct that defines the request body for
+            loading invites to a user.
+        properties:
+            user_id:
+                description: UserId is an ID of the user in a storage.
+                example: 189
+                format: int64
+                type: integer
+                x-go-name: UserId
+        required:
+            - user_id
+        type: object
+        x-go-name: GetInvitesByUserIdRequest
+        x-go-package: github.com/ogniloud/madr/internal/social/models
+    getUserInfoRequest:
+        type: object
+        x-go-name: GetUserInfoRequest
+        x-go-package: github.com/ogniloud/madr/internal/models
+    getUserInfoResponse:
+        properties:
+            email:
+                type: string
+                x-go-name: Email
+            id:
+                format: int64
+                type: integer
+                x-go-name: ID
+            username:
+                type: string
+                x-go-name: Username
+        type: object
+        x-go-name: GetUserInfoResponse
+        x-go-package: github.com/ogniloud/madr/internal/models
+    getUsersByGroupIdRequest:
+        description: |-
+            GetUsersByGroupIdRequest is a struct that defines the request body for
+            loading members of a group.
+        properties:
+            group_id:
+                description: GroupId is an ID of a group in the storage.
+                example: 189
+                format: int64
+                type: integer
+                x-go-name: GroupId
+        required:
+            - group_id
+        type: object
+        x-go-name: GetUsersByGroupIdRequest
+        x-go-package: github.com/ogniloud/madr/internal/social/models
+    loadDecksRequest:
+        description: |-
+            LoadDecksRequest is a struct that defines the request body for
+            loading deck handler.
+        properties:
+            user_id:
+                description: UserId is used for loading for the cards that the user has.
+                example: 189
+                format: int64
+                type: integer
+                x-go-name: UserId
+        required:
+            - user_id
+        type: object
+        x-go-name: LoadDecksRequest
+        x-go-package: github.com/ogniloud/madr/internal/flashcards/models
+    newDeckWithFlashcardsRequest:
+        description: |-
+            NewDeckWithFlashcardsRequest is a struct that defines the request body for
+            creating a new deck handler.
+        properties:
+            flashcards:
+                description: Flashcards is a slice of flashcards that will be added.
+                items:
+                    properties:
+                        answer:
+                            type: string
+                            x-go-name: Answer
+                        backside:
+                            $ref: '#/definitions/Backside'
+                        word:
+                            type: string
+                            x-go-name: Word
+                    type: object
+                type: array
+                x-go-name: Flashcards
+                x-property-array:
+                    - value1
+                    - value2
+                x-property-array-obj:
+                    - name: obj
+                      value: field
+                x-property-value: value
+            name:
+                description: Name is a name of the deck
+                example: Aboba123
+                type: string
+                x-go-name: Name
+            user_id:
+                description: UserId is an ID of the user in a storage.
+                example: 189
+                format: int64
+                type: integer
+                x-go-name: UserId
+        required:
+            - user_id
+            - name
+        type: object
+        x-go-name: NewDeckWithFlashcardsRequest
+        x-go-package: github.com/ogniloud/madr/internal/flashcards/models
+    randomCardDeckRequest:
+        description: |-
+            RandomCardDeckRequest is a struct that defines the request body for the
+            getting a random card from the deck.
+        properties:
+            deck_id:
+                description: DeckId is an ID of the deck where the flashcard are taken from.
+                example: 123
+                format: int64
+                type: integer
+                x-go-name: DeckId
+            user_id:
+                description: UserId is an ID of the user in a storage.
+                example: 189
+                format: int64
+                type: integer
+                x-go-name: UserId
+        required:
+            - user_id
+            - deck_id
+        type: object
+        x-go-name: RandomCardDeckRequest
+        x-go-package: github.com/ogniloud/madr/internal/flashcards/models
+    randomCardRequest:
+        description: |-
+            RandomCardRequest is a struct that defines the request body for
+            getting a random card from all the decks.
+        properties:
+            user_id:
+                description: UserId is an ID of the user in a storage.
+                example: 189
+                format: int64
+                type: integer
+                x-go-name: UserId
+        required:
+            - user_id
+        type: object
+        x-go-name: RandomCardRequest
+        x-go-package: github.com/ogniloud/madr/internal/flashcards/models
+    randomMatchingDeckRequest:
+        description: |-
+            RandomMatchingDeckRequest is a struct that defines the request body for
+            getting a random matching exercise from the deck.
+        properties:
+            deck_id:
+                description: DeckId is an ID of the deck where the flashcard are taken from.
+                example: 123
+                format: int64
+                type: integer
+                x-go-name: DeckId
+            size:
+                description: Size is the max amount of cards to include int the exercise
+                example: 5
+                format: int64
+                type: integer
+                x-go-name: Size
+            user_id:
+                description: UserId is an ID of the user in a storage.
+                example: 189
+                format: int64
+                type: integer
+                x-go-name: UserId
+        required:
+            - user_id
+            - deck_id
+            - size
+        type: object
+        x-go-name: RandomMatchingDeckRequest
+        x-go-package: github.com/ogniloud/madr/internal/flashcards/models
+    randomMatchingRequest:
+        description: |-
+            RandomMatchingRequest is a struct that defines the request body for
+            getting a random matching exercise from all the decks.
+        properties:
+            size:
+                description: Size is the max amount of cards to include int the exercise
+                example: 5
+                format: int64
+                type: integer
+                x-go-name: Size
+            user_id:
+                description: UserId is an ID of the user in a storage.
+                example: 189
+                format: int64
+                type: integer
+                x-go-name: UserId
+        required:
+            - user_id
+            - size
+        type: object
+        x-go-name: RandomMatchingRequest
+        x-go-package: github.com/ogniloud/madr/internal/flashcards/models
+    randomNCardsDeckRequest:
+        description: |-
+            RandomNCardsDeckRequest is a struct that defines the request body for
+            getting n random cards from the deck.
+        properties:
+            deck_id:
+                description: DeckId is an ID of the deck where the flashcard are taken from.
+                example: 123
+                format: int64
+                type: integer
+                x-go-name: DeckId
+            "n":
+                description: Amount of cards to get
+                format: int64
+                type: integer
+                x-go-name: "N"
+            user_id:
+                description: UserId is an ID of the user in a storage.
+                example: 189
+                format: int64
+                type: integer
+                x-go-name: UserId
+        required:
+            - user_id
+            - deck_id
+        type: object
+        x-go-name: RandomNCardsDeckRequest
+        x-go-package: github.com/ogniloud/madr/internal/flashcards/models
+    randomNCardsRequest:
+        description: |-
+            RandomNCardsRequest is a struct that defines the request body for
+            getting n random cards from all the decks.
+        properties:
+            "n":
+                description: Amount of cards to get
+                format: int64
+                type: integer
+                x-go-name: "N"
+            user_id:
+                description: UserId is an ID of the user in a storage.
+                example: 189
+                format: int64
+                type: integer
+                x-go-name: UserId
+        required:
+            - user_id
+        type: object
+        x-go-name: RandomNCardsRequest
+        x-go-package: github.com/ogniloud/madr/internal/flashcards/models
+    randomTextDeckRequest:
+        description: |-
+            RandomTextDeckRequest is a struct that defines the request body for
+            getting a random text exercise from all the decks.
+        properties:
+            deck_id:
+                description: DeckId is an ID of the deck where the flashcard are taken from.
+                example: 123
+                format: int64
+                type: integer
+                x-go-name: DeckId
+            size:
+                description: Size is the max amount of cards to include int the exercise
+                example: 5
+                format: int64
+                type: integer
+                x-go-name: Size
+            user_id:
+                description: UserId is an ID of the user in a storage.
+                example: 189
+                format: int64
+                type: integer
+                x-go-name: UserId
+        required:
+            - user_id
+            - deck_id
+            - size
+        type: object
+        x-go-name: RandomTextDeckRequest
+        x-go-package: github.com/ogniloud/madr/internal/flashcards/models
+    randomTextRequest:
+        description: |-
+            RandomTextRequest is a struct that defines the request body for
+            getting a random text exercise from all the decks.
+        properties:
+            size:
+                description: Size is the max amount of cards to include int the exercise
+                example: 5
+                format: int64
+                type: integer
+                x-go-name: Size
+            user_id:
+                description: UserId is an ID of the user in a storage.
+                example: 189
+                format: int64
+                type: integer
+                x-go-name: UserId
+        required:
+            - user_id
+            - size
+        type: object
+        x-go-name: RandomTextRequest
+        x-go-package: github.com/ogniloud/madr/internal/flashcards/models
+    rateRequest:
+        description: |-
+            RateRequest is a struct that defines the request body for the
+            rating a card.
+        properties:
+            flashcard_id:
+                description: FlashcardId is an ID of the flashcard.
+                example: 1111
+                format: int64
+                type: integer
+                x-go-name: FlashcardId
+            mark:
+                $ref: '#/definitions/Mark'
+            user_id:
+                description: UserId is an ID of the user in a storage.
+                example: 189
+                format: int64
+                type: integer
+                x-go-name: UserId
+        required:
+            - user_id
+            - flashcard_id
+            - mark
+        type: object
+        x-go-name: RateRequest
+        x-go-package: github.com/ogniloud/madr/internal/flashcards/models
+    sendInviteRequest:
+        description: |-
+            SendInviteRequest is a struct that defines the request body for
+            sending an invite to group.
+        properties:
+            creator_id:
+                description: CreatorId is an ID of the user in a storage.
+                example: 189
+                format: int64
+                type: integer
+                x-go-name: CreatorId
+            group_id:
+                description: GroupId is an ID of a group in the storage.
+                example: 189
+                format: int64
+                type: integer
+                x-go-name: GroupId
+            invitee_id:
+                description: CreatorId is an ID of the user in a storage.
+                example: 189
+                format: int64
+                type: integer
+                x-go-name: InviteeId
+        required:
+            - creator_id
+            - invitee_id
+            - group_id
+        type: object
+        x-go-name: SendInviteRequest
+        x-go-package: github.com/ogniloud/madr/internal/social/models
+    shareAllGroupDecksRequest:
+        description: |-
+            ShareAllGroupDecksRequest is a struct that defines the request body for
+            sharing all the group decks to a new user.
+        properties:
+            group_id:
+                description: GroupId is an ID of a group in the storage.
+                example: 189
+                format: int64
+                type: integer
+                x-go-name: GroupId
+            user_id:
+                description: UserId is an ID of the user in a storage.
+                example: 189
+                format: int64
+                type: integer
+                x-go-name: UserId
+        required:
+            - user_id
+            - group_id
+        type: object
+        x-go-name: ShareAllGroupDecksRequest
+        x-go-package: github.com/ogniloud/madr/internal/social/models
+    signInRequest:
+        properties:
+            password:
+                description: Password of the user.
+                example: myVerySecurePassword123
+                type: string
+                x-go-name: Password
+            username:
+                description: Username of the user.
+                example: user123
+                type: string
+                x-go-name: Username
+        required:
+            - username
+            - password
+        type: object
+        x-go-name: SignInRequest
+        x-go-package: github.com/ogniloud/madr/internal/models
+    signUpRequest:
+        properties:
+            email:
+                description: Email of the user.
+                example: user@example.com
+                type: string
+                x-go-name: Email
+            password:
+                description: Password of the user.
+                example: myVerySecurePassword123
+                type: string
+                x-go-name: Password
+            username:
+                description: Username of the user.
+                example: user123
+                type: string
+                x-go-name: Username
+        required:
+            - username
+            - email
+            - password
+        type: object
+        x-go-name: SignUpRequest
+        x-go-package: github.com/ogniloud/madr/internal/models
+info:
+    contact:
+        email: pelageech@mail.ru
+        name: Artyom Blaginin
+    description: Documentation for MADR API.
+    title: describes models for application.
+    version: 0.0.1
+paths:
+    /api/flashcards/add_card:
+        put:
+            consumes:
+                - application/json
+            operationId: AddCard
+            parameters:
+                - description: Add flashcard to the deck request.
+                  in: body
+                  name: request
+                  required: true
+                  schema:
+                    $ref: '#/definitions/addFlashcardToDeckRequest'
+                    description: Add flashcard to the deck request.
+                    type: object
+            produces:
+                - application/json
+            responses:
+                "201":
+                    $ref: '#/responses/addFlashcardToDeckCreatedResponse'
+                "400":
+                    $ref: '#/responses/addFlashcardToDeckBadRequestError'
+                "500":
+                    $ref: '#/responses/addFlashcardToDeckInternalServerError'
+            schemes:
+                - http
+            summary: Puts a card to the deck.
+    /api/flashcards/card/{id}:
+        get:
+            consumes:
+                - application/json
+            operationId: GetFlashcardById
+            parameters:
+                - description: FlashcardId.
+                  in: query
+                  name: id
+                  required: true
+                  type: object
+            produces:
+                - application/json
+            responses:
+                "200":
+                    $ref: '#/responses/getFlashcardByIdOKResponse'
+                "400":
+                    $ref: '#/responses/getFlashcardByIdBadRequestError'
+                "500":
+                    $ref: '#/responses/getFlashcardByIdInternalServerError'
+            schemes:
+                - http
+            summary: Takes a flashcard by id.
+    /api/flashcards/cards:
+        post:
+            consumes:
+                - application/json
+            operationId: CardsByDeckId
+            parameters:
+                - description: Get flashcards by deck id request.
+                  in: body
+                  name: request
+                  required: true
+                  schema:
+                    $ref: '#/definitions/getFlashcardsByDeckIdRequest'
+                    description: Get flashcards by deck id request.
+                    type: object
+            produces:
+                - application/json
+            responses:
+                "200":
+                    $ref: '#/responses/getFlashcardsByDeckIdOkResponse'
+                "400":
+                    $ref: '#/responses/getFlashcardsByDeckIdBadRequestError'
+                "500":
+                    $ref: '#/responses/getFlashcardsByDeckIdInternalServerError'
+            schemes:
+                - http
+            summary: Returns flashcards containing in the deck.
+    /api/flashcards/delete_card:
+        delete:
+            consumes:
+                - application/json
+            operationId: DeleteCard
+            parameters:
+                - description: Delete card from deck request.
+                  in: body
+                  name: request
+                  required: true
+                  schema:
+                    $ref: '#/definitions/deleteFlashcardFromDeckRequest'
+                    description: Delete card from deck request.
+                    type: object
+            produces:
+                - application/json
+            responses:
+                "204":
+                    $ref: '#/responses/deleteFlashcardFromDeckNoContentResponse'
+                "400":
+                    $ref: '#/responses/deleteFlashcardFromDeckBadRequestError'
+                "500":
+                    $ref: '#/responses/deleteFlashcardFromDeckInternalServerError'
+            schemes:
+                - http
+            summary: Deletes a card from the deck.
+    /api/flashcards/delete_deck:
+        delete:
+            consumes:
+                - application/json
+            operationId: DeleteDeck
+            parameters:
+                - description: Delete deck request.
+                  in: body
+                  name: request
+                  required: true
+                  schema:
+                    $ref: '#/definitions/deleteDeckRequest'
+                    description: Delete deck request.
+                    type: object
+            produces:
+                - application/json
+            responses:
+                "204":
+                    $ref: '#/responses/deleteDeckNoContentResponse'
+                "400":
+                    $ref: '#/responses/deleteDeckBadRequestError'
+                "500":
+                    $ref: '#/responses/deleteDeckInternalServerError'
+            schemes:
+                - http
+            summary: Deletes a deck from user's collection.
+    /api/flashcards/load:
+        post:
+            consumes:
+                - application/json
+            operationId: LoadDecks
+            parameters:
+                - description: Load decks request.
+                  in: body
+                  name: request
+                  required: true
+                  schema:
+                    $ref: '#/definitions/loadDecksRequest'
+                    description: Load decks request.
+                    type: object
+            produces:
+                - application/json
+            responses:
+                "200":
+                    $ref: '#/responses/loadDecksOkResponse'
+                "400":
+                    $ref: '#/responses/loadDecksBadRequestError'
+                "500":
+                    $ref: '#/responses/loadDecksInternalServerError'
+            schemes:
+                - http
+            summary: Loads decks that the user has.
+    /api/flashcards/new_deck:
+        put:
+            consumes:
+                - application/json
+            operationId: NewDeck
+            parameters:
+                - description: New deck with flashcards request.
+                  in: body
+                  name: request
+                  required: true
+                  schema:
+                    $ref: '#/definitions/newDeckWithFlashcardsRequest'
+                    description: New deck with flashcards request.
+                    type: object
+            produces:
+                - application/json
+            responses:
+                "201":
+                    $ref: '#/responses/newDeckWithFlashcardsCreatedResponse'
+                "400":
+                    $ref: '#/responses/newDeckWithFlashcardsBadRequestError'
+                "500":
+                    $ref: '#/responses/newDeckWithFlashcardsInternalServerError'
+            schemes:
+                - http
+            summary: Creates a new deck with flashcards.
+    /api/signin:
+        post:
+            consumes:
+                - application/json
+            operationId: SignIn
+            parameters:
+                - description: Sign in request.
+                  in: body
+                  name: request
+                  required: true
+                  schema:
+                    $ref: '#/definitions/signInRequest'
+                    description: Sign in request.
+                    type: object
+            produces:
+                - application/json
+            responses:
+                "200":
+                    $ref: '#/responses/signInOkResponse'
+                "400":
+                    $ref: '#/responses/signInBadRequestError'
+                "401":
+                    $ref: '#/responses/signInUnauthorizedError'
+                "500":
+                    $ref: '#/responses/signInInternalServerError'
+            schemes:
+                - http
+            summary: Signs in a user.
+    /api/signup:
+        post:
+            consumes:
+                - application/json
+            operationId: SignUp
+            parameters:
+                - description: Sign up request.
+                  in: body
+                  name: request
+                  required: true
+                  schema:
+                    $ref: '#/definitions/signUpRequest'
+                    description: Sign up request.
+                    type: object
+            produces:
+                - application/json
+            responses:
+                "201":
+                    $ref: '#/responses/signUpCreatedResponse'
+                "400":
+                    $ref: '#/responses/signUpBadRequestError'
+                "409":
+                    $ref: '#/responses/signUpConflictError'
+                "500":
+                    $ref: '#/responses/signUpInternalServerError'
+            schemes:
+                - http
+            summary: Creates a new user.
+    /api/social/follow:
+        post:
+            consumes:
+                - application/json
+            operationId: follow
+            parameters:
+                - description: request body
+                  in: body
+                  name: request
+                  required: true
+                  schema:
+                    $ref: '#/definitions/followRequest'
+                    description: request body
+                    type: object
+            produces:
+                - application/json
+                - 'Scheme: http'
+            responses:
+                "204":
+                    $ref: '#/responses/followNoContentResponse'
+                "400":
+                    $ref: '#/responses/followBadRequestResponse'
+                "500":
+                    $ref: '#/responses/followInternalServerErrorResponse'
+            summary: Follows the user.
+    /api/social/followers:
+        post:
+            consumes:
+                - application/json
+            operationId: getFollowers
+            parameters:
+                - description: request body
+                  in: body
+                  name: request
+                  required: true
+                  schema:
+                    $ref: '#/definitions/getFollowersRequest'
+                    description: request body
+                    type: object
+            produces:
+                - application/json
+                - 'Scheme: http'
+            responses:
+                "200":
+                    $ref: '#/responses/getFollowersOkResponse'
+                "400":
+                    $ref: '#/responses/getFollowersBadRequestResponse'
+                "500":
+                    $ref: '#/responses/getFollowersInternalServerErrorResponse'
+            summary: Returns a list of followers of the user.
+    /api/social/followings:
+        post:
+            consumes:
+                - application/json
+            operationId: getFollowings
+            parameters:
+                - description: request body
+                  in: body
+                  name: request
+                  required: true
+                  schema:
+                    $ref: '#/definitions/getFollowingsRequest'
+                    description: request body
+                    type: object
+            produces:
+                - application/json
+                - 'Scheme: http'
+            responses:
+                "200":
+                    $ref: '#/responses/getFollowingsOkResponse'
+                "400":
+                    $ref: '#/responses/getFollowingsBadRequestResponse'
+                "500":
+                    $ref: '#/responses/getFollowingsInternalServerErrorResponse'
+            summary: Returns a list of followings of the user.
+    /api/study/random:
+        post:
+            consumes:
+                - application/json
+            operationId: RandomCard
+            parameters:
+                - description: Random Card request.
+                  in: body
+                  name: request
+                  required: true
+                  schema:
+                    $ref: '#/definitions/randomCardRequest'
+                    description: Random Card request.
+                    type: object
+            produces:
+                - application/json
+            responses:
+                "200":
+                    $ref: '#/responses/randomCardOkResponse'
+                "400":
+                    $ref: '#/responses/randomCardBadRequestError'
+                "500":
+                    $ref: '#/responses/randomCardInternalServerError'
+            schemes:
+                - http
+            summary: Returns a random card from all the decks.
+    /api/study/random_deck:
+        post:
+            consumes:
+                - application/json
+            operationId: RandomCardDeck
+            parameters:
+                - description: Random Card Deck request.
+                  in: body
+                  name: request
+                  required: true
+                  schema:
+                    $ref: '#/definitions/randomCardDeckRequest'
+                    description: Random Card Deck request.
+                    type: object
+            produces:
+                - application/json
+            responses:
+                "200":
+                    $ref: '#/responses/randomCardDeckOkResponse'
+                "400":
+                    $ref: '#/responses/randomCardDeckBadRequestError'
+                "500":
+                    $ref: '#/responses/randomCardDeckInternalServerError'
+            schemes:
+                - http
+            summary: Returns a random card from the deck.
+    /api/study/random_deck_n:
+        post:
+            consumes:
+                - application/json
+            operationId: RandomNCardsDeck
+            parameters:
+                - description: Random N Cards Deck request.
+                  in: body
+                  name: request
+                  required: true
+                  schema:
+                    $ref: '#/definitions/randomNCardsDeckRequest'
+                    description: Random N Cards Deck request.
+                    type: object
+            produces:
+                - application/json
+            responses:
+                "200":
+                    $ref: '#/responses/randomNCardsDeckOkResponse'
+                "400":
+                    $ref: '#/responses/randomNCardsDeckBadRequestError'
+                "500":
+                    $ref: '#/responses/randomNCardsDeckInternalServerError'
+            schemes:
+                - http
+            summary: Returns n random cards from the deck.
+    /api/study/random_matching:
+        post:
+            consumes:
+                - application/json
+            operationId: RandomMatching
+            parameters:
+                - description: Random Matching request.
+                  in: body
+                  name: request
+                  required: true
+                  schema:
+                    $ref: '#/definitions/randomMatchingRequest'
+                    description: Random Matching request.
+                    type: object
+            produces:
+                - application/json
+            responses:
+                "200":
+                    $ref: '#/responses/randomMatchingOkResponse'
+                "400":
+                    $ref: '#/responses/randomMatchingBadRequestError'
+                "500":
+                    $ref: '#/responses/randomMatchingInternalServerError'
+            schemes:
+                - http
+            summary: Returns a random matching exercise from all the decks.
+    /api/study/random_matching_deck:
+        post:
+            consumes:
+                - application/json
+            operationId: RandomMatchingDeck
+            parameters:
+                - description: Random Matching Deck request.
+                  in: body
+                  name: request
+                  required: true
+                  schema:
+                    $ref: '#/definitions/randomMatchingDeckRequest'
+                    description: Random Matching Deck request.
+                    type: object
+            produces:
+                - application/json
+            responses:
+                "200":
+                    $ref: '#/responses/randomMatchingDeckOkResponse'
+                "400":
+                    $ref: '#/responses/randomMatchingDeckBadRequestError'
+                "500":
+                    $ref: '#/responses/randomMatchingDeckInternalServerError'
+            schemes:
+                - http
+            summary: Returns a random matching exercise from the deck.
+    /api/study/random_n:
+        post:
+            consumes:
+                - application/json
+            operationId: RandomNCards
+            parameters:
+                - description: Random N Cards request.
+                  in: body
+                  name: request
+                  required: true
+                  schema:
+                    $ref: '#/definitions/randomNCardsRequest'
+                    description: Random N Cards request.
+                    type: object
+            produces:
+                - application/json
+            responses:
+                "200":
+                    $ref: '#/responses/randomNCardsOkResponse'
+                "400":
+                    $ref: '#/responses/randomNCardsBadRequestError'
+                "500":
+                    $ref: '#/responses/randomNCardsInternalServerError'
+            schemes:
+                - http
+            summary: Returns n random cards from all the decks.
+    /api/study/random_text:
+        post:
+            consumes:
+                - application/json
+            operationId: RandomText
+            parameters:
+                - description: Random Text request.
+                  in: body
+                  name: request
+                  required: true
+                  schema:
+                    $ref: '#/definitions/randomTextRequest'
+                    description: Random Text request.
+                    type: object
+            produces:
+                - application/json
+            responses:
+                "200":
+                    $ref: '#/responses/randomTextOkResponse'
+                "400":
+                    $ref: '#/responses/randomTextBadRequestError'
+                "500":
+                    $ref: '#/responses/randomTextInternalServerError'
+            schemes:
+                - http
+            summary: Returns a random text exercise from all the decks.
+    /api/study/random_text_deck:
+        post:
+            consumes:
+                - application/json
+            operationId: RandomTextDeck
+            parameters:
+                - description: Random Text Deck request.
+                  in: body
+                  name: request
+                  required: true
+                  schema:
+                    $ref: '#/definitions/randomTextDeckRequest'
+                    description: Random Text Deck request.
+                    type: object
+            produces:
+                - application/json
+            responses:
+                "200":
+                    $ref: '#/responses/randomTextDeckOkResponse'
+                "400":
+                    $ref: '#/responses/randomTextDeckBadRequestError'
+                "500":
+                    $ref: '#/responses/randomTextDeckInternalServerError'
+            schemes:
+                - http
+            summary: Returns a random text exercise from the deck.
+    /api/study/rate:
+        post:
+            consumes:
+                - application/json
+            operationId: Rate
+            parameters:
+                - description: Rate request.
+                  in: body
+                  name: request
+                  required: true
+                  schema:
+                    $ref: '#/definitions/rateRequest'
+                    description: Rate request.
+                    type: object
+            produces:
+                - application/json
+            responses:
+                "204":
+                    $ref: '#/responses/rateNoContentResponse'
+                "400":
+                    $ref: '#/responses/rateBadRequestError'
+                "500":
+                    $ref: '#/responses/rateInternalServerError'
+            schemes:
+                - http
+            summary: Rates the card and puts a new temperature for the card in a leitner's system.
+    /api/user/{id}:
+        get:
+            operationId: GetUserInfo
+            parameters:
+                - description: UserId.
+                  in: query
+                  name: id
+                  required: true
+                  type: object
+            produces:
+                - application/json
+            responses:
+                "200":
+                    description: getUserInfoResponse
+                    schema:
+                        $ref: '#/definitions/getUserInfoResponse'
+                "400":
+                    $ref: '#/responses/getUserInfoBadRequestError'
+                "404":
+                    $ref: '#/responses/getUserInfoNotFoundError'
+                "500":
+                    $ref: '#/responses/getUserInfoInternalServerError'
+            schemes:
+                - http
+            summary: Get user info.
+produces:
+    - application/json
+responses:
+    addFlashcardToDeckBadRequestError:
+        description: ""
+        schema:
+            $ref: '#/definitions/GenericError'
+    addFlashcardToDeckCreatedResponse:
+        description: ""
+    addFlashcardToDeckInternalServerError:
+        description: ""
+        schema:
+            $ref: '#/definitions/GenericError'
+    deleteDeckBadRequestError:
+        description: ""
+        schema:
+            $ref: '#/definitions/GenericError'
+    deleteDeckInternalServerError:
+        description: ""
+        schema:
+            $ref: '#/definitions/GenericError'
+    deleteDeckNoContentResponse:
+        description: ""
+    deleteFlashcardFromDeckBadRequestError:
+        description: ""
+        schema:
+            $ref: '#/definitions/GenericError'
+    deleteFlashcardFromDeckInternalServerError:
+        description: ""
+        schema:
+            $ref: '#/definitions/GenericError'
+    deleteFlashcardFromDeckNoContentResponse:
+        description: ""
+    followBadRequestResponse:
+        description: ""
+        schema:
+            $ref: '#/definitions/GenericError'
+    followInternalServerErrorResponse:
+        description: ""
+        schema:
+            $ref: '#/definitions/GenericError'
+    followNoContentResponse:
+        description: ""
+    getFlashcardByIdBadRequestError:
+        description: ""
+        schema:
+            $ref: '#/definitions/GenericError'
+    getFlashcardByIdInternalServerError:
+        description: ""
+        schema:
+            $ref: '#/definitions/GenericError'
+    getFlashcardByIdOKResponse:
+        description: ""
+        schema:
+            $ref: '#/definitions/GetFlashcardByIdResponse'
+    getFlashcardsByDeckIdBadRequestError:
+        description: ""
+        schema:
+            $ref: '#/definitions/GenericError'
+    getFlashcardsByDeckIdInternalServerError:
+        description: ""
+        schema:
+            $ref: '#/definitions/GenericError'
+    getFlashcardsByDeckIdOkResponse:
+        description: ""
+        schema:
+            $ref: '#/definitions/GetFlashcardsByDeckIdResponse'
+    getFollowersBadRequestResponse:
+        description: ""
+        schema:
+            $ref: '#/definitions/GenericError'
+    getFollowersInternalServerErrorResponse:
+        description: ""
+        schema:
+            $ref: '#/definitions/GenericError'
+    getFollowersOkResponse:
+        description: ""
+        schema:
+            $ref: '#/definitions/FollowersResponse'
+    getFollowingsBadRequestResponse:
+        description: ""
+        schema:
+            $ref: '#/definitions/GenericError'
+    getFollowingsInternalServerErrorResponse:
+        description: ""
+        schema:
+            $ref: '#/definitions/GenericError'
+    getFollowingsOkResponse:
+        description: ""
+        schema:
+            $ref: '#/definitions/FollowingsResponse'
+    getUserInfoBadRequestError:
+        description: ""
+        schema:
+            $ref: '#/definitions/GenericError'
+    getUserInfoInternalServerError:
+        description: ""
+        schema:
+            $ref: '#/definitions/GenericError'
+    getUserInfoNotFoundError:
+        description: ""
+        schema:
+            $ref: '#/definitions/GenericError'
+    loadDecksBadRequestError:
+        description: ""
+        schema:
+            $ref: '#/definitions/GenericError'
+    loadDecksInternalServerError:
+        description: ""
+        schema:
+            $ref: '#/definitions/GenericError'
+    loadDecksOkResponse:
+        description: ""
+        schema:
+            $ref: '#/definitions/LoadDecksResponse'
+    newDeckWithFlashcardsBadRequestError:
+        description: ""
+        schema:
+            $ref: '#/definitions/GenericError'
+    newDeckWithFlashcardsCreatedResponse:
+        description: ""
+    newDeckWithFlashcardsInternalServerError:
+        description: ""
+        schema:
+            $ref: '#/definitions/GenericError'
+    randomCardBadRequestError:
+        description: ""
+        schema:
+            $ref: '#/definitions/GenericError'
+    randomCardDeckBadRequestError:
+        description: ""
+        schema:
+            $ref: '#/definitions/GenericError'
+    randomCardDeckInternalServerError:
+        description: ""
+        schema:
+            $ref: '#/definitions/GenericError'
+    randomCardDeckOkResponse:
+        description: ""
+        schema:
+            $ref: '#/definitions/RandomCardDeckResponse'
+    randomCardInternalServerError:
+        description: ""
+        schema:
+            $ref: '#/definitions/GenericError'
+    randomCardOkResponse:
+        description: ""
+        schema:
+            $ref: '#/definitions/RandomCardResponse'
+    randomMatchingBadRequestError:
+        description: ""
+        schema:
+            $ref: '#/definitions/GenericError'
+    randomMatchingDeckBadRequestError:
+        description: ""
+        schema:
+            $ref: '#/definitions/GenericError'
+    randomMatchingDeckInternalServerError:
+        description: ""
+        schema:
+            $ref: '#/definitions/GenericError'
+    randomMatchingDeckOkResponse:
+        description: ""
+        schema:
+            $ref: '#/definitions/RandomMatchingDeckResponse'
+    randomMatchingInternalServerError:
+        description: ""
+        schema:
+            $ref: '#/definitions/GenericError'
+    randomMatchingOkResponse:
+        description: ""
+        schema:
+            $ref: '#/definitions/RandomMatchingResponse'
+    randomNCardsBadRequestError:
+        description: ""
+        schema:
+            $ref: '#/definitions/GenericError'
+    randomNCardsDeckBadRequestError:
+        description: ""
+        schema:
+            $ref: '#/definitions/GenericError'
+    randomNCardsDeckInternalServerError:
+        description: ""
+        schema:
+            $ref: '#/definitions/GenericError'
+    randomNCardsDeckOkResponse:
+        description: ""
+        schema:
+            $ref: '#/definitions/RandomNCardsDeckResponse'
+    randomNCardsInternalServerError:
+        description: ""
+        schema:
+            $ref: '#/definitions/GenericError'
+    randomNCardsOkResponse:
+        description: ""
+        schema:
+            $ref: '#/definitions/RandomNCardsResponse'
+    randomTextBadRequestError:
+        description: ""
+        schema:
+            $ref: '#/definitions/GenericError'
+    randomTextDeckBadRequestError:
+        description: ""
+        schema:
+            $ref: '#/definitions/GenericError'
+    randomTextDeckInternalServerError:
+        description: ""
+        schema:
+            $ref: '#/definitions/GenericError'
+    randomTextDeckOkResponse:
+        description: ""
+        schema:
+            $ref: '#/definitions/RandomTextDeckResponse'
+    randomTextInternalServerError:
+        description: ""
+        schema:
+            $ref: '#/definitions/GenericError'
+    randomTextOkResponse:
+        description: ""
+        schema:
+            $ref: '#/definitions/RandomTextResponse'
+    rateBadRequestError:
+        description: ""
+        schema:
+            $ref: '#/definitions/GenericError'
+    rateInternalServerError:
+        description: ""
+        schema:
+            $ref: '#/definitions/GenericError'
+    rateNoContentResponse:
+        description: ""
+    signInBadRequestError:
+        description: ""
+        schema:
+            $ref: '#/definitions/GenericError'
+    signInInternalServerError:
+        description: ""
+        schema:
+            $ref: '#/definitions/GenericError'
+    signInOkResponse:
+        description: ""
+        schema:
+            $ref: '#/definitions/SignInResponse'
+    signInUnauthorizedError:
+        description: ""
+        schema:
+            $ref: '#/definitions/GenericError'
+    signUpBadRequestError:
+        description: ""
+        schema:
+            $ref: '#/definitions/GenericError'
+    signUpConflictError:
+        description: ""
+        schema:
+            $ref: '#/definitions/GenericError'
+    signUpCreatedResponse:
+        description: ""
+    signUpInternalServerError:
+        description: ""
+        schema:
+            $ref: '#/definitions/GenericError'
+schemes:
+    - http
+swagger: "2.0"
