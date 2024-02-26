@@ -3,6 +3,7 @@ package storage
 import (
 	"context"
 
+	cardmodels "github.com/ogniloud/madr/internal/flashcards/models"
 	usermodels "github.com/ogniloud/madr/internal/models"
 	"github.com/ogniloud/madr/internal/social/models"
 )
@@ -22,7 +23,7 @@ type Storage interface {
 	GetGroupByGroupId(ctx context.Context, id models.GroupId) (models.GroupConfig, error)
 
 	// TODO
-	GetDecksByGroupId(ctx context.Context, id models.GroupId) ([]models.DeckId, error)
+	GetDecksByGroupId(ctx context.Context, id models.GroupId) ([]cardmodels.DeckConfig, error)
 
 	// GetInvitesByGroupId returns invites from the given group
 	GetInvitesByGroupId(ctx context.Context, id models.GroupId) (map[models.UserId]models.InviteInfo, error)
@@ -54,4 +55,8 @@ type Storage interface {
 	Follow(ctx context.Context, follower models.UserId, author models.UserId) error
 
 	Unfollow(ctx context.Context, follower models.UserId, author models.UserId) error
+
+	ShareDeckGroup(ctx context.Context, owner models.UserId, groupId models.GroupId, deckId models.DeckId) error
+
+	DeleteDeckFromGroup(ctx context.Context, owner models.UserId, groupId models.GroupId, deckId models.DeckId) error
 }

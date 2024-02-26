@@ -8,8 +8,14 @@ import (
 	"github.com/jackc/pgx/v5"
 
 	"github.com/ogniloud/madr/internal/db"
+	cardmodels "github.com/ogniloud/madr/internal/flashcards/models"
 	usermodels "github.com/ogniloud/madr/internal/models"
 	"github.com/ogniloud/madr/internal/social/models"
+)
+
+var (
+	ErrUserNotCreator = errors.New("the user is not a group creator")
+	ErrAlreadyCopied  = errors.New("deck already copied")
 )
 
 type Storage struct {
@@ -114,8 +120,10 @@ func (d *Storage) GetGroupByGroupId(ctx context.Context, id models.GroupId) (mod
 	return group, nil
 }
 
-func (d *Storage) GetDecksByGroupId(ctx context.Context, id models.GroupId) ([]models.DeckId, error) {
-	rows, err := d.Conn.Query(ctx, `SELECT deck_id FROM group_decks WHERE group_id = $1`, id)
+func (d *Storage) GetDecksByGroupId(ctx context.Context, id models.GroupId) ([]cardmodels.DeckConfig, error) {
+	rows, err := d.Conn.Query(ctx, `SELECT (dc.deck_id, user_id, name) FROM group_decks
+                 JOIN deck_config dc on dc.deck_id = group_decks.deck_id
+                 WHERE group_id = $1`, id)
 	if err != nil {
 		return nil, fmt.Errorf("group decks not loaded: %w", err)
 	}
@@ -126,9 +134,9 @@ func (d *Storage) GetDecksByGroupId(ctx context.Context, id models.GroupId) ([]m
 		return nil, fmt.Errorf("group deck rows read fail: %w", err)
 	}
 
-	ids := make([]models.DeckId, len(vals))
+	ids := make([]cardmodels.DeckConfig, len(vals))
 	for k, v := range vals {
-		ids[k], _ = v.(models.DeckId)
+		ids[k], _ = v.(cardmodels.DeckConfig)
 	}
 
 	return ids, nil
@@ -272,7 +280,7 @@ func (d *Storage) CheckIfCopied(ctx context.Context, copier models.UserId, deckI
 
 func (d *Storage) DeepCopyDeck(ctx context.Context, copier models.UserId, deckId models.DeckId) (models.DeckId, error) {
 	if ok, err := d.CheckIfCopied(ctx, copier, deckId); ok {
-		return 0, errors.New("deck already copied")
+		return 0, ErrAlreadyCopied
 	} else if err != nil {
 		return 0, err
 	}
@@ -411,6 +419,62 @@ func (d *Storage) Unfollow(ctx context.Context, follower models.UserId, author m
 	if err != nil {
 		d.Conn.Logger().Errorf("follow error: %v", err)
 		return fmt.Errorf("follow error: %w", err)
+	}
+
+	return nil
+}
+
+func (d *Storage) ShareDeckGroup(ctx context.Context, owner models.UserId, groupId models.GroupId, deckId models.DeckId) error {
+	_, err := d.Conn.Query(ctx, `SELECT group_id FROM groups WHERE group_id=$1 AND creator_id=$2`, groupId, owner)
+	if errors.Is(err, pgx.ErrNoRows) {
+		return ErrUserNotCreator
+	} else if err != nil {
+		d.Conn.Logger().Errorf("share deck error: %v", err)
+		return fmt.Errorf("share deck error: %w", err)
+	}
+
+	_, err = d.Conn.Exec(ctx, `INSERT INTO group_decks VALUES ($1, $2, now())`, groupId, deckId)
+	if err != nil {
+		d.Conn.Logger().Errorf("group deck add error: %v", err)
+		return fmt.Errorf("group deck add error: %w", err)
+	}
+
+	_, err = d.Conn.Exec(ctx, `INSERT INTO user_leitner(user_id, card_id, box, cool_down)
+    (SELECT u, c, 0 as box, now() as cool_down FROM
+            (SELECT user_id as u FROM group_members WHERE group_id=$1 AND user_id != $2) as gmu
+            LEFT JOIN (SELECT flashcard.card_id as c FROM flashcard WHERE deck_id=$3) as fc ON TRUE
+            WHERE NOT u IN (SELECT copier_id FROM copied_by WHERE deck_id=$4)
+    );`, groupId, owner, deckId, deckId)
+	if err != nil {
+		d.Conn.Logger().Errorf("add user leitners to members failed: %v", err)
+		return fmt.Errorf("add user leitners to members failed: %w", err)
+	}
+
+	return nil
+}
+
+func (d *Storage) DeleteDeckFromGroup(ctx context.Context, owner models.UserId, groupId models.GroupId, deckId models.DeckId) error {
+	_, err := d.Conn.Query(ctx, `SELECT group_id FROM groups WHERE group_id=$1 AND creator_id=$2`, groupId, owner)
+	if errors.Is(err, pgx.ErrNoRows) {
+		return ErrUserNotCreator
+	} else if err != nil {
+		d.Conn.Logger().Errorf("share deck error: %v", err)
+		return fmt.Errorf("share deck error: %w", err)
+	}
+
+	_, err = d.Conn.Exec(ctx, `DELETE FROM user_leitner WHERE
+    (user_leitner.user_id, user_leitner.card_id) IN (
+        SELECT * FROM (SELECT user_id FROM group_members WHERE group_id=$1 AND user_leitner.user_id!=$2)
+                          JOIN (SELECT f.card_id FROM flashcard f WHERE deck_id=$3) ON TRUE)`, groupId, owner, deckId)
+	if err != nil {
+		d.Conn.Logger().Errorf("delete user leitners for group members failed: %v", err)
+		return fmt.Errorf("delete user leitners for group members failed: %w", err)
+	}
+
+	_, err = d.Conn.Exec(ctx, `DELETE FROM group_decks WHERE group_id=$1 AND deck_id=$2`, groupId, deckId)
+	if err != nil {
+		d.Conn.Logger().Errorf("group deck delete error: %v", err)
+		return fmt.Errorf("group deck add error: %w", err)
 	}
 
 	return nil
