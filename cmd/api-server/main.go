@@ -179,6 +179,13 @@ func main() {
 			r.Post("/unfollow", socialEndpoints.Unfollow)
 			r.Post("/followers", socialEndpoints.Followers)
 			r.Post("/followings", socialEndpoints.Followings)
+			r.Post("/copy", socialEndpoints.DeepCopyDeck)
+		})
+
+		r.Route("/groups", func(r chi.Router) {
+			r.Post("/decks", socialEndpoints.GetDecksByGroupId)
+			r.Post("/share", socialEndpoints.ShareGroupDeck)
+			r.Post("/delete_deck", socialEndpoints.DeleteGroupDeck)
 		})
 	})
 
