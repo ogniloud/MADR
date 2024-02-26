@@ -27,6 +27,7 @@ func (e Endpoints) ShareGroupDeck(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNoContent)
 }
 
+// GetDecksByGroupId /api/group/decks
 func (e Endpoints) GetDecksByGroupId(w http.ResponseWriter, r *http.Request) {
 	reqBody := models.GetDecksByGroupIdRequest{}
 	respBody := models.GetDecksByGroupIdResponse{}
@@ -52,9 +53,9 @@ func (e Endpoints) GetDecksByGroupId(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (e Endpoints) DeepCopyDeck(w http.ResponseWriter, r *http.Request) {
-	reqBody := models.DeepCopyDeckRequest{}
-	respBody := models.DeepCopyDeckResponse{}
+// DeleteGroupDeck /api/groups/delete_deck
+func (e Endpoints) DeleteGroupDeck(w http.ResponseWriter, r *http.Request) {
+	reqBody := models.DeleteGroupDeckRequest{}
 
 	if err := ioutil.FromJSON(&reqBody, r.Body); err != nil {
 		e.logger.Errorf("json not parsed: %v", err)
@@ -62,17 +63,12 @@ func (e Endpoints) DeepCopyDeck(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	deckId, err := e.s.DeepCopyDeck(r.Context(), reqBody.CopierId, reqBody.DeckId)
+	err := e.s.DeleteDeckFromGroup(r.Context(), reqBody.UserId, reqBody.GroupId, reqBody.DeckId)
 	if err != nil {
 		e.logger.Errorf("reqBody: %+v, error: %v", reqBody, err)
 		e.ew.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	respBody.DeckId = deckId
-	if err := ioutil.ToJSON(respBody, w); err != nil {
-		e.logger.Errorf("To json error: %v", err)
-		e.ew.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
+	w.WriteHeader(http.StatusNoContent)
 }

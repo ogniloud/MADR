@@ -372,3 +372,13 @@ type ShareGroupDeckRequest struct {
 	GroupId GroupId `json:"group_id"`
 	DeckId  DeckId  `json:"deck_id"`
 }
+
+type ShareGroupDeckResponse struct{}
+
+type DeleteGroupDeckRequest struct {
+	UserId  UserId  `json:"user_id"`
+	GroupId GroupId `json:"group_id"`
+	DeckId  DeckId  `json:"deck_id"`
+}
+
+type DeleteGroupDeckResponse struct{}

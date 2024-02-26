@@ -56,5 +56,7 @@ type Storage interface {
 
 	Unfollow(ctx context.Context, follower models.UserId, author models.UserId) error
 
-	ShareDeckGroup(ctx context.Context, userId models.UserId, groupId models.GroupId, deckId models.DeckId) error
+	ShareDeckGroup(ctx context.Context, owner models.UserId, groupId models.GroupId, deckId models.DeckId) error
+
+	DeleteDeckFromGroup(ctx context.Context, owner models.UserId, groupId models.GroupId, deckId models.DeckId) error
 }

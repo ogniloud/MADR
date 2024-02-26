@@ -126,3 +126,29 @@ func (e Endpoints) Unfollow(w http.ResponseWriter, r *http.Request) {
 
 	w.WriteHeader(http.StatusNoContent)
 }
+
+// DeepCopyDeck /api/social/copy
+func (e Endpoints) DeepCopyDeck(w http.ResponseWriter, r *http.Request) {
+	reqBody := models.DeepCopyDeckRequest{}
+	respBody := models.DeepCopyDeckResponse{}
+
+	if err := ioutil.FromJSON(&reqBody, r.Body); err != nil {
+		e.logger.Errorf("json not parsed: %v", err)
+		e.ew.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	deckId, err := e.s.DeepCopyDeck(r.Context(), reqBody.CopierId, reqBody.DeckId)
+	if err != nil {
+		e.logger.Errorf("reqBody: %+v, error: %v", reqBody, err)
+		e.ew.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	respBody.DeckId = deckId
+	if err := ioutil.ToJSON(respBody, w); err != nil {
+		e.logger.Errorf("To json error: %v", err)
+		e.ew.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+}
