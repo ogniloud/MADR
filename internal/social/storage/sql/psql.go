@@ -13,7 +13,10 @@ import (
 	"github.com/ogniloud/madr/internal/social/models"
 )
 
-var ErrUserNotCreator = fmt.Errorf("the user is not a group creator")
+var (
+	ErrUserNotCreator = errors.New("the user is not a group creator")
+	ErrAlreadyCopied  = errors.New("deck already copied")
+)
 
 type Storage struct {
 	Conn *db.PSQLDatabase
@@ -277,7 +280,7 @@ func (d *Storage) CheckIfCopied(ctx context.Context, copier models.UserId, deckI
 
 func (d *Storage) DeepCopyDeck(ctx context.Context, copier models.UserId, deckId models.DeckId) (models.DeckId, error) {
 	if ok, err := d.CheckIfCopied(ctx, copier, deckId); ok {
-		return 0, errors.New("deck already copied")
+		return 0, ErrAlreadyCopied
 	} else if err != nil {
 		return 0, err
 	}
