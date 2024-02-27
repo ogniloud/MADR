@@ -2,7 +2,9 @@ import React from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 
 
-// components
+
+{/* Imported pages and components */}
+
 import Form from './components/User-Components/SignUp';
 import SignIn from './components/User-Components/SignIn';
 import MainPage from './components/Main-Page/MainPage';
@@ -13,6 +15,9 @@ import DeckDetail from "./components/Main-Page/Decks/DeckDetail";
 import AllWords from "./components/Main-Page/Decks/Browse Cards/AllWords";
 import Flashcards from "./components/Main-Page/Decks/Exercise Cards/Flashcards";
 import WordMatch from "./components/Main-Page/Decks/Exercise Cards/WordMatch";
+import SocialGroup from "./components/Social Site/social_group";
+
+
 
 function App() {
   return (
@@ -33,6 +38,14 @@ function App() {
 
             {/* DeckDetail route without a wildcard */}
             <Route path="/decks/:deck_id" element={<DeckDetail />} />
+
+              {/*  Social sites and user's profile*/}
+            <Route path = "/social_group" element={<SocialGroup/>} />
+
+
+
+
+
           </Routes>
         </Router>
       </div>
