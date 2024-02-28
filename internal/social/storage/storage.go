@@ -59,4 +59,6 @@ type Storage interface {
 	ShareDeckGroup(ctx context.Context, owner models.UserId, groupId models.GroupId, deckId models.DeckId) error
 
 	DeleteDeckFromGroup(ctx context.Context, owner models.UserId, groupId models.GroupId, deckId models.DeckId) error
+
+	GetGroupsByName(ctx context.Context, name string) ([]models.GroupConfig, error)
 }
