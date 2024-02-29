@@ -72,3 +72,24 @@ func (e Endpoints) DeleteGroupDeck(w http.ResponseWriter, r *http.Request) {
 
 	w.WriteHeader(http.StatusNoContent)
 }
+
+// SearchGroupByName GET /api/groups/search?q=...
+func (e Endpoints) SearchGroupByName(w http.ResponseWriter, r *http.Request) {
+	respBody := models.SearchGroupByNameResponse{}
+
+	name := r.Form.Get("q")
+
+	groups, err := e.s.GetGroupsByName(r.Context(), name)
+	if err != nil {
+		e.logger.Errorf("query: %+v, error: %v", r.Form, err)
+		e.ew.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	respBody.Groups = groups
+	if err := ioutil.ToJSON(respBody, w); err != nil {
+		e.logger.Errorf("To json error: %v", err)
+		e.ew.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+}
