@@ -388,3 +388,9 @@ type DeleteGroupDeckRequest struct {
 }
 
 type DeleteGroupDeckResponse struct{}
+
+type SearchGroupByNameRequest struct{} // GET
+
+type SearchGroupByNameResponse struct {
+	Groups []GroupConfig `json:"groups"`
+}

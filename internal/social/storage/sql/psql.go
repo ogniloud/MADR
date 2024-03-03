@@ -479,3 +479,27 @@ func (d *Storage) DeleteDeckFromGroup(ctx context.Context, owner models.UserId, 
 
 	return nil
 }
+
+func (d *Storage) GetGroupsByName(ctx context.Context, name string) ([]models.GroupConfig, error) {
+	rows, err := d.Conn.Query(ctx, `SELECT * FROM groups WHERE name=$1
+										UNION DISTINCT SELECT * FROM groups WHERE name LIKE $1`, name+"%")
+	if err != nil {
+		d.Conn.Logger().Errorf("groups not got: %v", err)
+		return nil, fmt.Errorf("groups not got: %w", err)
+	}
+
+	var gcs []models.GroupConfig
+	var t models.GroupConfig
+	_, err = pgx.ForEachRow(rows, []any{&t.GroupId, &t.CreatorId, &t.Name, &t.TimeCreated}, func() error {
+		gcs = append(gcs, t)
+		return nil
+	})
+	if err != nil {
+		d.Conn.Logger().Errorf("iteration error: %v", err)
+		return nil, fmt.Errorf("iteration error: %w", err)
+	}
+
+	gcs1 := make([]models.GroupConfig, len(gcs))
+	copy(gcs1, gcs)
+	return gcs1, nil
+}
