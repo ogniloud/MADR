@@ -93,3 +93,29 @@ func (e Endpoints) SearchGroupByName(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 }
+
+// CreateGroup PUT /api/groups/create
+func (e Endpoints) CreateGroup(w http.ResponseWriter, r *http.Request) {
+	reqBody := models.CreateGroupRequest{}
+	respBody := models.CreateGroupResponse{}
+
+	if err := ioutil.FromJSON(&reqBody, r.Body); err != nil {
+		e.logger.Errorf("json not parsed: %v", err)
+		e.ew.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	id, err := e.s.CreateGroup(r.Context(), reqBody.UserId, reqBody.Name)
+	if err != nil {
+		e.logger.Errorf("reqBody: %+v, error: %v", reqBody, err)
+		e.ew.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	respBody.GroupId = id
+	if err := ioutil.ToJSON(respBody, w); err != nil {
+		e.logger.Errorf("To json error: %v", err)
+		e.ew.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+}

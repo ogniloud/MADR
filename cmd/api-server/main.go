@@ -183,6 +183,7 @@ func main() {
 		})
 
 		r.Route("/groups", func(r chi.Router) {
+			r.Put("/create", socialEndpoints.CreateGroup)
 			r.Post("/decks", socialEndpoints.GetDecksByGroupId)
 			r.Post("/share", socialEndpoints.ShareGroupDeck)
 			r.Post("/delete_deck", socialEndpoints.DeleteGroupDeck)
