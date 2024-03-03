@@ -11,10 +11,10 @@ import (
 // Storage is an interface for accessing a database.
 type Storage interface {
 	// GetCreatedGroupsByUserId returns all the groups the user created
-	GetCreatedGroupsByUserId(ctx context.Context, id models.UserId) (models.Groups, error)
+	GetCreatedGroupsByUserId(ctx context.Context, id models.UserId) ([]models.GroupConfig, error)
 
 	// GetGroupsByUserId returns all the groups the user pertains to
-	GetGroupsByUserId(ctx context.Context, id models.UserId) (models.Groups, error)
+	GetGroupsByUserId(ctx context.Context, id models.UserId) ([]models.GroupConfig, error)
 
 	// GetUsersByGroupId returns all users pertaining to the group
 	GetUsersByGroupId(ctx context.Context, id models.GroupId) (models.Members, error)

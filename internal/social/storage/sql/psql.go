@@ -22,7 +22,7 @@ type Storage struct {
 	Conn *db.PSQLDatabase
 }
 
-func (d *Storage) GetCreatedGroupsByUserId(ctx context.Context, id models.UserId) (models.Groups, error) {
+func (d *Storage) GetCreatedGroupsByUserId(ctx context.Context, id models.UserId) ([]models.GroupConfig, error) {
 	rows, err := d.Conn.Query(ctx, `SELECT * FROM groups WHERE creator_id=$1`, id)
 	if err != nil {
 		return nil, err
@@ -30,11 +30,11 @@ func (d *Storage) GetCreatedGroupsByUserId(ctx context.Context, id models.UserId
 
 	defer rows.Close()
 
-	groups := models.Groups{}
+	var groups []models.GroupConfig
 
 	cfg := models.GroupConfig{}
 	_, err = pgx.ForEachRow(rows, []any{&cfg.GroupId, &cfg.CreatorId, &cfg.Name, &cfg.TimeCreated}, func() error {
-		groups[cfg.GroupId] = cfg
+		groups = append(groups, cfg)
 
 		return nil
 	})
@@ -43,10 +43,12 @@ func (d *Storage) GetCreatedGroupsByUserId(ctx context.Context, id models.UserId
 		return nil, err
 	}
 
-	return groups, nil
+	groups1 := make([]models.GroupConfig, len(groups))
+	copy(groups1, groups)
+	return groups1, nil
 }
 
-func (d *Storage) GetGroupsByUserId(ctx context.Context, id models.UserId) (models.Groups, error) {
+func (d *Storage) GetGroupsByUserId(ctx context.Context, id models.UserId) ([]models.GroupConfig, error) {
 	rows, err := d.Conn.Query(ctx, `
 	SELECT *
 	FROM groups
@@ -61,11 +63,11 @@ func (d *Storage) GetGroupsByUserId(ctx context.Context, id models.UserId) (mode
 
 	defer rows.Close()
 
-	groups := models.Groups{}
+	groups := []models.GroupConfig{}
 
 	cfg := models.GroupConfig{}
 	_, err = pgx.ForEachRow(rows, []any{&cfg.GroupId, &cfg.CreatorId, &cfg.Name, &cfg.TimeCreated}, func() error {
-		groups[cfg.GroupId] = cfg
+		groups = append(groups, cfg)
 
 		return nil
 	})
@@ -74,7 +76,9 @@ func (d *Storage) GetGroupsByUserId(ctx context.Context, id models.UserId) (mode
 		return nil, err
 	}
 
-	return groups, nil
+	groups1 := make([]models.GroupConfig, len(groups))
+	copy(groups1, groups)
+	return groups1, nil
 }
 
 func (d *Storage) GetUsersByGroupId(ctx context.Context, id models.GroupId) (models.Members, error) {

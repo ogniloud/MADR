@@ -119,3 +119,55 @@ func (e Endpoints) CreateGroup(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 }
+
+// GetGroupsByUserId POST /api/groups
+func (e Endpoints) GetGroupsByUserId(w http.ResponseWriter, r *http.Request) {
+	reqBody := models.GetGroupsByUserIdRequest{}
+	respBody := models.GetGroupsByUserIdResponse{}
+
+	if err := ioutil.FromJSON(&reqBody, r.Body); err != nil {
+		e.logger.Errorf("json not parsed: %v", err)
+		e.ew.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	ids, err := e.s.GetGroupsByUserId(r.Context(), reqBody.UserId)
+	if err != nil {
+		e.logger.Errorf("reqBody: %+v, error: %v", reqBody, err)
+		e.ew.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	respBody.Groups = ids
+	if err := ioutil.ToJSON(respBody, w); err != nil {
+		e.logger.Errorf("To json error: %v", err)
+		e.ew.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+}
+
+// GetCreatedGroupsByUserId POST /api/created_groups
+func (e Endpoints) GetCreatedGroupsByUserId(w http.ResponseWriter, r *http.Request) {
+	reqBody := models.GetCreatedGroupsByUserIdRequest{}
+	respBody := models.GetCreatedGroupsByUserIdResponse{}
+
+	if err := ioutil.FromJSON(&reqBody, r.Body); err != nil {
+		e.logger.Errorf("json not parsed: %v", err)
+		e.ew.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	ids, err := e.s.GetCreatedGroupsByUserId(r.Context(), reqBody.UserId)
+	if err != nil {
+		e.logger.Errorf("reqBody: %+v, error: %v", reqBody, err)
+		e.ew.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	respBody.Groups = ids
+	if err := ioutil.ToJSON(respBody, w); err != nil {
+		e.logger.Errorf("To json error: %v", err)
+		e.ew.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+}

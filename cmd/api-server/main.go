@@ -188,6 +188,8 @@ func main() {
 			r.Post("/share", socialEndpoints.ShareGroupDeck)
 			r.Post("/delete_deck", socialEndpoints.DeleteGroupDeck)
 			r.Get("/search", socialEndpoints.SearchGroupByName)
+			r.Post("/groups", socialEndpoints.GetGroupsByUserId)
+			r.Post("/created_groups", socialEndpoints.GetCreatedGroupsByUserId)
 		})
 	})
 
