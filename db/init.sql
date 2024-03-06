@@ -69,8 +69,9 @@ CREATE TABLE IF NOT EXISTS group_members (
 );
 
 CREATE TABLE IF NOT EXISTS group_invites (
-    group_id SERIAL,
-    user_id SERIAL, -- юзер получил инвайт группы, но ещё его не принял
+    invite_id SERIAL PRIMARY KEY,
+    group_id INT,
+    user_id INT, -- юзер получил инвайт группы, но ещё его не принял
     time_sent TIMESTAMP,
     UNIQUE(group_id, user_id),
 
