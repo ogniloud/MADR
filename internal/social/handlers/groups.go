@@ -171,3 +171,43 @@ func (e Endpoints) GetCreatedGroupsByUserId(w http.ResponseWriter, r *http.Reque
 		return
 	}
 }
+
+// SendInvite /api/invite/send
+func (e Endpoints) SendInvite(w http.ResponseWriter, r *http.Request) {
+	reqBody := models.SendInviteRequest{}
+
+	if err := ioutil.FromJSON(&reqBody, r.Body); err != nil {
+		e.logger.Errorf("json not parsed: %v", err)
+		e.ew.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	err := e.s.SendInvite(r.Context(), reqBody.CreatorId, reqBody.InviteeId, reqBody.GroupId)
+	if err != nil {
+		e.logger.Errorf("reqBody: %+v, error: %v", reqBody, err)
+		e.ew.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.WriteHeader(http.StatusNoContent)
+}
+
+// AcceptInvite /api/invite/accept
+func (e Endpoints) AcceptInvite(w http.ResponseWriter, r *http.Request) {
+	reqBody := models.AcceptInviteRequest{}
+
+	if err := ioutil.FromJSON(&reqBody, r.Body); err != nil {
+		e.logger.Errorf("json not parsed: %v", err)
+		e.ew.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	err := e.s.AcceptInvite(r.Context(), reqBody.UserId, reqBody.GroupId)
+	if err != nil {
+		e.logger.Errorf("reqBody: %+v, error: %v", reqBody, err)
+		e.ew.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.WriteHeader(http.StatusNoContent)
+}

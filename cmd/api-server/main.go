@@ -27,7 +27,6 @@ import (
 	"github.com/ogniloud/madr/internal/usercred"
 
 	"github.com/charmbracelet/log"
-	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	openapi "github.com/go-openapi/runtime/middleware"
 )
@@ -190,6 +189,11 @@ func main() {
 			r.Get("/search", socialEndpoints.SearchGroupByName)
 			r.Post("/groups", socialEndpoints.GetGroupsByUserId)
 			r.Post("/created_groups", socialEndpoints.GetCreatedGroupsByUserId)
+		})
+
+		r.Route("/invite", func(r chi.Router) {
+			r.Post("/send", socialEndpoints.SendInvite)
+			r.Post("/accept", socialEndpoints.AcceptInvite)
 		})
 	})
 
