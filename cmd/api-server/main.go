@@ -191,6 +191,7 @@ func main() {
 			r.Get("/search", socialEndpoints.SearchGroupByName)
 			r.Post("/groups", socialEndpoints.GetGroupsByUserId)
 			r.Post("/created_groups", socialEndpoints.GetCreatedGroupsByUserId)
+			r.Put("/change_name", socialEndpoints.ChangeGroupName)
 		})
 
 		r.Route("/invite", func(r chi.Router) {

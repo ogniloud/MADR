@@ -507,3 +507,14 @@ func (d *Storage) GetGroupsByName(ctx context.Context, name string) ([]models.Gr
 	copy(gcs1, gcs)
 	return gcs1, nil
 }
+
+func (d *Storage) ChangeGroupName(ctx context.Context, creatorId models.UserId, groupId models.GroupId, name string) error {
+	_, err := d.Conn.Exec(ctx, `UPDATE groups SET name=$1 WHERE group_id=$2 AND creator_id=$3`,
+		name, creatorId, groupId)
+	if err != nil {
+		d.Conn.Logger().Errorf("name not updated %v", err)
+		return fmt.Errorf("name not updated %w", err)
+	}
+
+	return nil
+}

@@ -394,3 +394,11 @@ type SearchGroupByNameRequest struct{} // GET
 type SearchGroupByNameResponse struct {
 	Groups []GroupConfig `json:"groups"`
 }
+
+type ChangeGroupNameRequest struct {
+	CreatorId UserId  `json:"creator_id"`
+	GroupId   GroupId `json:"group_id"`
+	Name      string  `json:"name"`
+}
+
+type ChangeGroupNameResponse struct{}

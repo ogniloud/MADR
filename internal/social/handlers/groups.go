@@ -172,7 +172,7 @@ func (e Endpoints) GetCreatedGroupsByUserId(w http.ResponseWriter, r *http.Reque
 	}
 }
 
-// SendInvite /api/invite/send
+// SendInvite /api/invite/send POST
 func (e Endpoints) SendInvite(w http.ResponseWriter, r *http.Request) {
 	reqBody := models.SendInviteRequest{}
 
@@ -192,7 +192,7 @@ func (e Endpoints) SendInvite(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNoContent)
 }
 
-// AcceptInvite /api/invite/accept
+// AcceptInvite /api/invite/accept POST
 func (e Endpoints) AcceptInvite(w http.ResponseWriter, r *http.Request) {
 	reqBody := models.AcceptInviteRequest{}
 
@@ -203,6 +203,26 @@ func (e Endpoints) AcceptInvite(w http.ResponseWriter, r *http.Request) {
 	}
 
 	err := e.s.AcceptInvite(r.Context(), reqBody.UserId, reqBody.GroupId)
+	if err != nil {
+		e.logger.Errorf("reqBody: %+v, error: %v", reqBody, err)
+		e.ew.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.WriteHeader(http.StatusNoContent)
+}
+
+// ChangeGroupName PUT /api/groups/change_name
+func (e Endpoints) ChangeGroupName(w http.ResponseWriter, r *http.Request) {
+	reqBody := models.ChangeGroupNameRequest{}
+
+	if err := ioutil.FromJSON(&reqBody, r.Body); err != nil {
+		e.logger.Errorf("json not parsed: %v", err)
+		e.ew.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	err := e.s.ChangeGroupName(r.Context(), reqBody.CreatorId, reqBody.GroupId, reqBody.Name)
 	if err != nil {
 		e.logger.Errorf("reqBody: %+v, error: %v", reqBody, err)
 		e.ew.Error(w, err.Error(), http.StatusInternalServerError)

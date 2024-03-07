@@ -61,4 +61,6 @@ type Storage interface {
 	DeleteDeckFromGroup(ctx context.Context, owner models.UserId, groupId models.GroupId, deckId models.DeckId) error
 
 	GetGroupsByName(ctx context.Context, name string) ([]models.GroupConfig, error)
+
+	ChangeGroupName(ctx context.Context, creatorId models.UserId, groupId models.GroupId, name string) error
 }
