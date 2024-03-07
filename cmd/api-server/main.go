@@ -2,12 +2,13 @@ package main
 
 import (
 	"context"
-	"github.com/go-chi/chi/v5"
 	"net/http"
 	"os"
 	"os/signal"
 	"strconv"
 	"time"
+
+	"github.com/go-chi/chi/v5"
 
 	_ "github.com/lib/pq"
 
