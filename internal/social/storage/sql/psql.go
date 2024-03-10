@@ -518,3 +518,23 @@ func (d *Storage) ChangeGroupName(ctx context.Context, creatorId models.UserId, 
 
 	return nil
 }
+
+func (d *Storage) QuitGroup(ctx context.Context, userId models.UserId, groupId models.GroupId) error {
+	_, err := d.Conn.Exec(ctx, `DELETE FROM user_leitner WHERE user_id=$1 AND
+                               (card_id IN (SELECT f.card_id FROM group_decks
+                                            JOIN public.flashcard f on group_decks.deck_id = f.deck_id
+                                            WHERE group_id=$2))`, userId, groupId)
+	if err != nil {
+		d.Conn.Logger().Errorf("decks not deleted %v", err)
+		return fmt.Errorf("decks not deleted %w", err)
+	}
+
+	_, err = d.Conn.Exec(ctx, `DELETE FROM group_members WHERE group_id=$1 AND user_id=$2`,
+		groupId, userId)
+	if err != nil {
+		d.Conn.Logger().Errorf("member not deleted %v", err)
+		return fmt.Errorf("member not deleted %w", err)
+	}
+
+	return nil
+}

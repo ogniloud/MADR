@@ -402,3 +402,10 @@ type ChangeGroupNameRequest struct {
 }
 
 type ChangeGroupNameResponse struct{}
+
+type QuitGroupRequest struct {
+	UserId  UserId  `json:"user_id"`
+	GroupId GroupId `json:"group_id"`
+}
+
+type QuitGroupResponse struct{}

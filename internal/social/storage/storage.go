@@ -35,7 +35,10 @@ type Storage interface {
 	CreateGroup(ctx context.Context, id models.UserId, name string) (models.GroupId, error)
 
 	// Deletes the group where id belongs to its creator
-	DeleteGroup(ctx context.Context, id models.UserId, group_id models.GroupId) error
+	DeleteGroup(ctx context.Context, id models.UserId, groupId models.GroupId) error
+
+	// QuitGroup deletes user [id] from the group. The creator can't quit.
+	QuitGroup(ctx context.Context, id models.UserId, groupId models.GroupId) error
 
 	// User accepts an invite to a group and becomes a member of the group
 	AcceptInvite(ctx context.Context, id models.UserId, group_id models.GroupId) error
