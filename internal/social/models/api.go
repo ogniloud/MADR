@@ -23,7 +23,7 @@ type GetCreatedGroupsByUserIdResponse struct {
 	// Groups is a map from group id to group config.
 	//
 	// required: true
-	Groups Groups `json:"groups"`
+	Groups []GroupConfig `json:"groups"`
 }
 
 // GetGroupsByUserIdRequest is a struct that defines the request body for
@@ -44,7 +44,7 @@ type GetGroupsByUserIdResponse struct {
 	// Groups is a map from group id to group config.
 	//
 	// required: true
-	Groups Groups `json:"groups"`
+	Groups []GroupConfig `json:"groups"`
 }
 
 // GetUsersByGroupIdRequest is a struct that defines the request body for
@@ -394,3 +394,18 @@ type SearchGroupByNameRequest struct{} // GET
 type SearchGroupByNameResponse struct {
 	Groups []GroupConfig `json:"groups"`
 }
+
+type ChangeGroupNameRequest struct {
+	CreatorId UserId  `json:"creator_id"`
+	GroupId   GroupId `json:"group_id"`
+	Name      string  `json:"name"`
+}
+
+type ChangeGroupNameResponse struct{}
+
+type QuitGroupRequest struct {
+	UserId  UserId  `json:"user_id"`
+	GroupId GroupId `json:"group_id"`
+}
+
+type QuitGroupResponse struct{}

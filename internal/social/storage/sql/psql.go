@@ -22,7 +22,7 @@ type Storage struct {
 	Conn *db.PSQLDatabase
 }
 
-func (d *Storage) GetCreatedGroupsByUserId(ctx context.Context, id models.UserId) (models.Groups, error) {
+func (d *Storage) GetCreatedGroupsByUserId(ctx context.Context, id models.UserId) ([]models.GroupConfig, error) {
 	rows, err := d.Conn.Query(ctx, `SELECT * FROM groups WHERE creator_id=$1`, id)
 	if err != nil {
 		return nil, err
@@ -30,11 +30,11 @@ func (d *Storage) GetCreatedGroupsByUserId(ctx context.Context, id models.UserId
 
 	defer rows.Close()
 
-	groups := models.Groups{}
+	var groups []models.GroupConfig
 
 	cfg := models.GroupConfig{}
 	_, err = pgx.ForEachRow(rows, []any{&cfg.GroupId, &cfg.CreatorId, &cfg.Name, &cfg.TimeCreated}, func() error {
-		groups[cfg.GroupId] = cfg
+		groups = append(groups, cfg)
 
 		return nil
 	})
@@ -43,10 +43,12 @@ func (d *Storage) GetCreatedGroupsByUserId(ctx context.Context, id models.UserId
 		return nil, err
 	}
 
-	return groups, nil
+	groups1 := make([]models.GroupConfig, len(groups))
+	copy(groups1, groups)
+	return groups1, nil
 }
 
-func (d *Storage) GetGroupsByUserId(ctx context.Context, id models.UserId) (models.Groups, error) {
+func (d *Storage) GetGroupsByUserId(ctx context.Context, id models.UserId) ([]models.GroupConfig, error) {
 	rows, err := d.Conn.Query(ctx, `
 	SELECT *
 	FROM groups
@@ -61,11 +63,11 @@ func (d *Storage) GetGroupsByUserId(ctx context.Context, id models.UserId) (mode
 
 	defer rows.Close()
 
-	groups := models.Groups{}
+	groups := []models.GroupConfig{}
 
 	cfg := models.GroupConfig{}
 	_, err = pgx.ForEachRow(rows, []any{&cfg.GroupId, &cfg.CreatorId, &cfg.Name, &cfg.TimeCreated}, func() error {
-		groups[cfg.GroupId] = cfg
+		groups = append(groups, cfg)
 
 		return nil
 	})
@@ -74,7 +76,9 @@ func (d *Storage) GetGroupsByUserId(ctx context.Context, id models.UserId) (mode
 		return nil, err
 	}
 
-	return groups, nil
+	groups1 := make([]models.GroupConfig, len(groups))
+	copy(groups1, groups)
+	return groups1, nil
 }
 
 func (d *Storage) GetUsersByGroupId(ctx context.Context, id models.GroupId) (models.Members, error) {
@@ -502,4 +506,35 @@ func (d *Storage) GetGroupsByName(ctx context.Context, name string) ([]models.Gr
 	gcs1 := make([]models.GroupConfig, len(gcs))
 	copy(gcs1, gcs)
 	return gcs1, nil
+}
+
+func (d *Storage) ChangeGroupName(ctx context.Context, creatorId models.UserId, groupId models.GroupId, name string) error {
+	_, err := d.Conn.Exec(ctx, `UPDATE groups SET name=$1 WHERE group_id=$2 AND creator_id=$3`,
+		name, creatorId, groupId)
+	if err != nil {
+		d.Conn.Logger().Errorf("name not updated %v", err)
+		return fmt.Errorf("name not updated %w", err)
+	}
+
+	return nil
+}
+
+func (d *Storage) QuitGroup(ctx context.Context, userId models.UserId, groupId models.GroupId) error {
+	_, err := d.Conn.Exec(ctx, `DELETE FROM user_leitner WHERE user_id=$1 AND
+                               (card_id IN (SELECT f.card_id FROM group_decks
+                                            JOIN public.flashcard f on group_decks.deck_id = f.deck_id
+                                            WHERE group_id=$2))`, userId, groupId)
+	if err != nil {
+		d.Conn.Logger().Errorf("decks not deleted %v", err)
+		return fmt.Errorf("decks not deleted %w", err)
+	}
+
+	_, err = d.Conn.Exec(ctx, `DELETE FROM group_members WHERE group_id=$1 AND user_id=$2`,
+		groupId, userId)
+	if err != nil {
+		d.Conn.Logger().Errorf("member not deleted %v", err)
+		return fmt.Errorf("member not deleted %w", err)
+	}
+
+	return nil
 }

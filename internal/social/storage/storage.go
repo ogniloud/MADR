@@ -11,10 +11,10 @@ import (
 // Storage is an interface for accessing a database.
 type Storage interface {
 	// GetCreatedGroupsByUserId returns all the groups the user created
-	GetCreatedGroupsByUserId(ctx context.Context, id models.UserId) (models.Groups, error)
+	GetCreatedGroupsByUserId(ctx context.Context, id models.UserId) ([]models.GroupConfig, error)
 
 	// GetGroupsByUserId returns all the groups the user pertains to
-	GetGroupsByUserId(ctx context.Context, id models.UserId) (models.Groups, error)
+	GetGroupsByUserId(ctx context.Context, id models.UserId) ([]models.GroupConfig, error)
 
 	// GetUsersByGroupId returns all users pertaining to the group
 	GetUsersByGroupId(ctx context.Context, id models.GroupId) (models.Members, error)
@@ -35,7 +35,10 @@ type Storage interface {
 	CreateGroup(ctx context.Context, id models.UserId, name string) (models.GroupId, error)
 
 	// Deletes the group where id belongs to its creator
-	DeleteGroup(ctx context.Context, id models.UserId, group_id models.GroupId) error
+	DeleteGroup(ctx context.Context, id models.UserId, groupId models.GroupId) error
+
+	// QuitGroup deletes user [id] from the group. The creator can't quit.
+	QuitGroup(ctx context.Context, id models.UserId, groupId models.GroupId) error
 
 	// User accepts an invite to a group and becomes a member of the group
 	AcceptInvite(ctx context.Context, id models.UserId, group_id models.GroupId) error
@@ -61,4 +64,6 @@ type Storage interface {
 	DeleteDeckFromGroup(ctx context.Context, owner models.UserId, groupId models.GroupId, deckId models.DeckId) error
 
 	GetGroupsByName(ctx context.Context, name string) ([]models.GroupConfig, error)
+
+	ChangeGroupName(ctx context.Context, creatorId models.UserId, groupId models.GroupId, name string) error
 }

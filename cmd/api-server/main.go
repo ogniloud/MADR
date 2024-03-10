@@ -8,6 +8,8 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/go-chi/chi/v5"
+
 	_ "github.com/lib/pq"
 
 	"github.com/go-chi/cors"
@@ -27,7 +29,6 @@ import (
 	"github.com/ogniloud/madr/internal/usercred"
 
 	"github.com/charmbracelet/log"
-	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	openapi "github.com/go-openapi/runtime/middleware"
 )
@@ -183,10 +184,21 @@ func main() {
 		})
 
 		r.Route("/groups", func(r chi.Router) {
+			r.Put("/create", socialEndpoints.CreateGroup)
 			r.Post("/decks", socialEndpoints.GetDecksByGroupId)
 			r.Post("/share", socialEndpoints.ShareGroupDeck)
 			r.Post("/delete_deck", socialEndpoints.DeleteGroupDeck)
 			r.Get("/search", socialEndpoints.SearchGroupByName)
+			r.Post("/groups", socialEndpoints.GetGroupsByUserId)
+			r.Post("/created_groups", socialEndpoints.GetCreatedGroupsByUserId)
+			r.Put("/change_name", socialEndpoints.ChangeGroupName)
+			r.Delete("/delete", socialEndpoints.DeleteGroup)
+			r.Delete("/quit", socialEndpoints.QuitGroup)
+		})
+
+		r.Route("/invite", func(r chi.Router) {
+			r.Post("/send", socialEndpoints.SendInvite)
+			r.Post("/accept", socialEndpoints.AcceptInvite)
 		})
 	})
 
