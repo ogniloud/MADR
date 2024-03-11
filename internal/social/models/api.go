@@ -409,3 +409,13 @@ type QuitGroupRequest struct {
 }
 
 type QuitGroupResponse struct{}
+
+type SearchUserResponse struct {
+	Users []UserInfo `json:"users"`
+}
+
+type UserInfo struct {
+	ID       int
+	Username string
+	Email    string
+}

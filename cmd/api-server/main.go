@@ -181,6 +181,7 @@ func main() {
 			r.Post("/followers", socialEndpoints.Followers)
 			r.Post("/followings", socialEndpoints.Followings)
 			r.Post("/copy", socialEndpoints.DeepCopyDeck)
+			r.Get("/search", socialEndpoints.SearchUser)
 		})
 
 		r.Route("/groups", func(r chi.Router) {

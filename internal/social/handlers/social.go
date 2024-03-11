@@ -242,3 +242,27 @@ func (e Endpoints) DeepCopyDeck(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 }
+
+// SearchUse GET /api/social/search
+func (e Endpoints) SearchUser(w http.ResponseWriter, r *http.Request) {
+	respBody := models.SearchUserResponse{}
+
+	name := r.Form.Get("q")
+
+	users, err := e.s.GetUsersByName(r.Context(), name)
+	if err != nil {
+		e.logger.Errorf("query: %+v, error: %v", r.Form, err)
+		e.ew.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	for _, user := range users {
+		respBody.Users = append(respBody.Users, models.UserInfo(user))
+	}
+
+	if err := ioutil.ToJSON(respBody, w); err != nil {
+		e.logger.Errorf("To json error: %v", err)
+		e.ew.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+}
