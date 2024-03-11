@@ -66,4 +66,6 @@ type Storage interface {
 	GetGroupsByName(ctx context.Context, name string) ([]models.GroupConfig, error)
 
 	ChangeGroupName(ctx context.Context, creatorId models.UserId, groupId models.GroupId, name string) error
+
+	GetUsersByName(ctx context.Context, name string) ([]usermodels.UserInfo, error)
 }

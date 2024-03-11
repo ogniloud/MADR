@@ -409,3 +409,16 @@ type QuitGroupRequest struct {
 }
 
 type QuitGroupResponse struct{}
+
+// SearchUserResponse is a struct that defines the response body for
+// searching users by name.
+type SearchUserResponse struct {
+	Users []UserInfo `json:"users"`
+}
+
+// UserInfo is a struct that defines the user info model.
+type UserInfo struct {
+	ID       int
+	Username string
+	Email    string
+}

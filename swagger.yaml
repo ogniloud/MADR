@@ -242,6 +242,18 @@ definitions:
                 $ref: '#/definitions/Text'
         type: object
         x-go-package: github.com/ogniloud/madr/internal/flashcards/models
+    SearchUserResponse:
+        description: |-
+            SearchUserResponse is a struct that defines the response body for
+            searching users by name.
+        properties:
+            users:
+                items:
+                    $ref: '#/definitions/UserInfo'
+                type: array
+                x-go-name: Users
+        type: object
+        x-go-package: github.com/ogniloud/madr/internal/social/models
     SignInResponse:
         properties:
             authorization:
@@ -285,7 +297,7 @@ definitions:
                 type: string
         title: UserInfo is a struct that defines the user info model.
         type: object
-        x-go-package: github.com/ogniloud/madr/internal/models
+        x-go-package: github.com/ogniloud/madr/internal/social/models
     acceptInviteRequest:
         description: |-
             AcceptInviteRequest is a struct that defines the request body for
@@ -1350,6 +1362,26 @@ paths:
                 "500":
                     $ref: '#/responses/getFollowingsInternalServerErrorResponse'
             summary: Returns a list of followings of the user.
+    /api/social/search:
+        get:
+            consumes:
+                - application/json
+            operationId: search
+            parameters:
+                - description: search query
+                  in: query
+                  name: q
+                  required: true
+                  type: string
+            produces:
+                - application/json
+                - 'Scheme: http'
+            responses:
+                "200":
+                    $ref: '#/responses/searchUserOkResponse'
+                "500":
+                    $ref: '#/responses/searchUserInternalServerErrorResponse'
+            summary: Returns a list of users by name.
     /api/social/unfollow:
         post:
             consumes:
@@ -1865,6 +1897,14 @@ responses:
             $ref: '#/definitions/GenericError'
     rateNoContentResponse:
         description: ""
+    searchUserInternalServerErrorResponse:
+        description: ""
+        schema:
+            $ref: '#/definitions/GenericError'
+    searchUserOkResponse:
+        description: ""
+        schema:
+            $ref: '#/definitions/SearchUserResponse'
     signInBadRequestError:
         description: ""
         schema:

@@ -242,3 +242,55 @@ func (e Endpoints) DeepCopyDeck(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 }
+
+// swagger:route GET /api/social/search search
+// Returns a list of users by name.
+//
+//	Consumes:
+//	- application/json
+//
+//	Produces:
+//	- application/json
+//
+//	Scheme: http
+//
+//
+//	Parameters:
+//	+ name: q
+//	  in: query
+//	  description: search query
+//	  required: true
+//	  type: string
+//
+//	Responses:
+//	200: searchUserOkResponse
+//	500: searchUserInternalServerErrorResponse
+func (e Endpoints) SearchUser(w http.ResponseWriter, r *http.Request) {
+	respBody := models.SearchUserResponse{}
+
+	err := r.ParseForm()
+	if err != nil {
+		e.logger.Errorf("parse form error: %v", err)
+		e.ew.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	name := r.Form.Get("q")
+
+	users, err := e.s.GetUsersByName(r.Context(), name)
+	if err != nil {
+		e.logger.Errorf("query: %+v, error: %v", r.Form, err)
+		e.ew.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	for _, user := range users {
+		respBody.Users = append(respBody.Users, models.UserInfo(user))
+	}
+
+	if err := ioutil.ToJSON(respBody, w); err != nil {
+		e.logger.Errorf("To json error: %v", err)
+		e.ew.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+}

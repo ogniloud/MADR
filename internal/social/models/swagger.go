@@ -81,3 +81,17 @@ type SwaggerUnfollowInternalServerErrorResponse struct {
 	// in: body
 	Body ioutil.GenericError
 }
+
+// swagger:response searchUserOkResponse
+// SwaggerSearchUserOkResponse is a struct that defines the response body for the SearchUser endpoint.
+type SwaggerSearchUserOkResponse struct {
+	// in: body
+	Body SearchUserResponse
+}
+
+// swagger:response searchUserInternalServerErrorResponse
+// SwaggerSearchUserInternalServerErrorResponse is a struct that defines the response body for the SearchUser endpoint.
+type SwaggerSearchUserInternalServerErrorResponse struct {
+	// in: body
+	Body ioutil.GenericError
+}

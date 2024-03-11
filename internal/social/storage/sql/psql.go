@@ -538,3 +538,24 @@ func (d *Storage) QuitGroup(ctx context.Context, userId models.UserId, groupId m
 
 	return nil
 }
+
+func (d *Storage) GetUsersByName(ctx context.Context, name string) ([]usermodels.UserInfo, error) {
+	rows, err := d.Conn.Query(ctx, `SELECT user_id, username, email FROM user_credentials WHERE username LIKE $1`, "%"+name+"%")
+	if err != nil {
+		d.Conn.Logger().Errorf("Storage.GetUsersByName: %v", err)
+		return nil, fmt.Errorf("can't get users by name: %w", err)
+	}
+
+	var u []usermodels.UserInfo
+
+	for rows.Next() {
+		var user usermodels.UserInfo
+		if err := rows.Scan(&user.ID, &user.Username, &user.Email); err != nil {
+			d.Conn.Logger().Errorf("Storage.GetUsersByName: %v", err)
+			return nil, fmt.Errorf("can't scan user: %w", err)
+		}
+		u = append(u, user)
+	}
+
+	return u, nil
+}
