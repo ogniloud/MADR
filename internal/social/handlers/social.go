@@ -243,7 +243,28 @@ func (e Endpoints) DeepCopyDeck(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-// SearchUse GET /api/social/search
+// swagger:route GET /api/social/search search
+// Returns a list of users by name.
+//
+//	Consumes:
+//	- application/json
+//
+//	Produces:
+//	- application/json
+//
+//	Scheme: http
+//
+//
+//	Parameters:
+//	+ name: q
+//	  in: query
+//	  description: search query
+//	  required: true
+//	  type: string
+//
+//	Responses:
+//	200: searchUserOkResponse
+//	500: searchUserInternalServerErrorResponse
 func (e Endpoints) SearchUser(w http.ResponseWriter, r *http.Request) {
 	respBody := models.SearchUserResponse{}
 
