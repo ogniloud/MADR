@@ -268,6 +268,13 @@ func (e Endpoints) DeepCopyDeck(w http.ResponseWriter, r *http.Request) {
 func (e Endpoints) SearchUser(w http.ResponseWriter, r *http.Request) {
 	respBody := models.SearchUserResponse{}
 
+	err := r.ParseForm()
+	if err != nil {
+		e.logger.Errorf("parse form error: %v", err)
+		e.ew.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
 	name := r.Form.Get("q")
 
 	users, err := e.s.GetUsersByName(r.Context(), name)
