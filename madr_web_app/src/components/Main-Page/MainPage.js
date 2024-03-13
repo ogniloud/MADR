@@ -6,7 +6,6 @@ import { jwtDecode } from 'jwt-decode';
 import './Styles/MainPage.css';
 import defaultProfilePicture from './imgs/default-profile-picture.png';
 import closeIcon from './imgs/close-circle.png';
-import searchIcon from './imgs/magnifying-glass--glass-search-magnifying.png'
 
 const MainPage = () => {
     const [userInfo, setUserInfo] = useState(null);
