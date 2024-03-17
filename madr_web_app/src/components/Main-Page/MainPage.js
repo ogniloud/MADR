@@ -206,13 +206,16 @@ const MainPage = () => {
                                         {/* Dropdown content here */}
                                     </div>
                                 </div>
+
                             </div>
+
+                            <button className="popup-logout-button" onClick={handleLogout}>
+                                Logout
+                            </button>
                         </div>
                     )}
                 </div>
-                <button className="logout-button" onClick={handleLogout}>
-                    Logout
-                </button>
+
             </nav>
 
             {searchClicked && (

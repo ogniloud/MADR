@@ -16,25 +16,6 @@
     color: white;
 }
 
-.logout-button {
-    position: absolute;
-    right: 20px; /* Adjust the distance from the left edge */
-    top: -138.5px; /* Adjust the distance from the top edge if needed */
-    background-color: #F57A4D;
-    color: #862323;
-    border: none;
-    padding: 10px 15px;
-    cursor: pointer;
-    border-radius: 5px;
-    font-size: 16px;
-    transition: background-color 0.3s ease-in-out;
-    width: 120px;
-    height: 40px;
-}
-
-.logout-button:hover {
-    background-color: #D45A35;
-}
 
 .upper-part {
     position: absolute;
@@ -136,6 +117,25 @@
     top:100px;
 }
 
+
+.popup-logout-button{
+    background: none;
+    font-family: "Google Sans", "sans-serif";
+    font-size: 15px;
+    border: 2px solid white;
+    border-radius: 10px;
+    position: relative;
+    height: 40px;
+    width: 120px;
+    top:260px;
+
+}
+
+.popup-logout-button:hover{
+    background: transparent;
+    border: 2px solid black;
+
+}
 
 .follower-button-user-details{
     position: absolute;
