@@ -125,7 +125,7 @@ func (d *Storage) GetGroupByGroupId(ctx context.Context, id models.GroupId) (mod
 }
 
 func (d *Storage) GetDecksByGroupId(ctx context.Context, id models.GroupId) ([]cardmodels.DeckConfig, error) {
-	rows, err := d.Conn.Query(ctx, `SELECT (dc.deck_id, user_id, name) FROM group_decks
+	rows, err := d.Conn.Query(ctx, `SELECT dc.deck_id, user_id, name FROM group_decks
                  JOIN deck_config dc on dc.deck_id = group_decks.deck_id
                  WHERE group_id = $1`, id)
 	if err != nil {
@@ -343,7 +343,7 @@ WHERE f.deck_id = $2`, id, deckId)
 }
 
 func (d *Storage) GetFollowersByUserId(ctx context.Context, id models.UserId) ([]usermodels.UserInfo, error) {
-	rows, err := d.Conn.Query(ctx, `SELECT (follower_id, user_credentials.username, user_credentials.email) FROM followers 
+	rows, err := d.Conn.Query(ctx, `SELECT follower_id, user_credentials.username, user_credentials.email FROM followers 
     JOIN user_credentials ON followers.follower_id = user_credentials.user_id 
                    WHERE followers.user_id=$1`, id)
 	if err != nil {
@@ -370,7 +370,7 @@ func (d *Storage) GetFollowersByUserId(ctx context.Context, id models.UserId) ([
 }
 
 func (d *Storage) GetFollowingsByUserId(ctx context.Context, id models.UserId) ([]usermodels.UserInfo, error) {
-	rows, err := d.Conn.Query(ctx, `SELECT (followers.user_id, user_credentials.username, user_credentials.email) FROM followers 
+	rows, err := d.Conn.Query(ctx, `SELECT followers.user_id, user_credentials.username, user_credentials.email FROM followers 
     JOIN user_credentials ON followers.user_id = user_credentials.user_id 
                    WHERE followers.follower_id=$1`, id)
 	if err != nil {

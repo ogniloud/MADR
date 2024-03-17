@@ -20,10 +20,11 @@ type Endpoints struct {
 	s      IService
 }
 
-func New(s IService, ew ioutil.ErrorWriter) Endpoints {
+func New(s IService, ew ioutil.ErrorWriter, logger *log.Logger) Endpoints {
 	return Endpoints{
-		ew: ew,
-		s:  s,
+		ew:     ew,
+		s:      s,
+		logger: logger,
 	}
 }
 
