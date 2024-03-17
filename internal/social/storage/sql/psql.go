@@ -23,7 +23,7 @@ type Storage struct {
 }
 
 func (d *Storage) GetCreatedGroupsByUserId(ctx context.Context, id models.UserId) ([]models.GroupConfig, error) {
-	rows, err := d.Conn.Query(ctx, `SELECT * FROM groups WHERE creator_id=$1`, id)
+	rows, err := d.Conn.Query(ctx, `SELECT group_id, creator_id, name, time_created FROM groups WHERE creator_id=$1`, id)
 	if err != nil {
 		return nil, err
 	}
@@ -50,7 +50,7 @@ func (d *Storage) GetCreatedGroupsByUserId(ctx context.Context, id models.UserId
 
 func (d *Storage) GetGroupsByUserId(ctx context.Context, id models.UserId) ([]models.GroupConfig, error) {
 	rows, err := d.Conn.Query(ctx, `
-	SELECT *
+	SELECT group_id, creator_id, name, time_created
 	FROM groups
 	WHERE group_id in (
 		SELECT group_id
@@ -83,7 +83,7 @@ func (d *Storage) GetGroupsByUserId(ctx context.Context, id models.UserId) ([]mo
 
 func (d *Storage) GetUsersByGroupId(ctx context.Context, id models.GroupId) (models.Members, error) {
 	rows, err := d.Conn.Query(ctx, `
-	SELECT *
+	SELECT user_id, time_joined
 	FROM group_members
 	WHERE group_id=$1`, id)
 	if err != nil {
@@ -110,7 +110,7 @@ func (d *Storage) GetUsersByGroupId(ctx context.Context, id models.GroupId) (mod
 
 func (d *Storage) GetGroupByGroupId(ctx context.Context, id models.GroupId) (models.GroupConfig, error) {
 	row := d.Conn.QueryRow(ctx, `
-	SELECT *
+	SELECT group_id, creator_id, name, time_created
 	FROM groups
 	WHERE group_id=$1`, id)
 
@@ -133,22 +133,25 @@ func (d *Storage) GetDecksByGroupId(ctx context.Context, id models.GroupId) ([]c
 	}
 	defer rows.Close()
 
-	vals, err := rows.Values()
+	dcs := make([]cardmodels.DeckConfig, 0)
+	var dc cardmodels.DeckConfig
+	_, err = pgx.ForEachRow(rows, []any{&dc.DeckId, &dc.UserId, &dc.Name}, func() error {
+		dcs = append(dcs, dc)
+		return nil
+	})
 	if err != nil {
 		return nil, fmt.Errorf("group deck rows read fail: %w", err)
 	}
 
-	ids := make([]cardmodels.DeckConfig, len(vals))
-	for k, v := range vals {
-		ids[k], _ = v.(cardmodels.DeckConfig)
-	}
+	dcs1 := make([]cardmodels.DeckConfig, len(dcs))
+	copy(dcs1, dcs)
 
-	return ids, nil
+	return dcs1, nil
 }
 
 func (d *Storage) GetInvitesByGroupId(ctx context.Context, id models.GroupId) (map[models.UserId]models.InviteInfo, error) {
 	rows, err := d.Conn.Query(ctx, `
-	SELECT *
+	SELECT group_id, invite_id, time_sent
 	FROM group_invites
 	WHERE group_id=$1`, id)
 	if err != nil {
@@ -175,7 +178,7 @@ func (d *Storage) GetInvitesByGroupId(ctx context.Context, id models.GroupId) (m
 
 func (d *Storage) GetInvitesByUserId(ctx context.Context, id models.UserId) (map[models.GroupId]models.InviteInfo, error) {
 	rows, err := d.Conn.Query(ctx, `
-	SELECT *
+	SELECT group_id, invite_id, time_sent
 	FROM group_invites
 	WHERE user_id=$1`, id)
 	if err != nil {
@@ -210,11 +213,13 @@ func (d *Storage) CreateGroup(ctx context.Context, id models.UserId, name string
 
 	err := row.Scan(&id)
 	if err != nil {
+		d.Conn.Logger().Errorf("create group failed: %v", err)
 		return 0, fmt.Errorf("psql error: %w", err)
 	}
 
 	err = d.addMember(ctx, id, groupId)
 	if err != nil {
+		d.Conn.Logger().Errorf("add member failed: %v", err)
 		return 0, err
 	}
 
@@ -261,7 +266,7 @@ func (d *Storage) SendInvite(ctx context.Context, creatorId models.UserId, invit
 	}
 
 	row := d.Conn.QueryRow(ctx,
-		`INSERT INTO group_invites VALUES ($1, $2, now()) RETURNING group_id`, groupId, invitee)
+		`INSERT INTO group_invites (group_id, user_id, time_sent) VALUES ($1, $2, now()) RETURNING group_id`, groupId, invitee)
 	return row.Scan(&groupId)
 }
 
@@ -398,7 +403,7 @@ func (d *Storage) GetFollowingsByUserId(ctx context.Context, id models.UserId) (
 
 func (d *Storage) addMember(ctx context.Context, id models.UserId, groupId models.GroupId) error {
 	row := d.Conn.QueryRow(ctx,
-		`INSERT INTO group_members VALUES ($1, $2, now()) RETURNING group_id`, groupId, id)
+		`INSERT INTO group_members (group_id, user_id, time_joined) VALUES ($1, $2, now()) RETURNING group_id`, groupId, id)
 
 	err := row.Scan(&groupId)
 	if err != nil {
