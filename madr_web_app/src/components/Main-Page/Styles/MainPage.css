@@ -222,31 +222,55 @@
 }
 
 
-.popup-search-container{
-    font-family: "Google Sans", sans-serif ;
+.main-page-search-container {
+    font-family: "Google Sans", sans-serif;
     position: absolute;
-    top:410px;
-    height: 120px;
-    width: 600px;
-
-
+    top: 25px;
+    left: 720px;
+    height: 30px;
+    width: 500px;
+    background: transparent;
 }
 
-
-
-.popup-search-btn{
-    background: black;
+.main-page-search-btn {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
     color: white;
-    font-family: "Google Sans",sans-serif;
-    position: absolute;
-    height: 50px;
+    font-family: "Google Sans", sans-serif;
+    height: 35px;
     width: 140px;
-    left: 230px;
-    bottom:30px;
-
-
+    left: 530px;
+    bottom: 95px;
+    border: 2px solid white;
+    background: transparent;
 }
 
+.main-page-search-btn:hover{
+    background: black;
+    border: 2px solid black;
+    color: white;
+}
+
+.main-page-search-results {
+    position: relative;
+    justify-content: center;
+    align-items: left;
+    display: flex;
+    flex-direction: column;
+    padding: 15px;
+    top: 62px;
+    left: 32px;
+    background-color: #FFD708;
+    border-radius: 5px;
+    color: white;
+    z-index: 10000;
+    height: auto; /* Set height to auto */
+    max-height: 160px; /* Set maximum height */
+    width: 500px;
+    overflow-y: auto; /* Enable vertical scrolling */
+}
 
 
 .popup-content-user-details ul {
