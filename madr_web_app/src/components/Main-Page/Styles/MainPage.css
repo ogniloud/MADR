@@ -16,25 +16,6 @@
     color: white;
 }
 
-.logout-button {
-    position: absolute;
-    right: 20px; /* Adjust the distance from the left edge */
-    top: -138.5px; /* Adjust the distance from the top edge if needed */
-    background-color: #F57A4D;
-    color: #862323;
-    border: none;
-    padding: 10px 15px;
-    cursor: pointer;
-    border-radius: 5px;
-    font-size: 16px;
-    transition: background-color 0.3s ease-in-out;
-    width: 120px;
-    height: 40px;
-}
-
-.logout-button:hover {
-    background-color: #D45A35;
-}
 
 .upper-part {
     position: absolute;
@@ -137,6 +118,25 @@
 }
 
 
+.popup-logout-button{
+    background: none;
+    font-family: "Google Sans", "sans-serif";
+    font-size: 15px;
+    border: 2px solid white;
+    border-radius: 10px;
+    position: relative;
+    height: 40px;
+    width: 120px;
+    top:260px;
+
+}
+
+.popup-logout-button:hover{
+    background: transparent;
+    border: 2px solid black;
+
+}
+
 .follower-button-user-details{
     position: absolute;
     top: 150px;
@@ -222,32 +222,78 @@
 }
 
 
-.popup-search-container{
-    font-family: "Google Sans", sans-serif ;
+.main-page-search-container {
+    font-family: "Google Sans", sans-serif;
     position: absolute;
-    top:410px;
-    height: 120px;
-    width: 600px;
-
-
+    top: 25px;
+    left: 720px;
+    height: 30px;
+    width: 500px;
+    background: transparent;
 }
 
-
-
-.popup-search-btn{
-    background: black;
+.main-page-search-btn {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
     color: white;
-    font-family: "Google Sans",sans-serif;
-    position: absolute;
-    height: 50px;
+    font-family: "Google Sans", sans-serif;
+    height: 35px;
     width: 140px;
-    left: 230px;
-    bottom:30px;
+    left: 530px;
+    bottom: 95px;
+    border: 2px solid white;
+    background: transparent;
+}
+
+.main-page-search-btn:hover{
+    background: black;
+    border: 2px solid black;
+    color: white;
+}
+
+.main-page-search-results {
+    position: relative;
+    flex-direction: column;
+    padding: 50px;
+    top: 62px;
+    left: 140px;
+    background-color: #FFD708;
+    border-radius: 5px;
+    color: white;
+    z-index: 10000;
+    height: auto;
+    max-height: 160px;
+    width: 500px;
+    overflow-y: auto;
+}
+
+.main-page-search-results ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+
+.main-page-follow-unfollow-button{
+    background: none;
+    font-family: "Google Sans", "sans-serif";
+    font-size: 15px;
+    border: 2px solid white;
+    border-radius: 10px;
+    position: relative;
+    bottom: 30px;
 
 
 }
 
 
+
+.main-page-follow-unfollow-button:hover{
+    background: black;
+    border: 2px solid black;
+    color: white;
+}
 
 .popup-content-user-details ul {
     list-style: none;
