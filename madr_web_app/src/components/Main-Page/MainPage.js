@@ -32,11 +32,11 @@ const MainPage = () => {
                             'Authorization': `Bearer ${token}`,
                             'Content-Type': 'application/json'
                         },
-                        body: JSON.stringify({ userId: decodedToken.userId })
+                        body: JSON.stringify({ user_id: decodedToken.user_id })
                     });
 
                     const dataFollowers = await responseFollowers.json();
-                    setFollowers(dataFollowers.followers || []);
+                    setFollowers(dataFollowers.user_info || []);
 
                     const responseFollowings = await fetch('http://localhost:8080/api/social/followings', {
                         method: 'POST',
@@ -44,11 +44,11 @@ const MainPage = () => {
                             'Authorization': `Bearer ${token}`,
                             'Content-Type': 'application/json'
                         },
-                        body: JSON.stringify({ userId: decodedToken.userId })
+                        body: JSON.stringify({ user_id: decodedToken.user_id })
                     });
 
                     const dataFollowings = await responseFollowings.json();
-                    setFollowings(dataFollowings.followings || []);
+                    setFollowings(dataFollowings.user_info || []);
                 } catch (error) {
                     console.error('Error fetching user data:', error);
                 }
