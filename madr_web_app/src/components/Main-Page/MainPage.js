@@ -223,7 +223,7 @@ const MainPage = () => {
                                 <li key={index}>
                                     <p>Username: {user.Username}</p>
                                     <p>Email: {user.Email}</p>
-                                    <button onClick={() => handleFollow(user)}>
+                                    <button className="main-page-follow-unfollow-button" onClick={() => handleFollow(user)}>
                                         {followings.some((following) => following.userId === user.userId)
                                             ? 'Unfollow'
                                             : 'Follow'}

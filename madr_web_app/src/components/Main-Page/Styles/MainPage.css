@@ -255,23 +255,45 @@
 
 .main-page-search-results {
     position: relative;
-    justify-content: center;
-    align-items: left;
-    display: flex;
     flex-direction: column;
-    padding: 15px;
+    padding: 50px;
     top: 62px;
-    left: 32px;
+    left: 140px;
     background-color: #FFD708;
     border-radius: 5px;
     color: white;
     z-index: 10000;
-    height: auto; /* Set height to auto */
-    max-height: 160px; /* Set maximum height */
+    height: auto;
+    max-height: 160px;
     width: 500px;
-    overflow-y: auto; /* Enable vertical scrolling */
+    overflow-y: auto;
 }
 
+.main-page-search-results ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+
+.main-page-follow-unfollow-button{
+    background: none;
+    font-family: "Google Sans", "sans-serif";
+    font-size: 15px;
+    border: 2px solid white;
+    border-radius: 10px;
+    position: relative;
+    bottom: 30px;
+
+
+}
+
+
+
+.main-page-follow-unfollow-button:hover{
+    background: black;
+    border: 2px solid black;
+    color: white;
+}
 
 .popup-content-user-details ul {
     list-style: none;
