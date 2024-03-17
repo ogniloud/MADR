@@ -133,17 +133,20 @@ func (d *Storage) GetDecksByGroupId(ctx context.Context, id models.GroupId) ([]c
 	}
 	defer rows.Close()
 
-	vals, err := rows.Values()
+	dcs := make([]cardmodels.DeckConfig, 0)
+	var dc cardmodels.DeckConfig
+	_, err = pgx.ForEachRow(rows, []any{&dc.DeckId, &dc.UserId, &dc.Name}, func() error {
+		dcs = append(dcs, dc)
+		return nil
+	})
 	if err != nil {
 		return nil, fmt.Errorf("group deck rows read fail: %w", err)
 	}
 
-	ids := make([]cardmodels.DeckConfig, len(vals))
-	for k, v := range vals {
-		ids[k], _ = v.(cardmodels.DeckConfig)
-	}
+	dcs1 := make([]cardmodels.DeckConfig, len(dcs))
+	copy(dcs1, dcs)
 
-	return ids, nil
+	return dcs1, nil
 }
 
 func (d *Storage) GetInvitesByGroupId(ctx context.Context, id models.GroupId) (map[models.UserId]models.InviteInfo, error) {
