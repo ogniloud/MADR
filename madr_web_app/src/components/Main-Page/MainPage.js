@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useRef } from 'react';
 import { Link, Route, Routes, useNavigate } from 'react-router-dom';
 import Feed from './Feeds/FeedsPage';
@@ -159,9 +158,6 @@ const MainPage = () => {
 
 
 
-
-
-
     return (
         <div className="main-page">
             <nav className="upper-part">
@@ -229,7 +225,7 @@ const MainPage = () => {
                                     <p>Email: {user.Email}</p>
                                     <button onClick={() => handleFollow(user)}>
                                         {followings.some((following) => following.userId === user.userId)
-                                            ? 'Following'
+                                            ? 'Unfollow'
                                             : 'Follow'}
                                     </button>
                                 </li>
