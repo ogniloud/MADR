@@ -144,7 +144,7 @@ func main() {
 	deckEndpoints := deck.New(deckService, ioutil.JSONErrorWriter{Logger: l}, l)
 	exerciseEndpoints := study.New(deckService, studyService, ioutil.JSONErrorWriter{Logger: l}, l)
 
-	socialEndpoints := handlers2.New(socialStorage, ioutil.JSONErrorWriter{Logger: l})
+	socialEndpoints := handlers2.New(socialStorage, ioutil.JSONErrorWriter{Logger: l}, l)
 
 	// Set up routes
 	r.Route("/api", func(r chi.Router) {
