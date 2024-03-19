@@ -422,3 +422,11 @@ type UserInfo struct {
 	Username string
 	Email    string
 }
+
+type FeedRequest struct {
+	UserId UserId `json:"user_id"`
+}
+
+type FeedResponse struct {
+	Feed []Post `json:"feed"`
+}
