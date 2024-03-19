@@ -151,3 +151,12 @@ CREATE TABLE IF NOT EXISTS followers (
 --  Колоды групповые удалять нельзя (если не создатель).
 --  Если человек, удаляющий колоду, создатель... ЗАВЕРШИТЬ.
 
+CREATE TABLE IF NOT EXISTS feed (
+    user_id INT,
+    data TEXT,
+    timestamp TIMESTAMP,
+
+    FOREIGN KEY (user_id) REFERENCES user_credentials(user_id)
+);
+
+CREATE INDEX feed_user_id_index ON feed (user_id);

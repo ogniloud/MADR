@@ -68,4 +68,6 @@ type Storage interface {
 	ChangeGroupName(ctx context.Context, creatorId models.UserId, groupId models.GroupId, name string) error
 
 	GetUsersByName(ctx context.Context, name string) ([]usermodels.UserInfo, error)
+
+	Feed(ctx context.Context, userId models.UserId, page int) (data []models.Post, err error)
 }

@@ -2,8 +2,10 @@ package sql
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"fmt"
+	"time"
 
 	"github.com/jackc/pgx/v5"
 
@@ -267,7 +269,30 @@ func (d *Storage) SendInvite(ctx context.Context, creatorId models.UserId, invit
 
 	row := d.Conn.QueryRow(ctx,
 		`INSERT INTO group_invites (group_id, user_id, time_sent) VALUES ($1, $2, now()) RETURNING group_id`, groupId, invitee)
-	return row.Scan(&groupId)
+	if err := row.Scan(&groupId); err != nil {
+		return fmt.Errorf("send invite error: %w", err)
+	}
+
+	go func() {
+		data := &models.Post{
+			Type: models.Invite,
+			Data: models.InviteData{
+				InviteeId:   invitee,
+				InviteeName: "TEST_NAME_INVITEE",
+				GroupId:     groupId,
+				GroupName:   "TEST_NAME_GROUP",
+			},
+		}
+
+		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+		defer cancel()
+
+		if err := d.saveToFeed(ctx, invitee, data); err != nil {
+			d.Conn.Logger().Errorf("invite: %v", err)
+		}
+	}()
+
+	return nil
 }
 
 func (d *Storage) ShareAllGroupDecks(ctx context.Context, id models.UserId, groupId models.GroupId) error {
@@ -414,7 +439,8 @@ func (d *Storage) addMember(ctx context.Context, id models.UserId, groupId model
 }
 
 func (d *Storage) Follow(ctx context.Context, follower models.UserId, author models.UserId) error {
-	_, err := d.Conn.Exec(ctx, `INSERT INTO followers VALUES ($1, $2, now())`, author, follower)
+	_, err := d.Conn.Exec(ctx, `INSERT INTO followers (user_id, follower_id, time_followed) VALUES
+                                                                ($1, $2, now())`, author, follower)
 	if err != nil {
 		d.Conn.Logger().Errorf("follow error: %v", err)
 		return fmt.Errorf("follow error: %w", err)
@@ -563,4 +589,53 @@ func (d *Storage) GetUsersByName(ctx context.Context, name string) ([]usermodels
 	}
 
 	return u, nil
+}
+
+func (d *Storage) Feed(ctx context.Context, userId models.UserId, page int) (data []models.Post, err error) {
+	rows, err := d.Conn.Query(ctx, `SELECT data FROM feed 
+            WHERE user_id = $1 OFFSET $2*50 LIMIT 50`, userId, page)
+	if err != nil {
+		return nil, fmt.Errorf("get feed error: %w", err)
+	}
+
+	var entity string
+	_, err = pgx.ForEachRow(rows, []any{&entity}, func() error {
+		p := models.Post{}
+		err := json.Unmarshal([]byte(entity), &p)
+
+		if err != nil {
+			d.Conn.Logger().Errorf("json broken: %+v, err: %+v", entity, err)
+			return nil
+		}
+
+		data = append(data, p)
+
+		return nil
+	})
+	if err != nil {
+		return nil, fmt.Errorf("")
+	}
+
+	data1 := make([]models.Post, len(data))
+	copy(data1, data)
+
+	return data1, nil
+}
+
+func (d *Storage) saveToFeed(ctx context.Context, userId models.UserId, posts ...*models.Post) error {
+	t := time.Now().UTC()
+
+	n, err := d.Conn.CopyFrom(ctx, pgx.Identifier{"feed"}, []string{"user_id", "data", "timestamp"},
+		pgx.CopyFromSlice(len(posts), func(i int) ([]any, error) {
+			b, _ := json.Marshal(posts[i])
+			return []any{userId, string(b), t}, nil
+		}))
+
+	if err != nil {
+		return fmt.Errorf("save to feed fail: %w", err)
+	}
+
+	d.Conn.Logger().Debugf("added %d rows to feed", n)
+
+	return nil
 }

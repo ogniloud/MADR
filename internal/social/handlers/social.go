@@ -295,3 +295,28 @@ func (e Endpoints) SearchUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 }
+
+func (e Endpoints) Feed(w http.ResponseWriter, r *http.Request) {
+	reqBody := models.FeedRequest{}
+	respBody := models.FeedResponse{}
+
+	if err := ioutil.FromJSON(&reqBody, r.Body); err != nil {
+		e.logger.Errorf("json not parsed: %v", err)
+		e.ew.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	feed, err := e.s.Feed(r.Context(), reqBody.UserId, 0)
+	if err != nil {
+		e.logger.Errorf("reqBody: %+v, error: %v", reqBody, err)
+		e.ew.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	respBody.Feed = feed
+	if err := ioutil.ToJSON(respBody, w); err != nil {
+		e.logger.Errorf("To json error: %v", err)
+		e.ew.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+}
