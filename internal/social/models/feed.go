@@ -114,8 +114,8 @@ func (d SharedFromFollowingData) Type() FeedPostType {
 }
 
 type FollowingSubscribedData struct {
-	FollowerId   UserId `json:"following_id"`
-	FollowerName string `json:"following_name"`
+	FollowerId   UserId `json:"follower_id"`
+	FollowerName string `json:"follower_name"`
 	AuthorId     UserId `json:"author_id"`
 	AuthorName   string `json:"author_name"`
 }

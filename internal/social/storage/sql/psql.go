@@ -446,6 +446,69 @@ func (d *Storage) Follow(ctx context.Context, follower models.UserId, author mod
 		return fmt.Errorf("follow error: %w", err)
 	}
 
+	go func() {
+		ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+		defer cancel()
+
+		rows, err := d.Conn.Query(ctx, `SELECT follower_id FROM followers WHERE user_id=$1`, follower)
+		if err != nil {
+			d.Conn.Logger().Errorf("feed: select followers err: %v", err)
+			return
+		}
+		defer rows.Close()
+
+		followers, err := pgx.CollectRows(rows, func(row pgx.CollectableRow) (models.UserId, error) {
+			var u models.UserId
+			err := row.Scan(&u)
+			return u, err
+		})
+		if err != nil {
+			d.Conn.Logger().Errorf("collect followers err: %v", err)
+			return
+		}
+
+		names, err := d.Conn.Query(ctx, `SELECT user_id, username FROM user_credentials WHERE 
+                                      user_id=$1 OR user_id=$2`, follower, author)
+		if err != nil {
+			d.Conn.Logger().Errorf("feed: select followers err: %v", err)
+			return
+		}
+		defer names.Close()
+
+		m := make(map[models.UserId]string, 2)
+		var u models.UserId
+		var un string
+		_, err = pgx.ForEachRow(names, []any{&u, &un}, func() error {
+			m[u] = un
+			return nil
+		})
+		if err != nil {
+			d.Conn.Logger().Errorf("names collect failed err: %v", err)
+			return
+		}
+
+		data := models.FollowingSubscribedData{
+			FollowerId:   follower,
+			FollowerName: m[follower],
+			AuthorId:     author,
+			AuthorName:   m[author],
+		}
+		b, _ := json.Marshal(&data)
+		s := string(b)
+		t := time.Now()
+		_, err = d.Conn.CopyFrom(ctx,
+			pgx.Identifier{"feed"},
+			[]string{"user_id", "data", "timestamp"},
+			pgx.CopyFromSlice(len(followers), func(i int) ([]any, error) {
+				return []any{followers[i], s, t}, nil
+			}),
+		)
+		if err != nil {
+			d.Conn.Logger().Errorf("copy to feed failed: %v", err)
+			return
+		}
+	}()
+
 	return nil
 }
 
