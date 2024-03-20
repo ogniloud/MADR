@@ -94,7 +94,28 @@ func (e Endpoints) SearchGroupByName(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-// CreateGroup PUT /api/groups/create
+// swagger:route PUT /api/groups/create groups createGroup
+// Create a new group
+//
+// Consumes:
+// - application/json
+//
+// Produces:
+// - application/json
+//
+// Schemes: http
+//
+// Parameters:
+//
+//   - name: request
+//     in: body
+//     required: true
+//     type: createGroupRequest
+//
+//     Responses:
+//     200: createGroupOkResponse
+//     400: createGroupBadRequestResponse
+//     500: createGroupInternalServerErrorResponse
 func (e Endpoints) CreateGroup(w http.ResponseWriter, r *http.Request) {
 	reqBody := models.CreateGroupRequest{}
 	respBody := models.CreateGroupResponse{}

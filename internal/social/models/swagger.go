@@ -95,3 +95,24 @@ type SwaggerSearchUserInternalServerErrorResponse struct {
 	// in: body
 	Body ioutil.GenericError
 }
+
+// swagger:response createGroupOkResponse
+// SwaggerCreateGroupOkResponse is a struct that defines the response body for the CreateGroup endpoint.
+type SwaggerCreateGroupOkResponse struct {
+	// in: body
+	Body CreateGroupResponse
+}
+
+// swagger:response createGroupBadRequestResponse
+// SwaggerCreateGroupBadRequestResponse is a struct that defines the response body for the CreateGroup endpoint.
+type SwaggerCreateGroupBadRequestResponse struct {
+	// in: body
+	Body ioutil.GenericError
+}
+
+// swagger:response createGroupInternalServerErrorResponse
+// SwaggerCreateGroupInternalServerErrorResponse is a struct that defines the response body for the CreateGroup endpoint.
+type SwaggerCreateGroupInternalServerErrorResponse struct {
+	// in: body
+	Body ioutil.GenericError
+}
