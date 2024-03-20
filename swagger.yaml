@@ -20,6 +20,21 @@ definitions:
         title: BacksideType tells how to imagine a value of Backside.
         type: integer
         x-go-package: github.com/ogniloud/madr/internal/flashcards/models
+    CreateGroupResponse:
+        description: |-
+            CreateGroupResponse is a struct that defines the request body for
+            creating a new group.
+        properties:
+            group_id:
+                description: GroupId is an ID of a group in the storage.
+                example: 189
+                format: int64
+                type: integer
+                x-go-name: GroupId
+        required:
+            - group_id
+        type: object
+        x-go-package: github.com/ogniloud/madr/internal/social/models
     DeckConfig:
         description: DeckId is not a primary key, for each user a configuration can be different.
         properties:
@@ -1231,6 +1246,30 @@ paths:
             schemes:
                 - http
             summary: Creates a new deck with flashcards.
+    /api/groups/create:
+        put:
+            consumes:
+                - application/json
+            operationId: CreateGroup
+            parameters:
+                - in: body
+                  name: request
+                  required: true
+                  schema:
+                    $ref: '#/definitions/createGroupRequest'
+                    type: object
+            produces:
+                - application/json
+            responses:
+                "200":
+                    $ref: '#/responses/createGroupOkResponse'
+                "400":
+                    $ref: '#/responses/createGroupBadRequestResponse'
+                "500":
+                    $ref: '#/responses/createGroupInternalServerErrorResponse'
+            schemes:
+                - http
+            summary: Create a new group.
     /api/signin:
         post:
             consumes:
@@ -1679,6 +1718,18 @@ responses:
         description: ""
         schema:
             $ref: '#/definitions/GenericError'
+    createGroupBadRequestResponse:
+        description: ""
+        schema:
+            $ref: '#/definitions/GenericError'
+    createGroupInternalServerErrorResponse:
+        description: ""
+        schema:
+            $ref: '#/definitions/GenericError'
+    createGroupOkResponse:
+        description: ""
+        schema:
+            $ref: '#/definitions/CreateGroupResponse'
     deleteDeckBadRequestError:
         description: ""
         schema:
