@@ -39,18 +39,26 @@ definitions:
         description: DeckId is not a primary key, for each user a configuration can be different.
         properties:
             deck_id:
+                description: DeckId is a unique identifier of the deck.
+                example: 1
                 format: int64
                 type: integer
                 x-go-name: DeckId
             name:
                 description: Name is a name of the deck which the user assigned to it.
+                example: Bangladesh famous words
                 type: string
                 x-go-name: Name
             user_id:
                 description: UserId means that a user with UserId has the deck with id DeckId.
+                example: 12
                 format: int64
                 type: integer
                 x-go-name: UserId
+        required:
+            - deck_id
+            - user_id
+            - name
         title: DeckConfig contains information about a particular deck.
         type: object
         x-go-package: github.com/ogniloud/madr/internal/flashcards/models
@@ -108,6 +116,21 @@ definitions:
         title: GenericError is a generic error message returned by a server.
         type: object
         x-go-package: github.com/ogniloud/madr/internal/ioutil
+    GetDecksByGroupIdResponse:
+        description: |-
+            GetDecksByGroupIdResponse is a struct that defines the request body for
+            loading decks of a group.
+        properties:
+            decks:
+                description: Decks is a list of decks.
+                items:
+                    $ref: '#/definitions/DeckConfig'
+                type: array
+                x-go-name: Decks
+        required:
+            - decks
+        type: object
+        x-go-package: github.com/ogniloud/madr/internal/social/models
     GetFlashcardByIdResponse:
         properties:
             flashcard:
@@ -1274,6 +1297,30 @@ paths:
             schemes:
                 - http
             summary: Creates a new deck with flashcards.
+    /api/group/decks:
+        post:
+            consumes:
+                - application/json
+            operationId: GetDecksByGroupId
+            parameters:
+                - in: body
+                  name: request
+                  required: true
+                  schema:
+                    $ref: '#/definitions/getDecksByGroupIdRequest'
+                    type: object
+            produces:
+                - application/json
+            responses:
+                "200":
+                    $ref: '#/responses/getDecksByGroupIdOkResponse'
+                "400":
+                    $ref: '#/responses/getDecksByGroupIdBadRequestResponse'
+                "500":
+                    $ref: '#/responses/getDecksByGroupIdInternalServerErrorResponse'
+            schemes:
+                - http
+            summary: Get decks by group id.
     /api/group/share:
         post:
             consumes:
@@ -1812,6 +1859,18 @@ responses:
             $ref: '#/definitions/GenericError'
     followNoContentResponse:
         description: ""
+    getDecksByGroupIdBadRequestResponse:
+        description: ""
+        schema:
+            $ref: '#/definitions/GenericError'
+    getDecksByGroupIdInternalServerErrorResponse:
+        description: ""
+        schema:
+            $ref: '#/definitions/GenericError'
+    getDecksByGroupIdOkResponse:
+        description: ""
+        schema:
+            $ref: '#/definitions/GetDecksByGroupIdResponse'
     getFlashcardByIdBadRequestError:
         description: ""
         schema:

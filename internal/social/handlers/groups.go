@@ -48,7 +48,28 @@ func (e Endpoints) ShareGroupDeck(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNoContent)
 }
 
-// GetDecksByGroupId /api/group/decks
+// swagger:route POST /api/group/decks GetDecksByGroupId
+// Get decks by group id.
+//
+//	Consumes:
+//	- application/json
+//
+//	Produces:
+//	- application/json
+//
+//	Schemes: http
+//
+//
+//	Parameters:
+//	+ name: request
+//	  in: body
+//	  required: true
+//	  type: getDecksByGroupIdRequest
+//
+//	Responses:
+//	200: getDecksByGroupIdOkResponse
+//	400: getDecksByGroupIdBadRequestResponse
+//	500: getDecksByGroupIdInternalServerErrorResponse
 func (e Endpoints) GetDecksByGroupId(w http.ResponseWriter, r *http.Request) {
 	reqBody := models.GetDecksByGroupIdRequest{}
 	respBody := models.GetDecksByGroupIdResponse{}
