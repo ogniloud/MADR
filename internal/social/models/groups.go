@@ -15,15 +15,28 @@ type (
 
 // GroupConfig contains information about a particular group.
 type GroupConfig struct {
+	// GroupId is a unique identifier of the group.
+	//
+	// required: true
+	// example: 1
 	GroupId GroupId `json:"group_id"`
 
 	// CreatorId means that a user created the group and is authorized to share posts within it.
+	//
+	// required: true
+	// example: 12
 	CreatorId UserId `json:"creator_id"`
 
 	// Name is a name of the group which the user assigned to it.
+	//
+	// required: true
+	// example: vodka lovers
 	Name string `json:"name"`
 
 	// Timestamp when the group was created
+	//
+	// required: true
+	// example: 2020-01-01T00:00:00Z
 	TimeCreated time.Time `json:"time_created"`
 }
 

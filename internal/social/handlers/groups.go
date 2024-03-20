@@ -7,7 +7,28 @@ import (
 	"github.com/ogniloud/madr/internal/social/models"
 )
 
-// ShareGroupDeck /api/group/share
+// swagger:route POST /api/group/share ShareGroupDeck
+// Share a deck with a group.
+//
+//	Consumes:
+//	- application/json
+//
+//	Produces:
+//	- application/json
+//
+//	Schemes: http
+//
+//
+//	Parameters:
+//	+ name: request
+//	  in: body
+//	  required: true
+//	  type: shareGroupDeckRequest
+//
+//	Responses:
+//	204: shareGroupDeckNoContentResponse
+//	400: shareGroupDeckBadRequestResponse
+//	500: shareGroupDeckInternalServerErrorResponse
 func (e Endpoints) ShareGroupDeck(w http.ResponseWriter, r *http.Request) {
 	reqBody := models.ShareGroupDeckRequest{}
 
@@ -27,7 +48,28 @@ func (e Endpoints) ShareGroupDeck(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNoContent)
 }
 
-// GetDecksByGroupId /api/group/decks
+// swagger:route POST /api/group/decks GetDecksByGroupId
+// Get decks by group id.
+//
+//	Consumes:
+//	- application/json
+//
+//	Produces:
+//	- application/json
+//
+//	Schemes: http
+//
+//
+//	Parameters:
+//	+ name: request
+//	  in: body
+//	  required: true
+//	  type: getDecksByGroupIdRequest
+//
+//	Responses:
+//	200: getDecksByGroupIdOkResponse
+//	400: getDecksByGroupIdBadRequestResponse
+//	500: getDecksByGroupIdInternalServerErrorResponse
 func (e Endpoints) GetDecksByGroupId(w http.ResponseWriter, r *http.Request) {
 	reqBody := models.GetDecksByGroupIdRequest{}
 	respBody := models.GetDecksByGroupIdResponse{}
@@ -94,7 +136,28 @@ func (e Endpoints) SearchGroupByName(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-// CreateGroup PUT /api/groups/create
+// swagger:route PUT /api/groups/create CreateGroup
+// Create a new group.
+//
+//	Consumes:
+//	- application/json
+//
+//	Produces:
+//	- application/json
+//
+//	Schemes: http
+//
+//
+//	Parameters:
+//	+ name: request
+//	  in: body
+//	  required: true
+//	  type: createGroupRequest
+//
+//	Responses:
+//	200: createGroupOkResponse
+//	400: createGroupBadRequestResponse
+//	500: createGroupInternalServerErrorResponse
 func (e Endpoints) CreateGroup(w http.ResponseWriter, r *http.Request) {
 	reqBody := models.CreateGroupRequest{}
 	respBody := models.CreateGroupResponse{}
@@ -120,7 +183,28 @@ func (e Endpoints) CreateGroup(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-// GetGroupsByUserId POST /api/groups
+// swagger:route POST /api/groups/groups GetGroupsByUserId
+// Get groups by user id.
+//
+//	Consumes:
+//	- application/json
+//
+//	Produces:
+//	- application/json
+//
+//	Schemes: http
+//
+//
+//	Parameters:
+//	+ name: request
+//	  in: body
+//	  required: true
+//	  type: getGroupsByUserIdRequest
+//
+//	Responses:
+//	200: getGroupsByUserIdOkResponse
+//	400: getGroupsByUserIdBadRequestResponse
+//	500: getGroupsByUserIdInternalServerErrorResponse
 func (e Endpoints) GetGroupsByUserId(w http.ResponseWriter, r *http.Request) {
 	reqBody := models.GetGroupsByUserIdRequest{}
 	respBody := models.GetGroupsByUserIdResponse{}

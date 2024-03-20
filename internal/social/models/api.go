@@ -373,10 +373,26 @@ type UnfollowRequest struct {
 type UnfollowResponse struct{}
 
 // ShareGroupDeckRequest contains values for sharing decks.
+//
+// swagger:model shareGroupDeckRequest
 type ShareGroupDeckRequest struct {
-	UserId  UserId  `json:"user_id"`
+	// UserId is an ID of the user in a storage.
+	//
+	// required: true
+	// example: 189
+	UserId UserId `json:"user_id"`
+
+	// GroupId is an ID of a group in the storage.
+	//
+	// required: true
+	// example: 222
 	GroupId GroupId `json:"group_id"`
-	DeckId  DeckId  `json:"deck_id"`
+
+	// DeckId is an ID of a deck in the storage.
+	//
+	// required: true
+	// example: 3
+	DeckId DeckId `json:"deck_id"`
 }
 
 type ShareGroupDeckResponse struct{}

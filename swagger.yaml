@@ -20,22 +20,45 @@ definitions:
         title: BacksideType tells how to imagine a value of Backside.
         type: integer
         x-go-package: github.com/ogniloud/madr/internal/flashcards/models
+    CreateGroupResponse:
+        description: |-
+            CreateGroupResponse is a struct that defines the request body for
+            creating a new group.
+        properties:
+            group_id:
+                description: GroupId is an ID of a group in the storage.
+                example: 189
+                format: int64
+                type: integer
+                x-go-name: GroupId
+        required:
+            - group_id
+        type: object
+        x-go-package: github.com/ogniloud/madr/internal/social/models
     DeckConfig:
         description: DeckId is not a primary key, for each user a configuration can be different.
         properties:
             deck_id:
+                description: DeckId is a unique identifier of the deck.
+                example: 1
                 format: int64
                 type: integer
                 x-go-name: DeckId
             name:
                 description: Name is a name of the deck which the user assigned to it.
+                example: Bangladesh famous words
                 type: string
                 x-go-name: Name
             user_id:
                 description: UserId means that a user with UserId has the deck with id DeckId.
+                example: 12
                 format: int64
                 type: integer
                 x-go-name: UserId
+        required:
+            - deck_id
+            - user_id
+            - name
         title: DeckConfig contains information about a particular deck.
         type: object
         x-go-package: github.com/ogniloud/madr/internal/flashcards/models
@@ -93,6 +116,21 @@ definitions:
         title: GenericError is a generic error message returned by a server.
         type: object
         x-go-package: github.com/ogniloud/madr/internal/ioutil
+    GetDecksByGroupIdResponse:
+        description: |-
+            GetDecksByGroupIdResponse is a struct that defines the request body for
+            loading decks of a group.
+        properties:
+            decks:
+                description: Decks is a list of decks.
+                items:
+                    $ref: '#/definitions/DeckConfig'
+                type: array
+                x-go-name: Decks
+        required:
+            - decks
+        type: object
+        x-go-package: github.com/ogniloud/madr/internal/social/models
     GetFlashcardByIdResponse:
         properties:
             flashcard:
@@ -120,6 +158,54 @@ definitions:
                 x-property-value: value
         type: object
         x-go-package: github.com/ogniloud/madr/internal/flashcards/models
+    GetGroupsByUserIdResponse:
+        description: |-
+            GetGroupsByUserIdResponse is a struct that defines the request body for
+            loading groups the user is a member of.
+        properties:
+            groups:
+                description: Groups is a map from group id to group config.
+                items:
+                    $ref: '#/definitions/GroupConfig'
+                type: array
+                x-go-name: Groups
+        required:
+            - groups
+        type: object
+        x-go-package: github.com/ogniloud/madr/internal/social/models
+    GroupConfig:
+        properties:
+            creator_id:
+                description: CreatorId means that a user created the group and is authorized to share posts within it.
+                example: 12
+                format: int64
+                type: integer
+                x-go-name: CreatorId
+            group_id:
+                description: GroupId is a unique identifier of the group.
+                example: 1
+                format: int64
+                type: integer
+                x-go-name: GroupId
+            name:
+                description: Name is a name of the group which the user assigned to it.
+                example: vodka lovers
+                type: string
+                x-go-name: Name
+            time_created:
+                description: Timestamp when the group was created
+                example: "2020-01-01T00:00:00Z"
+                format: date-time
+                type: string
+                x-go-name: TimeCreated
+        required:
+            - group_id
+            - creator_id
+            - name
+            - time_created
+        title: GroupConfig contains information about a particular group.
+        type: object
+        x-go-package: github.com/ogniloud/madr/internal/social/models
     LoadDecksResponse:
         description: |-
             LoadDecksResponse is a struct that defines the response body for
@@ -1002,6 +1088,34 @@ definitions:
         type: object
         x-go-name: ShareAllGroupDecksRequest
         x-go-package: github.com/ogniloud/madr/internal/social/models
+    shareGroupDeckRequest:
+        properties:
+            deck_id:
+                description: DeckId is an ID of a deck in the storage.
+                example: 3
+                format: int64
+                type: integer
+                x-go-name: DeckId
+            group_id:
+                description: GroupId is an ID of a group in the storage.
+                example: 222
+                format: int64
+                type: integer
+                x-go-name: GroupId
+            user_id:
+                description: UserId is an ID of the user in a storage.
+                example: 189
+                format: int64
+                type: integer
+                x-go-name: UserId
+        required:
+            - user_id
+            - group_id
+            - deck_id
+        title: ShareGroupDeckRequest contains values for sharing decks.
+        type: object
+        x-go-name: ShareGroupDeckRequest
+        x-go-package: github.com/ogniloud/madr/internal/social/models
     signInRequest:
         properties:
             password:
@@ -1231,6 +1345,102 @@ paths:
             schemes:
                 - http
             summary: Creates a new deck with flashcards.
+    /api/group/decks:
+        post:
+            consumes:
+                - application/json
+            operationId: GetDecksByGroupId
+            parameters:
+                - in: body
+                  name: request
+                  required: true
+                  schema:
+                    $ref: '#/definitions/getDecksByGroupIdRequest'
+                    type: object
+            produces:
+                - application/json
+            responses:
+                "200":
+                    $ref: '#/responses/getDecksByGroupIdOkResponse'
+                "400":
+                    $ref: '#/responses/getDecksByGroupIdBadRequestResponse'
+                "500":
+                    $ref: '#/responses/getDecksByGroupIdInternalServerErrorResponse'
+            schemes:
+                - http
+            summary: Get decks by group id.
+    /api/group/share:
+        post:
+            consumes:
+                - application/json
+            operationId: ShareGroupDeck
+            parameters:
+                - in: body
+                  name: request
+                  required: true
+                  schema:
+                    $ref: '#/definitions/shareGroupDeckRequest'
+                    type: object
+            produces:
+                - application/json
+            responses:
+                "204":
+                    $ref: '#/responses/shareGroupDeckNoContentResponse'
+                "400":
+                    $ref: '#/responses/shareGroupDeckBadRequestResponse'
+                "500":
+                    $ref: '#/responses/shareGroupDeckInternalServerErrorResponse'
+            schemes:
+                - http
+            summary: Share a deck with a group.
+    /api/groups/create:
+        put:
+            consumes:
+                - application/json
+            operationId: CreateGroup
+            parameters:
+                - in: body
+                  name: request
+                  required: true
+                  schema:
+                    $ref: '#/definitions/createGroupRequest'
+                    type: object
+            produces:
+                - application/json
+            responses:
+                "200":
+                    $ref: '#/responses/createGroupOkResponse'
+                "400":
+                    $ref: '#/responses/createGroupBadRequestResponse'
+                "500":
+                    $ref: '#/responses/createGroupInternalServerErrorResponse'
+            schemes:
+                - http
+            summary: Create a new group.
+    /api/groups/groups:
+        post:
+            consumes:
+                - application/json
+            operationId: GetGroupsByUserId
+            parameters:
+                - in: body
+                  name: request
+                  required: true
+                  schema:
+                    $ref: '#/definitions/getGroupsByUserIdRequest'
+                    type: object
+            produces:
+                - application/json
+            responses:
+                "200":
+                    $ref: '#/responses/getGroupsByUserIdOkResponse'
+                "400":
+                    $ref: '#/responses/getGroupsByUserIdBadRequestResponse'
+                "500":
+                    $ref: '#/responses/getGroupsByUserIdInternalServerErrorResponse'
+            schemes:
+                - http
+            summary: Get groups by user id.
     /api/signin:
         post:
             consumes:
@@ -1679,6 +1889,18 @@ responses:
         description: ""
         schema:
             $ref: '#/definitions/GenericError'
+    createGroupBadRequestResponse:
+        description: ""
+        schema:
+            $ref: '#/definitions/GenericError'
+    createGroupInternalServerErrorResponse:
+        description: ""
+        schema:
+            $ref: '#/definitions/GenericError'
+    createGroupOkResponse:
+        description: ""
+        schema:
+            $ref: '#/definitions/CreateGroupResponse'
     deleteDeckBadRequestError:
         description: ""
         schema:
@@ -1709,6 +1931,18 @@ responses:
             $ref: '#/definitions/GenericError'
     followNoContentResponse:
         description: ""
+    getDecksByGroupIdBadRequestResponse:
+        description: ""
+        schema:
+            $ref: '#/definitions/GenericError'
+    getDecksByGroupIdInternalServerErrorResponse:
+        description: ""
+        schema:
+            $ref: '#/definitions/GenericError'
+    getDecksByGroupIdOkResponse:
+        description: ""
+        schema:
+            $ref: '#/definitions/GetDecksByGroupIdResponse'
     getFlashcardByIdBadRequestError:
         description: ""
         schema:
@@ -1757,6 +1991,18 @@ responses:
         description: ""
         schema:
             $ref: '#/definitions/FollowingsResponse'
+    getGroupsByUserIdBadRequestResponse:
+        description: ""
+        schema:
+            $ref: '#/definitions/GenericError'
+    getGroupsByUserIdInternalServerErrorResponse:
+        description: ""
+        schema:
+            $ref: '#/definitions/GenericError'
+    getGroupsByUserIdOkResponse:
+        description: ""
+        schema:
+            $ref: '#/definitions/GetGroupsByUserIdResponse'
     getUserInfoBadRequestError:
         description: ""
         schema:
@@ -1905,6 +2151,16 @@ responses:
         description: ""
         schema:
             $ref: '#/definitions/SearchUserResponse'
+    shareGroupDeckBadRequestResponse:
+        description: ""
+        schema:
+            $ref: '#/definitions/GenericError'
+    shareGroupDeckInternalServerErrorResponse:
+        description: ""
+        schema:
+            $ref: '#/definitions/GenericError'
+    shareGroupDeckNoContentResponse:
+        description: ""
     signInBadRequestError:
         description: ""
         schema:

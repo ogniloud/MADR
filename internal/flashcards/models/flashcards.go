@@ -13,12 +13,22 @@ type (
 // DeckConfig contains information about a particular deck.
 // DeckId is not a primary key, for each user a configuration can be different.
 type DeckConfig struct {
+	// DeckId is a unique identifier of the deck.
+	//
+	// required: true
+	// example: 1
 	DeckId DeckId `json:"deck_id"`
 
 	// UserId means that a user with UserId has the deck with id DeckId.
+	//
+	// required: true
+	// example: 12
 	UserId UserId `json:"user_id"`
 
 	// Name is a name of the deck which the user assigned to it.
+	//
+	// required: true
+	// example: Bangladesh famous words
 	Name string `json:"name"`
 }
 
