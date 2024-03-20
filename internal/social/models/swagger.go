@@ -155,3 +155,24 @@ type SwaggerGetDecksByGroupIdInternalServerErrorResponse struct {
 	// in: body
 	Body ioutil.GenericError
 }
+
+// swagger:response getGroupsByUserIdOkResponse
+// SwaggerGetGroupsByUserIdOkResponse is a struct that defines the response body for the GetGroupsByUserId endpoint.
+type SwaggerGetGroupsByUserIdOkResponse struct {
+	// in: body
+	Body GetGroupsByUserIdResponse
+}
+
+// swagger:response getGroupsByUserIdBadRequestResponse
+// SwaggerGetGroupsByUserIdBadRequestResponse is a struct that defines the response body for the GetGroupsByUserId endpoint.
+type SwaggerGetGroupsByUserIdBadRequestResponse struct {
+	// in: body
+	Body ioutil.GenericError
+}
+
+// swagger:response getGroupsByUserIdInternalServerErrorResponse
+// SwaggerGetGroupsByUserIdInternalServerErrorResponse is a struct that defines the response body for the GetGroupsByUserId endpoint.
+type SwaggerGetGroupsByUserIdInternalServerErrorResponse struct {
+	// in: body
+	Body ioutil.GenericError
+}

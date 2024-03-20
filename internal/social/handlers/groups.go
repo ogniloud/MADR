@@ -183,7 +183,28 @@ func (e Endpoints) CreateGroup(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-// GetGroupsByUserId POST /api/groups
+// swagger:route POST /api/groups/groups GetGroupsByUserId
+// Get groups by user id.
+//
+//	Consumes:
+//	- application/json
+//
+//	Produces:
+//	- application/json
+//
+//	Schemes: http
+//
+//
+//	Parameters:
+//	+ name: request
+//	  in: body
+//	  required: true
+//	  type: getGroupsByUserIdRequest
+//
+//	Responses:
+//	200: getGroupsByUserIdOkResponse
+//	400: getGroupsByUserIdBadRequestResponse
+//	500: getGroupsByUserIdInternalServerErrorResponse
 func (e Endpoints) GetGroupsByUserId(w http.ResponseWriter, r *http.Request) {
 	reqBody := models.GetGroupsByUserIdRequest{}
 	respBody := models.GetGroupsByUserIdResponse{}

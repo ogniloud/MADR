@@ -158,6 +158,54 @@ definitions:
                 x-property-value: value
         type: object
         x-go-package: github.com/ogniloud/madr/internal/flashcards/models
+    GetGroupsByUserIdResponse:
+        description: |-
+            GetGroupsByUserIdResponse is a struct that defines the request body for
+            loading groups the user is a member of.
+        properties:
+            groups:
+                description: Groups is a map from group id to group config.
+                items:
+                    $ref: '#/definitions/GroupConfig'
+                type: array
+                x-go-name: Groups
+        required:
+            - groups
+        type: object
+        x-go-package: github.com/ogniloud/madr/internal/social/models
+    GroupConfig:
+        properties:
+            creator_id:
+                description: CreatorId means that a user created the group and is authorized to share posts within it.
+                example: 12
+                format: int64
+                type: integer
+                x-go-name: CreatorId
+            group_id:
+                description: GroupId is a unique identifier of the group.
+                example: 1
+                format: int64
+                type: integer
+                x-go-name: GroupId
+            name:
+                description: Name is a name of the group which the user assigned to it.
+                example: vodka lovers
+                type: string
+                x-go-name: Name
+            time_created:
+                description: Timestamp when the group was created
+                example: "2020-01-01T00:00:00Z"
+                format: date-time
+                type: string
+                x-go-name: TimeCreated
+        required:
+            - group_id
+            - creator_id
+            - name
+            - time_created
+        title: GroupConfig contains information about a particular group.
+        type: object
+        x-go-package: github.com/ogniloud/madr/internal/social/models
     LoadDecksResponse:
         description: |-
             LoadDecksResponse is a struct that defines the response body for
@@ -1369,6 +1417,30 @@ paths:
             schemes:
                 - http
             summary: Create a new group.
+    /api/groups/groups:
+        post:
+            consumes:
+                - application/json
+            operationId: GetGroupsByUserId
+            parameters:
+                - in: body
+                  name: request
+                  required: true
+                  schema:
+                    $ref: '#/definitions/getGroupsByUserIdRequest'
+                    type: object
+            produces:
+                - application/json
+            responses:
+                "200":
+                    $ref: '#/responses/getGroupsByUserIdOkResponse'
+                "400":
+                    $ref: '#/responses/getGroupsByUserIdBadRequestResponse'
+                "500":
+                    $ref: '#/responses/getGroupsByUserIdInternalServerErrorResponse'
+            schemes:
+                - http
+            summary: Get groups by user id.
     /api/signin:
         post:
             consumes:
@@ -1919,6 +1991,18 @@ responses:
         description: ""
         schema:
             $ref: '#/definitions/FollowingsResponse'
+    getGroupsByUserIdBadRequestResponse:
+        description: ""
+        schema:
+            $ref: '#/definitions/GenericError'
+    getGroupsByUserIdInternalServerErrorResponse:
+        description: ""
+        schema:
+            $ref: '#/definitions/GenericError'
+    getGroupsByUserIdOkResponse:
+        description: ""
+        schema:
+            $ref: '#/definitions/GetGroupsByUserIdResponse'
     getUserInfoBadRequestError:
         description: ""
         schema:
