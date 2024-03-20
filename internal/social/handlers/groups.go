@@ -7,7 +7,28 @@ import (
 	"github.com/ogniloud/madr/internal/social/models"
 )
 
-// ShareGroupDeck /api/group/share
+// swagger:route POST /api/group/share ShareGroupDeck
+// Share a deck with a group.
+//
+//	Consumes:
+//	- application/json
+//
+//	Produces:
+//	- application/json
+//
+//	Schemes: http
+//
+//
+//	Parameters:
+//	+ name: request
+//	  in: body
+//	  required: true
+//	  type: shareGroupDeckRequest
+//
+//	Responses:
+//	204: shareGroupDeckNoContentResponse
+//	400: shareGroupDeckBadRequestResponse
+//	500: shareGroupDeckInternalServerErrorResponse
 func (e Endpoints) ShareGroupDeck(w http.ResponseWriter, r *http.Request) {
 	reqBody := models.ShareGroupDeckRequest{}
 

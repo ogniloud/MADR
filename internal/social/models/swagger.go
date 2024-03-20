@@ -116,3 +116,21 @@ type SwaggerCreateGroupInternalServerErrorResponse struct {
 	// in: body
 	Body ioutil.GenericError
 }
+
+// swagger:response shareGroupDeckNoContentResponse
+// SwaggerShareGroupDeckNoContentResponse is a struct that defines the response body for the ShareGroupDeck endpoint.
+type SwaggerShareGroupDeckNoContentResponse struct{}
+
+// swagger:response shareGroupDeckBadRequestResponse
+// SwaggerShareGroupDeckBadRequestResponse is a struct that defines the response body for the ShareGroupDeck endpoint.
+type SwaggerShareGroupDeckBadRequestResponse struct {
+	// in: body
+	Body ioutil.GenericError
+}
+
+// swagger:response shareGroupDeckInternalServerErrorResponse
+// SwaggerShareGroupDeckInternalServerErrorResponse is a struct that defines the response body for the ShareGroupDeck endpoint.
+type SwaggerShareGroupDeckInternalServerErrorResponse struct {
+	// in: body
+	Body ioutil.GenericError
+}

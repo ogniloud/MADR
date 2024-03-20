@@ -1017,6 +1017,34 @@ definitions:
         type: object
         x-go-name: ShareAllGroupDecksRequest
         x-go-package: github.com/ogniloud/madr/internal/social/models
+    shareGroupDeckRequest:
+        properties:
+            deck_id:
+                description: DeckId is an ID of a deck in the storage.
+                example: 3
+                format: int64
+                type: integer
+                x-go-name: DeckId
+            group_id:
+                description: GroupId is an ID of a group in the storage.
+                example: 222
+                format: int64
+                type: integer
+                x-go-name: GroupId
+            user_id:
+                description: UserId is an ID of the user in a storage.
+                example: 189
+                format: int64
+                type: integer
+                x-go-name: UserId
+        required:
+            - user_id
+            - group_id
+            - deck_id
+        title: ShareGroupDeckRequest contains values for sharing decks.
+        type: object
+        x-go-name: ShareGroupDeckRequest
+        x-go-package: github.com/ogniloud/madr/internal/social/models
     signInRequest:
         properties:
             password:
@@ -1246,6 +1274,30 @@ paths:
             schemes:
                 - http
             summary: Creates a new deck with flashcards.
+    /api/group/share:
+        post:
+            consumes:
+                - application/json
+            operationId: ShareGroupDeck
+            parameters:
+                - in: body
+                  name: request
+                  required: true
+                  schema:
+                    $ref: '#/definitions/shareGroupDeckRequest'
+                    type: object
+            produces:
+                - application/json
+            responses:
+                "204":
+                    $ref: '#/responses/shareGroupDeckNoContentResponse'
+                "400":
+                    $ref: '#/responses/shareGroupDeckBadRequestResponse'
+                "500":
+                    $ref: '#/responses/shareGroupDeckInternalServerErrorResponse'
+            schemes:
+                - http
+            summary: Share a deck with a group.
     /api/groups/create:
         put:
             consumes:
@@ -1956,6 +2008,16 @@ responses:
         description: ""
         schema:
             $ref: '#/definitions/SearchUserResponse'
+    shareGroupDeckBadRequestResponse:
+        description: ""
+        schema:
+            $ref: '#/definitions/GenericError'
+    shareGroupDeckInternalServerErrorResponse:
+        description: ""
+        schema:
+            $ref: '#/definitions/GenericError'
+    shareGroupDeckNoContentResponse:
+        description: ""
     signInBadRequestError:
         description: ""
         schema:
