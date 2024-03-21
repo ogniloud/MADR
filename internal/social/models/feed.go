@@ -104,7 +104,7 @@ func (d SharedFromGroupData) Type() FeedPostType {
 
 type SharedFromFollowingData struct {
 	AuthorId   UserId `json:"author_id"`
-	AuthorName string `json:"group_name"`
+	AuthorName string `json:"author_name"`
 	DeckId     DeckId `json:"deck_id"`
 	DeckName   string `json:"deck_name"`
 }
