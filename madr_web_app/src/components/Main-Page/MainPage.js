@@ -1,8 +1,8 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { Link, Route, Routes, useNavigate } from 'react-router-dom';
+import React, {useEffect, useRef, useState} from 'react';
+import {Link, Route, Routes, useNavigate} from 'react-router-dom';
 import Feed from './Feeds/FeedsPage';
 import CreateDeck from './Decks/CreateDecks';
-import { jwtDecode } from 'jwt-decode';
+import {jwtDecode} from 'jwt-decode';
 import './Styles/MainPage.css';
 import defaultProfilePicture from './imgs/default-profile-picture.png';
 import closeIcon from './imgs/close-circle.png';
@@ -116,7 +116,7 @@ const MainPage = () => {
                 if (userInfo && userInfo.user_id) {
                     if (isFollowing) {
                         console.log('Unfollowing user:', user);
-                        const requestBody = { author_id: userInfo.user_id, follower_id: user.ID };
+                        const requestBody = { author_id: user.ID, follower_id: userInfo.user_id };
                         console.log('Unfollow request body:', requestBody);
                         const response = await fetch('http://localhost:8080/api/social/unfollow', {
                             method: 'POST',
@@ -132,7 +132,7 @@ const MainPage = () => {
                         }
                     } else {
                         console.log('Following user:', user);
-                        const requestBody = { author_id: userInfo.user_id, follower_id: user.ID };
+                        const requestBody = { author_id: user.ID, follower_id: userInfo.user_id };
                         console.log('Follow request body:', requestBody);
                         const response = await fetch('http://localhost:8080/api/social/follow', {
                             method: 'POST',
