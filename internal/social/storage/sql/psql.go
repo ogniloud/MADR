@@ -276,7 +276,7 @@ func (d *Storage) SendInvite(ctx context.Context, creatorId models.UserId, invit
 	go func() {
 		data := &models.Post{
 			Type: models.Invite,
-			Data: models.InviteData{
+			InviteData: &models.InviteData{
 				InviteeId:   invitee,
 				InviteeName: "TEST_NAME_INVITEE",
 				GroupId:     groupId,
@@ -487,15 +487,18 @@ func (d *Storage) Follow(ctx context.Context, follower models.UserId, author mod
 			return
 		}
 
-		data := models.FollowingSubscribedData{
-			FollowerId:   follower,
-			FollowerName: m[follower],
-			AuthorId:     author,
-			AuthorName:   m[author],
+		post := models.Post{
+			Type: models.FollowingSubscribed,
+			FollowingSubscribedData: &models.FollowingSubscribedData{
+				FollowerId:   follower,
+				FollowerName: m[follower],
+				AuthorId:     author,
+				AuthorName:   m[author],
+			},
 		}
-		b, _ := json.Marshal(&data)
+		b, _ := json.Marshal(&post)
 		s := string(b)
-		t := time.Now()
+		t := time.Now().UTC()
 		_, err = d.Conn.CopyFrom(ctx,
 			pgx.Identifier{"feed"},
 			[]string{"user_id", "data", "timestamp"},
