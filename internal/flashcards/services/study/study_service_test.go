@@ -280,7 +280,7 @@ func (t *testingSuite) Test_MakeMatchingDeck() {
 // 	t.m.On("GetFlashcardById", mock.Anything, 3).Return(flashcardContents[2], nil)
 // 	t.m.On("GetFlashcardById", mock.Anything, 4).Return(flashcardContents[3], nil)
 // 	t.m.On("GetFlashcardById", mock.Anything, 5).Return(flashcardContents[4], nil)
-// 	t.m.On("GenerateTextWithWords", mock.Anything).Return(" asd sad word1 asdsa word2 word3 word4 word5 asdgsah sadhgashd ashjdgsad", nil)
+// 	t.m.On("GenerateText", mock.Anything).Return(" asd sad word1 asdsa word2 word3 word4 word5 asdgsah sadhgashd ashjdgsad", nil)
 
 // 	text, err := t.s.MakeTextDeck(context.Background(), 1, 1, models.CoolDown(time.Time{}.Add(time.Hour)), 5)
 // 	assert.NoError(t.T(), err)
