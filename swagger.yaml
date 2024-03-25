@@ -62,6 +62,18 @@ definitions:
         title: DeckConfig contains information about a particular deck.
         type: object
         x-go-package: github.com/ogniloud/madr/internal/flashcards/models
+    FeedPostType:
+        type: string
+        x-go-package: github.com/ogniloud/madr/internal/social/models
+    FeedResponse:
+        properties:
+            feed:
+                items:
+                    $ref: '#/definitions/Post'
+                type: array
+                x-go-name: Feed
+        type: object
+        x-go-package: github.com/ogniloud/madr/internal/social/models
     Flashcard:
         description: |-
             Flashcard is a model of real flashcards with front side with word
@@ -94,6 +106,32 @@ definitions:
                 type: array
                 x-go-name: UserInfo
         title: FollowersResponse contains ids and names of the followers.
+        type: object
+        x-go-package: github.com/ogniloud/madr/internal/social/models
+    FollowingSubscribedData:
+        properties:
+            author_id:
+                description: AuthorId is a unique identifier of the author.
+                example: 1
+                format: int64
+                type: integer
+                x-go-name: AuthorId
+            author_name:
+                description: AuthorName is a name of the author.
+                example: Dima Krasnov
+                type: string
+                x-go-name: AuthorName
+            follower_id:
+                description: FollowerId is a unique identifier of the follower.
+                example: 1
+                format: int64
+                type: integer
+                x-go-name: FollowerId
+            follower_name:
+                description: FollowerName is a name of the follower.
+                example: John Doe
+                type: string
+                x-go-name: FollowerName
         type: object
         x-go-package: github.com/ogniloud/madr/internal/social/models
     FollowingsResponse:
@@ -206,6 +244,32 @@ definitions:
         title: GroupConfig contains information about a particular group.
         type: object
         x-go-package: github.com/ogniloud/madr/internal/social/models
+    InviteData:
+        properties:
+            group_id:
+                description: GroupId is a unique identifier of the group.
+                example: 1
+                format: int64
+                type: integer
+                x-go-name: GroupId
+            group_name:
+                description: GroupName is a name of the group.
+                example: vodka lovers
+                type: string
+                x-go-name: GroupName
+            invitee_id:
+                description: InviteeId is a unique identifier of the user that received the invitation.
+                example: 1
+                format: int64
+                type: integer
+                x-go-name: InviteeId
+            invitee_name:
+                description: InviteeName is a name of the user that received the invitation.
+                example: John Doe
+                type: string
+                x-go-name: InviteeName
+        type: object
+        x-go-package: github.com/ogniloud/madr/internal/social/models
     LoadDecksResponse:
         description: |-
             LoadDecksResponse is a struct that defines the response body for
@@ -248,6 +312,20 @@ definitions:
                 x-go-name: M
         type: object
         x-go-package: github.com/ogniloud/madr/internal/flashcards/models
+    Post:
+        properties:
+            following_subscribed_data:
+                $ref: '#/definitions/FollowingSubscribedData'
+            invite_data:
+                $ref: '#/definitions/InviteData'
+            shared_from_following_data:
+                $ref: '#/definitions/SharedFromFollowingData'
+            shared_from_group_data:
+                $ref: '#/definitions/SharedFromGroupData'
+            type:
+                $ref: '#/definitions/FeedPostType'
+        type: object
+        x-go-package: github.com/ogniloud/madr/internal/social/models
     RandomCardDeckResponse:
         description: |-
             RandomCardDeckResponse is a struct that defines the response body for
@@ -338,6 +416,58 @@ definitions:
                     $ref: '#/definitions/UserInfo'
                 type: array
                 x-go-name: Users
+        type: object
+        x-go-package: github.com/ogniloud/madr/internal/social/models
+    SharedFromFollowingData:
+        properties:
+            author_id:
+                description: AuthorId is a unique identifier of the author.
+                example: 1
+                format: int64
+                type: integer
+                x-go-name: AuthorId
+            author_name:
+                description: AuthorName is a name of the author.
+                example: John Doe
+                type: string
+                x-go-name: AuthorName
+            deck_id:
+                description: DeckId is a unique identifier of the deck.
+                example: 1
+                format: int64
+                type: integer
+                x-go-name: DeckId
+            deck_name:
+                description: DeckName is a name of the deck.
+                example: russian curse words
+                type: string
+                x-go-name: DeckName
+        type: object
+        x-go-package: github.com/ogniloud/madr/internal/social/models
+    SharedFromGroupData:
+        properties:
+            deck_id:
+                description: DeckId is a unique identifier of the deck.
+                example: 1
+                format: int64
+                type: integer
+                x-go-name: DeckId
+            deck_name:
+                description: DeckName is a name of the deck.
+                example: Bangladesh famous words
+                type: string
+                x-go-name: DeckName
+            group_id:
+                description: GroupId is a unique identifier of the group.
+                example: 1
+                format: int64
+                type: integer
+                x-go-name: GroupId
+            group_name:
+                description: GroupName is a name of the group.
+                example: vodka lovers
+                type: string
+                x-go-name: GroupName
         type: object
         x-go-package: github.com/ogniloud/madr/internal/social/models
     SignInResponse:
@@ -558,6 +688,16 @@ definitions:
             - group_id
         type: object
         x-go-name: DeleteGroupRequest
+        x-go-package: github.com/ogniloud/madr/internal/social/models
+    feedRequest:
+        properties:
+            user_id:
+                format: int64
+                type: integer
+                x-go-name: UserId
+        title: FeedRequest is a struct that defines the request body for getting a user's feed.
+        type: object
+        x-go-name: FeedRequest
         x-go-package: github.com/ogniloud/madr/internal/social/models
     followRequest:
         description: FollowRequest contains an id of the user that following to author
@@ -1497,6 +1637,31 @@ paths:
             schemes:
                 - http
             summary: Creates a new user.
+    /api/social/feed:
+        post:
+            consumes:
+                - application/json
+            operationId: Feed
+            parameters:
+                - description: request body
+                  in: body
+                  name: request
+                  required: true
+                  schema:
+                    $ref: '#/definitions/feedRequest'
+                    description: request body
+                    type: object
+            produces:
+                - application/json
+                - 'Scheme: http'
+            responses:
+                "200":
+                    $ref: '#/responses/feedOkResponse'
+                "400":
+                    $ref: '#/responses/feedBadRequestResponse'
+                "500":
+                    $ref: '#/responses/feedInternalServerErrorResponse'
+            summary: Returns user's feed.
     /api/social/follow:
         post:
             consumes:
@@ -1921,6 +2086,18 @@ responses:
             $ref: '#/definitions/GenericError'
     deleteFlashcardFromDeckNoContentResponse:
         description: ""
+    feedBadRequestResponse:
+        description: ""
+        schema:
+            $ref: '#/definitions/GenericError'
+    feedInternalServerErrorResponse:
+        description: ""
+        schema:
+            $ref: '#/definitions/GenericError'
+    feedOkResponse:
+        description: ""
+        schema:
+            $ref: '#/definitions/FeedResponse'
     followBadRequestResponse:
         description: ""
         schema:

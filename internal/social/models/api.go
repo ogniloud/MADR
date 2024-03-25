@@ -439,6 +439,8 @@ type UserInfo struct {
 	Email    string
 }
 
+// FeedRequest is a struct that defines the request body for getting a user's feed.
+// swagger:model feedRequest
 type FeedRequest struct {
 	UserId UserId `json:"user_id"`
 }

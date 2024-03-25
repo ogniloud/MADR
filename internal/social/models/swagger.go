@@ -176,3 +176,24 @@ type SwaggerGetGroupsByUserIdInternalServerErrorResponse struct {
 	// in: body
 	Body ioutil.GenericError
 }
+
+// swagger:response feedOkResponse
+// SwaggerFeedOkResponse is a struct that defines the response body for the Feed endpoint.
+type SwaggerFeedOkResponse struct {
+	// in: body
+	Body FeedResponse
+}
+
+// swagger:response feedBadRequestResponse
+// SwaggerFeedBadRequestResponse is a struct that defines the response body for the Feed endpoint.
+type SwaggerFeedBadRequestResponse struct {
+	// in: body
+	Body ioutil.GenericError
+}
+
+// swagger:response feedInternalServerErrorResponse
+// SwaggerFeedInternalServerErrorResponse is a struct that defines the response body for the Feed endpoint.
+type SwaggerFeedInternalServerErrorResponse struct {
+	// in: body
+	Body ioutil.GenericError
+}
