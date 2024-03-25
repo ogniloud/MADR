@@ -1661,7 +1661,7 @@ paths:
                     $ref: '#/responses/feedBadRequestResponse'
                 "500":
                     $ref: '#/responses/feedInternalServerErrorResponse'
-            summary: Returns a list of users by name.
+            summary: Returns user's feed.
     /api/social/follow:
         post:
             consumes:

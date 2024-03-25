@@ -12,7 +12,7 @@ const (
 type Post struct {
 	// PostId is a unique identifier of the post.
 	//
-	// example: 1
+	// example: "invite_data"
 	Type FeedPostType `json:"type"`
 
 	// InviteData contains information about the invitation.

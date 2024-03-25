@@ -297,7 +297,7 @@ func (e Endpoints) SearchUser(w http.ResponseWriter, r *http.Request) {
 }
 
 // swagger:route POST /api/social/feed Feed
-// Returns a list of users by name.
+// Returns user's feed.
 //
 //	Consumes:
 //	- application/json
