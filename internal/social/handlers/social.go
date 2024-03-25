@@ -296,6 +296,29 @@ func (e Endpoints) SearchUser(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// swagger:route POST /api/social/feed Feed
+// Returns a list of users by name.
+//
+//	Consumes:
+//	- application/json
+//
+//	Produces:
+//	- application/json
+//
+//	Scheme: http
+//
+//
+//	Parameters:
+//	+ name: request
+//	  in: body
+//	  description: request body
+//	  required: true
+//	  type: feedRequest
+//
+//	Responses:
+//	200: feedOkResponse
+//	400: feedBadRequestResponse
+//	500: feedInternalServerErrorResponse
 func (e Endpoints) Feed(w http.ResponseWriter, r *http.Request) {
 	reqBody := models.FeedRequest{}
 	respBody := models.FeedResponse{}
