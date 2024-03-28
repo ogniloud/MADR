@@ -16,7 +16,7 @@ import AllWords from "./components/Main-Page/Decks/Browse Cards/AllWords";
 import Flashcards from "./components/Main-Page/Decks/Exercise Cards/Flashcards";
 import WordMatch from "./components/Main-Page/Decks/Exercise Cards/WordMatch";
 import SocialGroup from "./components/Social Site/social_group";
-
+import FeedsPage from "./components/Main-Page/Feeds/FeedsPage";
 
 
 function App() {
@@ -30,6 +30,7 @@ function App() {
             <Route path="/mainpage" element={<MainPage />} />
             <Route path="/create-deck" element={<CreateDecks />} />
             <Route path="/decks" element={<DecksPage />} />
+            <Route path="/feed" element={<FeedsPage />} />
 
             {/* Specific routes for individual components in DeckDetail */}
             <Route path="/decks/:deck_id/browse-cards/all-words" element={<AllWords />} />

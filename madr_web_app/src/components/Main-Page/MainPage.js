@@ -215,6 +215,9 @@ const MainPage = () => {
                         </div>
                     )}
                 </div>
+                <Link className="main-page-feed-button" to="/feed">
+                    Feed
+                </Link>
 
             </nav>
 
