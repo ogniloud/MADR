@@ -448,3 +448,8 @@ type FeedRequest struct {
 type FeedResponse struct {
 	Feed []Post `json:"feed"`
 }
+
+type ShareWithFollowersRequest struct {
+	UserId UserId `json:"user_id"`
+	DeckId DeckId `json:"deck_id"`
+}

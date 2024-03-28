@@ -46,9 +46,6 @@ type Storage interface {
 	// Sends invite to group to the user
 	SendInvite(ctx context.Context, creator_id models.UserId, invitee models.UserId, group_id models.GroupId) error
 
-	// TODO
-	ShareAllGroupDecks(ctx context.Context, id models.UserId, group_id models.GroupId) error
-
 	DeepCopyDeck(ctx context.Context, copier models.UserId, deckId models.DeckId) (models.DeckId, error)
 
 	GetFollowersByUserId(ctx context.Context, id models.UserId) ([]usermodels.UserInfo, error)
@@ -69,5 +66,7 @@ type Storage interface {
 
 	GetUsersByName(ctx context.Context, name string) ([]usermodels.UserInfo, error)
 
-	Feed(ctx context.Context, userId models.UserId, page int) (data []models.Post, err error)
+	Feed(ctx context.Context, userId models.UserId, page int) ([]models.Post, error)
+
+	ShareWithFollowers(ctx context.Context, userId models.UserId, deckId models.DeckId) error
 }
