@@ -1,61 +1,31 @@
-/* FeedsPage.css */
+.feeds-page {
+    padding: 20px;
+}
 
-.feeds-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+.feed-items {
+    margin-top: 20px;
 }
 
 .feed-item {
-    width: 100%;
-    max-width: 600px; /* Adjust based on your layout */
-    margin-bottom: 20px;
-    padding: 15px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    background-color: #fff;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-.feed-header {
     display: flex;
     align-items: center;
-    margin-bottom: 10px;
+    margin-bottom: 20px;
+    border: 1px solid #ccc;
+    padding: 10px;
 }
 
-.feed-avatar {
-    width: 40px;
-    height: 40px;
+.profile-picture img {
+    width: 50px;
+    height: 50px;
     border-radius: 50%;
     margin-right: 10px;
 }
 
-.feed-info {
-    flex: 1;
+.activity-details p {
+    margin: 0;
 }
 
-.feed-action {
-    font-weight: bold;
-}
-
-.feed-content {
-    margin-bottom: 10px;
-}
-
-.feed-footer {
-    font-size: 0.8rem;
+.timestamp {
     color: #666;
-}
-
-/* Example styles for different types of feed items */
-.invite-feed {
-    background-color: #f7f7f7;
-}
-
-.new-deck-feed {
-    background-color: #eaf6ff;
-}
-
-.follow-feed {
-    background-color: #fde9e9;
+    font-size: 12px;
 }
