@@ -343,3 +343,23 @@ func (e Endpoints) Feed(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 }
+
+// ShareWithFollowers /api/social/share
+func (e Endpoints) ShareWithFollowers(w http.ResponseWriter, r *http.Request) {
+	reqBody := models.ShareWithFollowersRequest{}
+
+	if err := ioutil.FromJSON(&reqBody, r.Body); err != nil {
+		e.logger.Errorf("json not parsed: %v", err)
+		e.ew.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	err := e.s.ShareWithFollowers(r.Context(), reqBody.UserId, reqBody.DeckId)
+	if err != nil {
+		e.logger.Errorf("reqBody: %+v, error: %v", reqBody, err)
+		e.ew.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.WriteHeader(http.StatusNoContent)
+}

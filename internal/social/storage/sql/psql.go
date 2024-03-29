@@ -295,10 +295,6 @@ func (d *Storage) SendInvite(ctx context.Context, creatorId models.UserId, invit
 	return nil
 }
 
-func (d *Storage) ShareAllGroupDecks(ctx context.Context, id models.UserId, groupId models.GroupId) error {
-	return nil
-}
-
 func (d *Storage) CheckIfCopied(ctx context.Context, copier models.UserId, deckId models.DeckId) (bool, error) {
 	row := d.Conn.QueryRow(ctx, `SELECT deck_id FROM copied_by WHERE copier_id=$1 AND deck_id=$2`, copier, deckId)
 	id := 0
@@ -435,7 +431,7 @@ func (d *Storage) addMember(ctx context.Context, id models.UserId, groupId model
 		return err
 	}
 
-	return d.ShareAllGroupDecks(ctx, id, groupId)
+	return nil
 }
 
 func (d *Storage) Follow(ctx context.Context, follower models.UserId, author models.UserId) error {
@@ -526,10 +522,16 @@ func (d *Storage) Unfollow(ctx context.Context, follower models.UserId, author m
 }
 
 func (d *Storage) ShareDeckGroup(ctx context.Context, owner models.UserId, groupId models.GroupId, deckId models.DeckId) error {
-	_, err := d.Conn.Query(ctx, `SELECT group_id FROM groups WHERE group_id=$1 AND creator_id=$2`, groupId, owner)
+	rows, err := d.Conn.Query(ctx, `SELECT name FROM groups WHERE group_id=$1 AND creator_id=$2`, groupId, owner)
 	if errors.Is(err, pgx.ErrNoRows) {
 		return ErrUserNotCreator
 	} else if err != nil {
+		d.Conn.Logger().Errorf("share deck error: %v", err)
+		return fmt.Errorf("share deck error: %w", err)
+	}
+
+	name := ""
+	if err := rows.Scan(&name); err != nil {
 		d.Conn.Logger().Errorf("share deck error: %v", err)
 		return fmt.Errorf("share deck error: %w", err)
 	}
@@ -550,6 +552,36 @@ func (d *Storage) ShareDeckGroup(ctx context.Context, owner models.UserId, group
 		d.Conn.Logger().Errorf("add user leitners to members failed: %v", err)
 		return fmt.Errorf("add user leitners to members failed: %w", err)
 	}
+
+	go func() {
+		deckName := ""
+		row := d.Conn.QueryRow(ctx, `SELECT name FROM deck_config WHERE deck_id=$1`, deckId)
+		if err := row.Scan(&deckName); err != nil {
+			d.Conn.Logger().Errorf("group deck feed: %v", err)
+			return
+		}
+
+		data := &models.SharedFromGroupData{
+			GroupId:   groupId,
+			GroupName: name,
+			DeckId:    deckId,
+			DeckName:  deckName,
+		}
+
+		post := models.Post{
+			Type:                models.SharedFromGroup,
+			SharedFromGroupData: data,
+		}
+
+		b, _ := json.Marshal(post)
+
+		_, err := d.Conn.Exec(ctx, `INSERT INTO feed (
+											SELECT gm.user_id, $1, now() FROM group_members gm
+             ) `, string(b))
+		if err != nil {
+			d.Conn.Logger().Errorf("feed deck group save error: %v", err)
+		}
+	}()
 
 	return nil
 }
@@ -686,6 +718,45 @@ func (d *Storage) Feed(ctx context.Context, userId models.UserId, page int) (dat
 	copy(data1, data)
 
 	return data1, nil
+}
+func (d *Storage) ShareWithFollowers(ctx context.Context, userId models.UserId, deckId models.DeckId) error {
+	var deckName, userName string
+
+	rowUser := d.Conn.QueryRow(ctx, `SELECT username FROM user_credentials WHERE user_id=$1`, userId)
+	if err := rowUser.Scan(&userName); err != nil {
+		d.Conn.Logger().Errorf("share: username get error: %v", err)
+		return fmt.Errorf("share: username get error: %w", err)
+	}
+
+	rowDeck := d.Conn.QueryRow(ctx, `SELECT name FROM deck_config WHERE deck_id=$1`, deckId)
+	if err := rowDeck.Scan(&deckName); err != nil {
+		d.Conn.Logger().Errorf("share: deckname get error: %v", err)
+		return fmt.Errorf("share: deckname get error: %w", err)
+	}
+
+	data := &models.SharedFromFollowingData{
+		AuthorId:   userId,
+		AuthorName: userName,
+		DeckId:     deckId,
+		DeckName:   deckName,
+	}
+
+	post := models.Post{
+		Type:                    models.SharedFromFollowing,
+		SharedFromFollowingData: data,
+	}
+
+	b, _ := json.Marshal(post)
+
+	_, err := d.Conn.Exec(ctx, `INSERT INTO feed (
+                  SELECT f.follower_id, $1, now() FROM followers f WHERE f.user_id=$2
+)`, string(b), userId)
+	if err != nil {
+		d.Conn.Logger().Errorf("share with followers error: %v", err)
+		return fmt.Errorf("share with followers error: %v", err)
+	}
+
+	return nil
 }
 
 func (d *Storage) saveToFeed(ctx context.Context, userId models.UserId, posts ...*models.Post) error {
