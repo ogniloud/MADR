@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import { jwtDecode } from 'jwt-decode';
+import React, {useEffect, useState} from 'react';
+import {jwtDecode} from 'jwt-decode';
 import './FeedPage.css';
 
 const FeedsPage = () => {
@@ -25,7 +25,7 @@ const FeedsPage = () => {
                             'Authorization': `Bearer ${token}`,
                             'Content-Type': 'application/json'
                         },
-                        body: JSON.stringify({ UserId: decodedToken.user_id })
+                        body: JSON.stringify({ user_id: decodedToken.user_id })
                     });
 
                     console.log('Fetch response:', response); // Debugging: Log fetch response
@@ -53,16 +53,29 @@ const FeedsPage = () => {
 
     const renderFeedItem = (item, index) => {
         switch (item.type) {
+            case "invite_data":
+                return (
+                    <div key={index}>
+                        {/* Render invite data */}
+                        <p>You received an invite from {item.invite_data.invitee_name} to group {item.invite_data.group_name}</p>
+                    </div>
+                );
+            case "shared_from_group_data":
+                return (
+                    <div key={index}>
+                        <p>New deck "{item.shared_from_group_data.deck_name}" added to group {item.shared_from_group_data.group_name}</p>
+                    </div>
+                );
+            case "shared_from_following_data":
+                return (
+                    <div key={index}>
+                        <p>New deck "{item.shared_from_following_data.deck_name}" shared by user {item.shared_from_following_data.author_name}</p>
+                    </div>
+                );
             case "following_subscribed_data":
                 return (
-                    <div key={index} className="feed-item">
-                        <div className="profile-picture">
-                            <img src={`https://example.com/${item.following_subscribed_data.follower_id}/profile-picture.jpg`} alt="Profile"/>
-                        </div>
-                        <div className="activity-details">
-                            <p><strong>{item.following_subscribed_data.follower_name}</strong> is following <strong>{item.following_subscribed_data.author_name}</strong></p>
-                            <p className="timestamp">Timestamp: {new Date().toLocaleString()}</p>
-                        </div>
+                    <div key={index}>
+                        <p>Your following "{item.following_subscribed_data.follower_name}" subscribed to user {item.following_subscribed_data.author_name}</p>
                     </div>
                 );
             default:
@@ -73,9 +86,7 @@ const FeedsPage = () => {
     return (
         <div className="feeds-page">
             <h1>Feed</h1>
-            <div className="feed-items"> {/* Apply CSS class to contain feed items */}
-                {feedData.map((item, index) => renderFeedItem(item, index))}
-            </div>
+            {feedData.map((item, index) => renderFeedItem(item, index))}
         </div>
     );
 };
