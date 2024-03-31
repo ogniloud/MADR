@@ -1,6 +1,6 @@
 import React, {useEffect, useRef, useState} from 'react';
 import {Link, Route, Routes, useNavigate} from 'react-router-dom';
-import Feed from './Feeds/FeedsPage';
+import Feed from './Feeds/FeedsPage'
 import CreateDeck from './Decks/CreateDecks';
 import {jwtDecode} from 'jwt-decode';
 import './Styles/MainPage.css';
