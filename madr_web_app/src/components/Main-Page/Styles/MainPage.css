@@ -283,8 +283,23 @@
     border-radius: 10px;
     position: relative;
     bottom: 30px;
+}
 
-
+.main-page-feed-button{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    color: white;
+    font-family: "Google Sans", sans-serif;
+    border: 2px solid white;
+    border-radius: 10px;
+    background: transparent;
+    width: 200px;
+    height: 35px;;
+    right: 1020px;
+    font-size: 20px;
+    font-weight: bold;
 }
 
 

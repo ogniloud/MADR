@@ -1,0 +1,50 @@
+.feeds-page{
+    font-family: "Google Sans", "sans-serif";
+}
+
+.feed-page-title {
+    position: absolute;
+    top: 2%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 35px; /* Increase the font size */
+    font-weight: bold;
+    color: white;
+}
+
+
+
+
+
+.feed-items-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.feed-item {
+    position: relative;
+    height: 80px;
+    width: 620px;
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid #333; /* Dark gray border */
+    background-color: rgba(242, 242, 242, 0.8); /* Light gray with 80% transparency */
+    transition: background-color 0.3s, box-shadow 0.3s; /* Add transition effect */
+}
+
+
+
+
+
+.home-button{
+    position: absolute;
+    top: 620px;
+    right: 690px;
+    font-weight: 600;
+}
+
+.home-button:hover{
+    color: #415A80;
+
+}
