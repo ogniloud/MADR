@@ -1,21 +1,19 @@
 import React, { useState } from 'react';
-import axios from 'axios';
 import { jwtDecode } from 'jwt-decode';
-import { useNavigate } from 'react-router-dom'; // Import the useNavigate hook
-import './CreateDecks.css';
+import { useNavigate } from 'react-router-dom';
+import {createDeck} from "../APIs/apiFunctions_decks";
+import './Styles/CreateDecks.css';
+
 
 const CreateDecks = ({ fetchUserDecks }) => {
     const [deckName, setDeckName] = useState('');
-    const [flashcards, setFlashcards] = useState([
-        { word: '', answer: '', backside: { type: 0, value: '' } },
-    ]);
+    const [flashcards, setFlashcards] = useState([{ word: '', answer: '', backside: { type: 0, value: '' } }]);
     const [errorMessage, setErrorMessage] = useState('');
-
     const navigate = useNavigate(); // Initialize navigate
-
-    // Get the user ID from the decoded token
     const decodedToken = jwtDecode(localStorage.getItem('token'));
     const userId = decodedToken.user_id;
+
+
 
     const addFlashcard = () => {
         setFlashcards([...flashcards, { word: '', answer: '', backside: { type: 0, value: '' } }]);
@@ -37,34 +35,24 @@ const CreateDecks = ({ fetchUserDecks }) => {
 
     const handleSubmit = async () => {
         try {
-            const response = await axios.put(
-                'http://localhost:8080/api/flashcards/new_deck',
-                {
-                    flashcards,
-                    name: deckName,
-                    user_id: userId, // Pass the user ID to the server
-                },
-                {
-                    headers: {
-                        'Content-Type': 'application/json',
-                        Authorization: `Bearer ${localStorage.getItem('token')}`, // Passing  the JWT token to the server
-                    },
-                }
-            );
+            const deckData = {
+                flashcards,
+                name: deckName,
+                user_id: userId,
+            };
 
-            console.log('Deck created successfully:', response.data);
+            const token = localStorage.getItem('token');
+            await createDeck(deckData, token);
+
             setErrorMessage('');
 
             if (typeof fetchUserDecks === 'function') {
                 await fetchUserDecks();
             }
-
-
-            // Navigate to MainPage after successful deck creation
             navigate('/decks');
         } catch (error) {
             console.error('Error creating deck:', error.message);
-            setErrorMessage('Failed to create the deck. Please try again.');
+            setErrorMessage(error.message);
         }
     };
 

@@ -1,7 +1,8 @@
-// AllWords.js
+
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { jwtDecode } from 'jwt-decode';
+import {fetchFlashcards, addFlashcard, deleteFlashcard} from "../../APIs/apiFunctions_browse_cards";
 import './Styles/AllWords.css';
 
 const AllWords = () => {
@@ -21,131 +22,43 @@ const AllWords = () => {
 
     const loadFlashcards = async () => {
         try {
-            const token = localStorage.getItem('token');
-            if (!token) {
-                // Handle case where the user is not authenticated
-                return;
-            }
-
-            const decodedToken = jwtDecode(token);
-            const user_id = decodedToken.user_id;
-
-            const requestBody = {
-                deck_id: Number(deck_id),
-            };
-
-            const response = await fetch('http://localhost:8080/api/flashcards/cards', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(requestBody),
-            });
-
-            if (response.ok) {
-                const data = await response.json();
-                setFlashcards(data.flashcards);
-            } else {
-                console.error('Error loading flashcards:', response.statusText);
-            }
+            const fetchedFlashcards = await fetchFlashcards(deck_id);
+            setFlashcards(fetchedFlashcards);
         } catch (error) {
-            console.error('Error loading flashcards:', error);
+            console.error(error.message);
         }
     };
 
     const handleAddFlashcard = async () => {
         try {
-            const token = localStorage.getItem('token');
-            if (!token) {
-                // Handle case where the user is not authenticated
-                return;
-            }
+            await addFlashcard({ word, answer, backsideType, backsideValue, deck_id });
+            setSuccessMessage('Flashcard added successfully!');
+            setErrorMessage('');
 
-            // Additional validation
-            if (!word || !answer || !backsideValue) {
-                setErrorMessage('Please fill in all fields.');
-                return;
-            }
-
-            const decodedToken = jwtDecode(token);
-            const user_id = decodedToken.user_id;
-
-            // Convert deck_id to a number
-            const deckIdAsNumber = Number(deck_id);
-
-            const requestBody = {
-                word,
-                answer: answer.replace(/^"|"$/g, ''), // Remove double quotes if present
-                backside: {
-                    type: Number(backsideType),
-                    value: backsideValue,
-                },
-                deck_id: deckIdAsNumber,
-                user_id,
-            };
-
-            console.log('Request Body:', JSON.stringify(requestBody));
-
-            const response = await fetch('http://localhost:8080/api/flashcards/add_card', {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(requestBody),
-            });
-
-            console.log('Response:', response);
-
-            if (response.ok) {
-                setSuccessMessage('Flashcard added successfully!');
-                setErrorMessage('');
-
-                // Clear form fields after success
-                setWord('');
-                setAnswer('');
-                setBacksideType(0);
-                setBacksideValue('');
-            } else {
-                const errorData = await response.json();
-                setSuccessMessage('');
-                setErrorMessage(`Error: ${errorData.message}`);
-            }
-            window.location.reload()
+            // Clear form fields after success
+            setWord('');
+            setAnswer('');
+            setBacksideType(0);
+            setBacksideValue('');
+            loadFlashcards(); // Reload flashcards
         } catch (error) {
-            console.error('Error adding flashcard:', error);
+            console.error(error.message);
             setSuccessMessage('');
-            setErrorMessage('An unexpected error occurred.');
+            setErrorMessage(error.message);
         }
     };
-
-    // deleting cards
 
     const handleDeleteWord = async (flashcardId) => {
         try {
-            const response = await fetch('http://localhost:8080/api/flashcards/delete_card', {
-                method: 'DELETE',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    flashcard_id: flashcardId,
-                    user_id: getUserId(),
-                }),
-            });
-
-            if (response.ok) {
-                // Remove the deleted flashcard from the list
-                setFlashcards(prevFlashcards => prevFlashcards.filter(flashcard => flashcard.id !== flashcardId));
-                setSuccessMessage('Word deleted successfully');
-            } else {
-                console.error('Error deleting word:', response.statusText);
-                setErrorMessage('Error deleting word');
-            }
+            await deleteFlashcard(flashcardId);
+            setFlashcards(prevFlashcards => prevFlashcards.filter(flashcard => flashcard.id !== flashcardId));
+            setSuccessMessage('Word deleted successfully');
         } catch (error) {
-            console.error('Error deleting word:', error);
+            console.error(error.message);
             setErrorMessage('Error deleting word');
         }
     };
+
 
     const getUserId = () => {
         const token = localStorage.getItem('token');

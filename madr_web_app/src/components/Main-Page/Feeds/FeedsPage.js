@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { jwtDecode } from 'jwt-decode';
 import { useNavigate } from 'react-router-dom';
+import {fetchFeedData} from "../APIs/apiFunctions_main_feeds";
 import './FeedPage.css';
 
 const FeedsPage = () => {
@@ -9,36 +9,16 @@ const FeedsPage = () => {
     const navigate = useNavigate();
 
     useEffect(() => {
-        const fetchFeedData = async () => {
-            const token = localStorage.getItem('token');
-            if (token) {
-                try {
-                    const decodedToken = jwtDecode(token);
-                    setUserInfo(decodedToken);
-
-                    const response = await fetch('http://localhost:8080/api/social/feed', {
-                        method: 'POST',
-                        headers: {
-                            'Authorization': `Bearer ${token}`,
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({ user_id: decodedToken.user_id })
-                    });
-
-                    if (response.ok) {
-                        const feedJson = await response.json();
-                        setFeedData(feedJson.feed || []);
-                    } else {
-                        console.error('Failed to fetch feed data. Status:', response.status);
-                    }
-                } catch (error) {
-                    console.error('Error fetching feed data:', error);
-                }
-            }
-        };
-
-        fetchFeedData();
+        const token = localStorage.getItem('token');
+        if (token) {
+            fetchFeed(token);
+        }
     }, []);
+
+    const fetchFeed = async (token) => {
+        const data = await fetchFeedData(token);
+        setFeedData(data);
+    };
 
     const returnToHome = () => {
         navigate('/mainpage');

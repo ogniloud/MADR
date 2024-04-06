@@ -1,5 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import {jwtDecode} from 'jwt-decode';
+import {fetchRandomMatchingData, rateFlashcard} from "../../APIs/apiFunctions_exe_cards";
 import './Styles/WordMatch.css';
 
 const WordMatch = () => {
@@ -30,31 +31,10 @@ const WordMatch = () => {
 
     const fetchMatchingData = async () => {
         try {
-            const responseMatchingData = await fetch(
-                'http://localhost:8080/api/study/random_matching',
-                {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        size: 5,
-                        user_id: userId,
-                    }),
-                }
-            );
-
-            if (responseMatchingData.ok) {
-                const dataMatchingData = await responseMatchingData.json();
-                setMatchingData(dataMatchingData.matching);
-            } else {
-                console.error(
-                    'Error fetching matching data:',
-                    responseMatchingData.statusText
-                );
-            }
+            const dataMatchingData = await fetchRandomMatchingData(5, userId);
+            setMatchingData(dataMatchingData.matching);
         } catch (error) {
-            console.error('Error fetching matching data:', error);
+            console.error(error.message);
         }
     };
 
@@ -63,53 +43,25 @@ const WordMatch = () => {
     };
 
     const handleCheckAnswers = async () => {
-        console.log('selectedPairs:', selectedPairs);
-        console.log('matchingData.cards:', matchingData.cards);
-        console.log('matchingData.pairs:', matchingData.pairs);
         try {
             const isCorrect = Object.keys(selectedPairs).every((property) => {
-                return matchingData.cards[property].answer === selectedPairs[property]
-
-                console.log('isCorrect:', isCorrect);
-                console.log('mark:', mark);
+                return matchingData.cards[property].answer === selectedPairs[property];
             });
-
 
             const mark = isCorrect ? 2 : 0;
 
             for (const property in selectedPairs) {
-                const responseRate = await fetch('http://localhost:8080/api/study/rate', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        mark: mark,
-                        flashcard_id: matchingData.cards[property].id,
-                        user_id: userId,
-                    }),
-                });
-
-                if (!responseRate.ok) {
-                    console.error('Error recording mark:', responseRate.statusText);
-                    return;
-                }
+                await rateFlashcard(matchingData.cards[property].id, mark, userId);
             }
 
-            setSuccessMessage(
-                isCorrect ? 'Correct! Mark recorded.' : 'Incorrect. Try again.'
-            );
+            setSuccessMessage(isCorrect ? 'Correct! Mark recorded.' : 'Incorrect. Try again.');
             setErrorMessage('');
 
-            // Clear selected pairs and reset checkboxes
             setSelectedPairs({});
-            document
-                .querySelectorAll('input[type="checkbox"]')
-                .forEach((checkbox) => {
-                    checkbox.checked = false;
-                });
+            document.querySelectorAll('input[type="checkbox"]').forEach((checkbox) => {
+                checkbox.checked = false;
+            });
 
-            // Optionally, you can fetch new matching data here for the next round
             fetchMatchingData();
         } catch (error) {
             console.error('Error recording mark:', error);
@@ -118,7 +70,7 @@ const WordMatch = () => {
         }
     };
 
-    let s = "";
+    let s = '';
     return (
         <div className="wm-container">
             <h2 className="wm-title">Word Match </h2>
