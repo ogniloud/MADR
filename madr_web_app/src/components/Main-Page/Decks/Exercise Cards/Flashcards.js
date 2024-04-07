@@ -1,14 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { jwtDecode } from 'jwt-decode';
-import './Styles/Flashcards.css'
+import { fetchRandomFlashcard, rateFlashcard, deleteFlashcard } from "../../APIs/apiFunctions_exe_cards";
+import './Styles/Flashcards.css';
 
 const Flashcards = () => {
     const { deck_id } = useParams();
     const [flashcard, setFlashcard] = useState(null);
     const [cardsSeen, setCardsSeen] = useState(0);
     const [userId, setUserId] = useState(null);
-    const [showDeleteButton, setShowDeleteButton] = useState(false);
 
     useEffect(() => {
         // Fetch the initial flashcard when the component mounts
@@ -23,80 +23,32 @@ const Flashcards = () => {
 
     const fetchFlashcard = async () => {
         try {
-            const response = await fetch(`http://localhost:8080/api/study/random_deck`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    deck_id: parseInt(deck_id), // Convert deck_id to a number
-                    user_id: userId,
-                }),
-            });
-
-            if (response.ok) {
-                const data = await response.json();
-                setFlashcard(data.flashcard);
-                setCardsSeen(cardsSeen + 1);
-            } else {
-                console.error('Error fetching flashcard:', response.statusText);
-            }
+            const fetchedFlashcard = await fetchRandomFlashcard(deck_id, userId);
+            setFlashcard(fetchedFlashcard);
+            setCardsSeen(cardsSeen + 1);
         } catch (error) {
-            console.error('Error fetching flashcard:', error);
+            console.error(error.message);
         }
     };
 
     const handleMark = async (mark) => {
         try {
-            const response = await fetch('http://localhost:8080/api/study/rate', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    flashcard_id: flashcard.id,
-                    mark: mark,
-                    user_id: userId,
-                }),
-            });
-
-            if (response.ok) {
-                // Fetch the next flashcard after recording the mark
-                fetchFlashcard();
-            } else {
-                console.error('Error recording mark:', response.statusText);
-            }
+            await rateFlashcard(flashcard.id, mark, userId);
+            // Fetch the next flashcard after recording the mark
+            fetchFlashcard();
         } catch (error) {
-            console.error('Error recording mark:', error);
+            console.error(error.message);
         }
     };
 
-
-    // deleting flashcards - on click
-
     const handleDeleteFlashcard = async () => {
         try {
-            const response = await fetch('http://localhost:8080/api/flashcards/delete_card', {
-                method: 'DELETE',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    flashcard_id: flashcard.id,
-                    user_id: userId,
-                }),
-            });
-
-            if (response.ok) {
-                // Fetch the next flashcard after successful deletion
-                fetchFlashcard();
-                alert('Flashcard deleted successfully');
-            } else {
-                console.error('Error deleting flashcard:', response.statusText);
-                alert('Error deleting flashcard');
-            }
+            await deleteFlashcard(flashcard.id, userId);
+            // Fetch the next flashcard after successful deletion
+            fetchFlashcard();
+            alert('Flashcard deleted successfully');
         } catch (error) {
-            console.error('Error deleting flashcard:', error);
+            console.error(error.message);
             alert('Error deleting flashcard');
         }
     };

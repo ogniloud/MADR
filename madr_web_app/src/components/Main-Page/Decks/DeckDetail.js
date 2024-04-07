@@ -9,7 +9,7 @@ import Flashcards from './Exercise Cards/Flashcards';
 import Texts from './Exercise Cards/Texts';
 import WordMatch from './Exercise Cards/WordMatch';
 import FillGaps from './Exercise Cards/FillGaps';
-import './DeckDetails.css';
+import './Styles/DeckDetails.css';
 
 const DeckDetail = () => {
     const { deck_id } = useParams();

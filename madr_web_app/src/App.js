@@ -17,6 +17,11 @@ import Flashcards from "./components/Main-Page/Decks/Exercise Cards/Flashcards";
 import WordMatch from "./components/Main-Page/Decks/Exercise Cards/WordMatch";
 import SocialGroup from "./components/Social Site/social_group";
 import FeedsPage from "./components/Main-Page/Feeds/FeedsPage";
+import Learned from "./components/Main-Page/Decks/Browse Cards/Learned";
+import TheHottest from "./components/Main-Page/Decks/Browse Cards/TheHottest";
+import Warm from "./components/Main-Page/Decks/Browse Cards/Warm";
+import FillGaps from "./components/Main-Page/Decks/Exercise Cards/FillGaps";
+import Texts from "./components/Main-Page/Decks/Exercise Cards/Texts";
 
 
 function App() {
@@ -32,19 +37,23 @@ function App() {
             <Route path="/decks" element={<DecksPage />} />
             <Route path="/feed" element={<FeedsPage />} />
 
+//http://localhost:3000/decks/2/browse-cards/the-hottest
             {/* Specific routes for individual components in DeckDetail */}
             <Route path="/decks/:deck_id/browse-cards/all-words" element={<AllWords />} />
+            <Route path="/decks/:deck_id/browse-cards/the-hottest" element={<TheHottest />} />
+            <Route path="/decks/:deck_id/browse-cards/learned" element={<Learned />} />
+            <Route path="/decks/:deck_id/browse-cards/warm" element={<Warm />} />
             <Route path="/decks/:deck_id/exercise/flashcards" element={<Flashcards />} />
             <Route path="/decks/:deck_id/exercise/word-match" element={<WordMatch />} />
+            <Route path="/decks/:deck_id/exercise/fill-gaps" element={<FillGaps />} />
+            <Route path="/decks/:deck_id/exercise/texts" element={<Texts />} />
+
 
             {/* DeckDetail route without a wildcard */}
             <Route path="/decks/:deck_id" element={<DeckDetail />} />
 
               {/*  Social sites and user's profile*/}
             <Route path = "/social_group" element={<SocialGroup/>} />
-
-
-
 
 
           </Routes>

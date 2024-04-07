@@ -1,79 +1,43 @@
-// DeckPage.js
 import React, { useEffect, useState } from 'react';
 import { Link, Route, Routes } from 'react-router-dom';
 import { jwtDecode } from 'jwt-decode';
+import {fetchUserDecks, deleteDeck} from "../APIs/apiFunctions_decks";
 import DeckDetail from './DeckDetail';
-import './DeckPage.css';
+import './Styles/DeckPage.css';
 
 const DecksPage = () => {
     const [createdDecks, setCreatedDecks] = useState([]);
 
     useEffect(() => {
-        const fetchUserDecks = async () => {
-            try {
-                const token = localStorage.getItem('token');
-                if (token) {
-                    const decodedToken = jwtDecode(token);
-                    let retries = 3;
-
-                    while (retries > 0) {
-                        const response = await fetch('http://localhost:8080/api/flashcards/load', {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json',
-                            },
-                            body: JSON.stringify({ user_id: decodedToken.user_id }),
-                        });
-
-                        if (response.ok) {
-                            const { decks } = await response.json();
-                            setCreatedDecks(decks);
-                            break;
-                        } else {
-                            console.error('Failed to load user decks:', response.statusText);
-
-                            // Retry after a delay
-                            await new Promise(resolve => setTimeout(resolve, 1000));
-                            retries--;
-                        }
-                    }
-                }
-            } catch (error) {
-                console.error('Error loading user decks:', error);
-            }
-        };
-        fetchUserDecks();
+        const token = localStorage.getItem('token');
+        if (token) {
+            fetchDecks(token);
+        }
     }, []);
 
-    const handleDeleteDeck = async (deckId) => {
+    const fetchDecks = async (token) => {
         try {
-            const response = await fetch('http://localhost:8080/api/flashcards/delete_deck', {
-                method: 'DELETE',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    deck_id: deckId,
-                    user_id: getUserId(),
-                }),
-            });
-
-            if (response.ok) {
-                // Remove the deleted deck from the list
-                setCreatedDecks(prevDecks => prevDecks.filter(deck => deck.deck_id !== deckId));
-                alert('Deck deleted successfully');
-            } else {
-                console.error('Failed to delete deck:', response.statusText);
-                alert('Failed to delete deck');
-            }
+            const decks = await fetchUserDecks(token);
+            setCreatedDecks(decks);
         } catch (error) {
-            console.error('Error deleting deck:', error);
-            alert('Error deleting deck');
+            console.error(error.message);
         }
     };
 
-    const getUserId = () => {
-        const token = localStorage.getItem('token');
+    const handleDeleteDeck = async (deckId) => {
+        try {
+            const token = localStorage.getItem('token');
+            const userId = getUserId(token);
+            await deleteDeck(deckId, userId, token);
+            setCreatedDecks(prevDecks => prevDecks.filter(deck => deck.deck_id !== deckId));
+            alert('Deck deleted successfully');
+        } catch (error) {
+            console.error(error.message);
+            alert('Failed to delete deck');
+        }
+    };
+
+    const getUserId = (token) => {
         if (token) {
             const decodedToken = jwtDecode(token);
             return decodedToken.user_id;

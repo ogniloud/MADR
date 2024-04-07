@@ -1,11 +1,12 @@
-import React, {useEffect, useRef, useState} from 'react';
-import {Link, Route, Routes, useNavigate} from 'react-router-dom';
-import Feed from './Feeds/FeedsPage'
+import React, { useEffect, useRef, useState } from 'react';
+import { Link, Route, Routes, useNavigate } from 'react-router-dom';
+import Feed from './Feeds/FeedsPage';
 import CreateDeck from './Decks/CreateDecks';
-import {jwtDecode} from 'jwt-decode';
+import { jwtDecode } from 'jwt-decode';
 import './Styles/MainPage.css';
 import defaultProfilePicture from './imgs/default-profile-picture.png';
 import closeIcon from './imgs/close-circle.png';
+import { fetchFollowers, fetchFollowings, searchUsers, followUser, unfollowUser } from './APIs/apiFunctions_main_feeds';
 
 const MainPage = () => {
     const [userInfo, setUserInfo] = useState(null);
@@ -26,29 +27,11 @@ const MainPage = () => {
                     const decodedToken = jwtDecode(token);
                     setUserInfo(decodedToken);
 
-                    const responseFollowers = await fetch('http://localhost:8080/api/social/followers', {
-                        method: 'POST',
-                        headers: {
-                            'Authorization': `Bearer ${token}`,
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({ user_id: decodedToken.user_id })
-                    });
+                    const followersData = await fetchFollowers(token, decodedToken.user_id);
+                    setFollowers(followersData.user_info || []);
 
-                    const dataFollowers = await responseFollowers.json();
-                    setFollowers(dataFollowers.user_info || []);
-
-                    const responseFollowings = await fetch('http://localhost:8080/api/social/followings', {
-                        method: 'POST',
-                        headers: {
-                            'Authorization': `Bearer ${token}`,
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({ user_id: decodedToken.user_id })
-                    });
-
-                    const dataFollowings = await responseFollowings.json();
-                    setFollowings(dataFollowings.user_info || []);
+                    const followingsData = await fetchFollowings(token, decodedToken.user_id);
+                    setFollowings(followingsData.user_info || []);
                 } catch (error) {
                     console.error('Error fetching user data:', error);
                 }
@@ -87,13 +70,10 @@ const MainPage = () => {
 
     const handleSearch = async () => {
         try {
-            const response = await fetch(`http://localhost:8080/api/social/search?q=${encodeURIComponent(searchQuery)}`);
-            if (response.ok) {
-                const searchData = await response.json();
-                setSearchResults(searchData.users || []);
-                setSearchClicked(true);
-            } else {
-                setSearchResults([]);
+            const token = localStorage.getItem('token');
+            if (token) {
+                const searchData = await searchUsers(token, searchQuery);
+                setSearchResults(searchData);
                 setSearchClicked(true);
             }
         } catch (error) {
@@ -109,41 +89,17 @@ const MainPage = () => {
 
     const handleFollow = async (user) => {
         try {
-            const isFollowing = followings.some((following) => following.userId === user.ID);
             const token = localStorage.getItem('token');
             if (token) {
-                console.log('UserInfo:', userInfo);
                 if (userInfo && userInfo.user_id) {
-                    if (isFollowing) {
-                        console.log('Unfollowing user:', user);
-                        const requestBody = { author_id: user.ID, follower_id: userInfo.user_id };
-                        console.log('Unfollow request body:', requestBody);
-                        const response = await fetch('http://localhost:8080/api/social/unfollow', {
-                            method: 'POST',
-                            headers: {
-                                'Authorization': `Bearer ${token}`,
-                                'Content-Type': 'application/json'
-                            },
-                            body: JSON.stringify(requestBody)
-                        });
-                        console.log('Unfollow response:', response);
-                        if (response.ok) {
+                    if (followings.some((following) => following.userId === user.ID)) {
+                        const response = await unfollowUser(token, user.ID, userInfo.user_id);
+                        if (response) {
                             setFollowings(followings.filter((following) => following.userId !== user.ID));
                         }
                     } else {
-                        console.log('Following user:', user);
-                        const requestBody = { author_id: user.ID, follower_id: userInfo.user_id };
-                        console.log('Follow request body:', requestBody);
-                        const response = await fetch('http://localhost:8080/api/social/follow', {
-                            method: 'POST',
-                            headers: {
-                                'Authorization': `Bearer ${token}`,
-                                'Content-Type': 'application/json'
-                            },
-                            body: JSON.stringify(requestBody)
-                        });
-                        console.log('Follow response:', response);
-                        if (response.ok) {
+                        const response = await followUser(token, user.ID, userInfo.user_id);
+                        if (response) {
                             setFollowings([...followings, { userId: user.ID, username: user.Username }]);
                         }
                     }
@@ -155,8 +111,6 @@ const MainPage = () => {
             console.error('Error following/unfollowing user:', error);
         }
     };
-
-
 
     return (
         <div className="main-page">
@@ -179,12 +133,12 @@ const MainPage = () => {
                             <div className="popup-header">
                                 <h3 className="popup-user-name">{userInfo && userInfo.username}</h3>
                                 <button className="popup-close-btn" onClick={togglePopup}>
-                                    <img src={closeIcon} alt="Close"/>
+                                    <img src={closeIcon} alt="Close" />
                                 </button>
                             </div>
 
                             <div className="popup-content-user-profile">
-                                <img src={defaultProfilePicture} alt="Profile"/>
+                                <img src={defaultProfilePicture} alt="Profile" />
                             </div>
 
                             <div className="popup-content-user-details">
@@ -244,8 +198,8 @@ const MainPage = () => {
             )}
 
             <Routes>
-                <Route path="/create-deck" element={<CreateDeck/>}/>
-                <Route path="/feed" element={<Feed/>}/>
+                <Route path="/create-deck" element={<CreateDeck />} />
+                <Route path="/feed" element={<Feed />} />
             </Routes>
 
             <div className="lower-part">
