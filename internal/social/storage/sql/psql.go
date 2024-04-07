@@ -815,16 +815,19 @@ func (d *Storage) GetParticipantsByGroupId(ctx context.Context, id models.GroupI
 		if err != nil {
 			return nil, fmt.Errorf("get participants: %w", err)
 		}
-		defer rows.Close()
 
-		for rows.Next() {
-			var userInfo models.UserInfo
-			if err := rows.Scan(&userInfo.ID, &userInfo.Username, &userInfo.Email); err != nil {
-				d.Conn.Logger().Errorf("get participants: %v", err)
+		func() {
+			defer rows.Close()
+
+			for rows.Next() {
+				var userInfo models.UserInfo
+				if err := rows.Scan(&userInfo.ID, &userInfo.Username, &userInfo.Email); err != nil {
+					d.Conn.Logger().Errorf("get participants: %v", err)
+				}
+
+				userInfos = append(userInfos, userInfo)
 			}
-
-			userInfos = append(userInfos, userInfo)
-		}
+		}()
 	}
 
 	return userInfos, nil
