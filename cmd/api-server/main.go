@@ -197,6 +197,7 @@ func main() {
 			r.Put("/change_name", socialEndpoints.ChangeGroupName)
 			r.Delete("/delete", socialEndpoints.DeleteGroup)
 			r.Delete("/quit", socialEndpoints.QuitGroup)
+			r.Post("/participants", socialEndpoints.GetParticipantsByGroupId)
 		})
 
 		r.Route("/invite", func(r chi.Router) {
