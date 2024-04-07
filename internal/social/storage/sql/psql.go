@@ -219,11 +219,11 @@ func (d *Storage) CreateGroup(ctx context.Context, id models.UserId, name string
 		return 0, fmt.Errorf("psql error: %w", err)
 	}
 
-	err = d.addMember(ctx, id, groupId)
-	if err != nil {
-		d.Conn.Logger().Errorf("add member failed: %v", err)
-		return 0, err
-	}
+	//err = d.addMember(ctx, id, groupId)
+	//if err != nil {
+	//	d.Conn.Logger().Errorf("add member failed: %v", err)
+	//	return 0, err
+	//}
 
 	return groupId, nil
 }
@@ -273,14 +273,24 @@ func (d *Storage) SendInvite(ctx context.Context, creatorId models.UserId, invit
 		return fmt.Errorf("send invite error: %w", err)
 	}
 
+	c := make(chan struct{})
 	go func() {
+		defer func() { c <- struct{}{} }()
+		row := d.Conn.QueryRow(ctx, `SELECT username FROM user_credentials WHERE user_id=$1`, invitee)
+		inviteeName := ""
+		_ = row.Scan(&inviteeName)
+
+		row = d.Conn.QueryRow(ctx, `SELECT name FROM groups WHERE group_id=$1`, groupId)
+		groupName := ""
+		_ = row.Scan(groupName)
+
 		data := &models.Post{
 			Type: models.Invite,
 			InviteData: &models.InviteData{
 				InviteeId:   invitee,
-				InviteeName: "TEST_NAME_INVITEE",
+				InviteeName: inviteeName,
 				GroupId:     groupId,
-				GroupName:   "TEST_NAME_GROUP",
+				GroupName:   groupName,
 			},
 		}
 
@@ -291,7 +301,7 @@ func (d *Storage) SendInvite(ctx context.Context, creatorId models.UserId, invit
 			d.Conn.Logger().Errorf("invite: %v", err)
 		}
 	}()
-
+	<-c
 	return nil
 }
 
@@ -442,7 +452,10 @@ func (d *Storage) Follow(ctx context.Context, follower models.UserId, author mod
 		return fmt.Errorf("follow error: %w", err)
 	}
 
+	c := make(chan struct{})
+
 	go func() {
+		defer func() { c <- struct{}{} }()
 		ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 		defer cancel()
 
@@ -507,7 +520,7 @@ func (d *Storage) Follow(ctx context.Context, follower models.UserId, author mod
 			return
 		}
 	}()
-
+	<-c
 	return nil
 }
 
@@ -529,7 +542,7 @@ func (d *Storage) ShareDeckGroup(ctx context.Context, owner models.UserId, group
 		d.Conn.Logger().Errorf("share deck error: %v", err)
 		return fmt.Errorf("share deck error: %w", err)
 	}
-
+	rows.Next()
 	name := ""
 	if err := rows.Scan(&name); err != nil {
 		d.Conn.Logger().Errorf("share deck error: %v", err)
@@ -553,7 +566,9 @@ func (d *Storage) ShareDeckGroup(ctx context.Context, owner models.UserId, group
 		return fmt.Errorf("add user leitners to members failed: %w", err)
 	}
 
+	c := make(chan struct{})
 	go func() {
+		defer func() { c <- struct{}{} }()
 		deckName := ""
 		row := d.Conn.QueryRow(ctx, `SELECT name FROM deck_config WHERE deck_id=$1`, deckId)
 		if err := row.Scan(&deckName); err != nil {
@@ -582,7 +597,7 @@ func (d *Storage) ShareDeckGroup(ctx context.Context, owner models.UserId, group
 			d.Conn.Logger().Errorf("feed deck group save error: %v", err)
 		}
 	}()
-
+	<-c
 	return nil
 }
 
