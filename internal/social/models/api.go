@@ -1,6 +1,10 @@
 package models
 
 import (
+	"encoding/json"
+	"fmt"
+	"strings"
+
 	cardmodels "github.com/ogniloud/madr/internal/flashcards/models"
 	"github.com/ogniloud/madr/internal/models"
 )
@@ -439,6 +443,25 @@ type UserInfo struct {
 	Email    string
 }
 
+func (u *UserInfo) Scan(v any) error {
+	switch vt := v.(type) {
+	case []byte:
+		err := json.Unmarshal(vt, u)
+		if err != nil {
+			return err
+		}
+	case string:
+		err := json.NewDecoder(strings.NewReader(vt)).Decode(u)
+		if err != nil {
+			return err
+		}
+	default:
+		return fmt.Errorf("type not allowed")
+	}
+
+	return nil
+}
+
 // FeedRequest is a struct that defines the request body for getting a user's feed.
 // swagger:model feedRequest
 type FeedRequest struct {
@@ -452,4 +475,12 @@ type FeedResponse struct {
 type ShareWithFollowersRequest struct {
 	UserId UserId `json:"user_id"`
 	DeckId DeckId `json:"deck_id"`
+}
+
+type GetParticipantsByGroupIdRequest struct {
+	GroupId GroupId `json:"group_id"`
+}
+
+type GetParticipantsByGroupIdResponse struct {
+	Participants []UserInfo `json:"participants"`
 }

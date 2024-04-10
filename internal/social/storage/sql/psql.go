@@ -16,6 +16,7 @@ import (
 )
 
 var (
+	ErrNotFound       = errors.New("not found")
 	ErrUserNotCreator = errors.New("the user is not a group creator")
 	ErrAlreadyCopied  = errors.New("deck already copied")
 )
@@ -772,6 +773,64 @@ func (d *Storage) ShareWithFollowers(ctx context.Context, userId models.UserId, 
 	}
 
 	return nil
+}
+
+func (d *Storage) GetParticipantsByGroupId(ctx context.Context, id models.GroupId) ([]models.UserInfo, error) {
+	userIds := make([]models.UserId, 1)
+
+	row := d.Conn.QueryRow(ctx, `SELECT group_id, creator_id FROM groups WHERE group_id=$1`, id)
+	if err := row.Scan(&id, &userIds[0]); err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			return nil, fmt.Errorf("group id=%d: %w", id, ErrNotFound)
+		}
+		return nil, fmt.Errorf("get participants: %w", err)
+	}
+
+	rows, err := d.Conn.Query(ctx, `SELECT user_id FROM group_members WHERE group_id=$1`, id)
+	if err != nil {
+		return nil, fmt.Errorf("get participants: %w", err)
+	}
+	defer rows.Close()
+
+	for i := 1; rows.Next(); i++ {
+		userIds = append(userIds, 0)
+		if err := rows.Scan(&userIds[i]); err != nil {
+			d.Conn.Logger().Errorf("get participants: %v", err)
+		}
+	}
+
+	batch := &pgx.Batch{}
+	q := `SELECT user_id, username, email FROM user_credentials WHERE user_id=$1`
+	for _, v := range userIds {
+		batch.Queue(q, v)
+	}
+
+	batchResults := d.Conn.SendBatch(ctx, batch)
+	defer func() { _ = batchResults.Close() }()
+
+	userInfos := make([]models.UserInfo, 0, len(userIds))
+
+	for range batch.Len() {
+		rows, err = batchResults.Query()
+		if err != nil {
+			return nil, fmt.Errorf("get participants: %w", err)
+		}
+
+		func() {
+			defer rows.Close()
+
+			for rows.Next() {
+				var userInfo models.UserInfo
+				if err := rows.Scan(&userInfo.ID, &userInfo.Username, &userInfo.Email); err != nil {
+					d.Conn.Logger().Errorf("get participants: %v", err)
+				}
+
+				userInfos = append(userInfos, userInfo)
+			}
+		}()
+	}
+
+	return userInfos, nil
 }
 
 func (d *Storage) saveToFeed(ctx context.Context, userId models.UserId, posts ...*models.Post) error {
