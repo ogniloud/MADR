@@ -259,7 +259,7 @@ func (d *Storage) AcceptInvite(ctx context.Context, id models.UserId, groupId mo
 	return d.addMember(ctx, id, groupId)
 }
 
-func (d *Storage) SendInvite(ctx context.Context, creatorId models.UserId, invitee models.UserId, groupId models.GroupId) error {
+func (d *Storage) SendInvite(ctx context.Context, creatorId models.UserId, inviteeId models.UserId, groupId models.GroupId) error {
 	group, err := d.GetGroupByGroupId(ctx, groupId)
 	if err != nil {
 		return fmt.Errorf("couldn't get the group the invite is supposed to be sent from, error: %w", err)
@@ -269,7 +269,7 @@ func (d *Storage) SendInvite(ctx context.Context, creatorId models.UserId, invit
 	}
 
 	row := d.Conn.QueryRow(ctx,
-		`INSERT INTO group_invites (group_id, user_id, time_sent) VALUES ($1, $2, now()) RETURNING group_id`, groupId, invitee)
+		`INSERT INTO group_invites (group_id, user_id, time_sent) VALUES ($1, $2, now()) RETURNING group_id`, groupId, inviteeId)
 	if err := row.Scan(&groupId); err != nil {
 		return fmt.Errorf("send invite error: %w", err)
 	}
@@ -277,9 +277,9 @@ func (d *Storage) SendInvite(ctx context.Context, creatorId models.UserId, invit
 	c := make(chan struct{})
 	go func() {
 		defer func() { c <- struct{}{} }()
-		row := d.Conn.QueryRow(ctx, `SELECT username FROM user_credentials WHERE user_id=$1`, invitee)
-		inviteeName := ""
-		_ = row.Scan(&inviteeName)
+		row := d.Conn.QueryRow(ctx, `SELECT username FROM user_credentials WHERE user_id=$1`, creatorId)
+		creatorName := ""
+		_ = row.Scan(&creatorName)
 
 		row = d.Conn.QueryRow(ctx, `SELECT name FROM groups WHERE group_id=$1`, groupId)
 		groupName := ""
@@ -288,8 +288,8 @@ func (d *Storage) SendInvite(ctx context.Context, creatorId models.UserId, invit
 		data := &models.Post{
 			Type: models.Invite,
 			InviteData: &models.InviteData{
-				InviteeId:   invitee,
-				InviteeName: inviteeName,
+				InviteeId:   creatorId,
+				InviteeName: creatorName,
 				GroupId:     groupId,
 				GroupName:   groupName,
 			},
@@ -298,7 +298,7 @@ func (d *Storage) SendInvite(ctx context.Context, creatorId models.UserId, invit
 		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 		defer cancel()
 
-		if err := d.saveToFeed(ctx, invitee, data); err != nil {
+		if err := d.saveToFeed(ctx, inviteeId, data); err != nil {
 			d.Conn.Logger().Errorf("invite: %v", err)
 		}
 	}()

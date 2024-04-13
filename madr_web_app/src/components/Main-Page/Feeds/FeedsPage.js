@@ -1,7 +1,8 @@
-import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import {fetchFeedData} from "../APIs/apiFunctions_main_feeds";
+import React, {useEffect, useState} from 'react';
+import {useNavigate} from 'react-router-dom';
+import {acceptInvite, copyDeck, fetchFeedData} from "../APIs/apiFunctions_main_feeds";
 import './FeedPage.css';
+import {jwtDecode} from "jwt-decode";
 
 const FeedsPage = () => {
     const [feedData, setFeedData] = useState([]);
@@ -12,7 +13,11 @@ const FeedsPage = () => {
         const token = localStorage.getItem('token');
         if (token) {
             fetchFeed(token);
+
+            const decodedToken = jwtDecode(token);
+            setUserInfo(decodedToken);
         }
+
     }, []);
 
     const fetchFeed = async (token) => {
@@ -33,24 +38,47 @@ const FeedsPage = () => {
                     <div key={index} className="feed-item">
                         {/* Render feed item based on item.type */}
                         {item.type === 'invite_data' && (
-                            <p>You received an invite from {item.invite_data.invitee_name} to group {item.invite_data.group_name}</p>
+                            <div>
+                                <p>You received an invite from {item.invite_data.invitee_name} to
+                                    group {item.invite_data.group_name}</p>
+                                <button onClick={() => acceptInvite(
+                                    null,
+                                        userInfo.id,
+                                        item.invite_data.group_id
+                                    )} className="feed-button">ACCEPT</button>
+                            </div>
                         )}
                         {item.type === 'shared_from_group_data' && (
-                            <p>New deck "{item.shared_from_group_data.deck_name}" added to group {item.shared_from_group_data.group_name}</p>
+                            <div>
+                                <p>New deck "{item.shared_from_group_data.deck_name}" added to
+                                    group {item.shared_from_group_data.group_name}</p>
+                                <button onClick={() => acceptInvite(
+                                    null,
+                                    userInfo.id,
+                                    item.shared_from_group_data.deck_id
+                                )} className="feed-button">ACCEPT</button>
+                            </div>
                         )}
                         {item.type === 'shared_from_following_data' && (
-                            <p>New deck "{item.shared_from_following_data.deck_name}" shared by user {item.shared_from_following_data.author_name}</p>
+                            <div>
+                                <p>New deck "{item.shared_from_following_data.deck_name}" shared by
+                                    user {item.shared_from_following_data.author_name}</p>
+                                <button onClick={() => copyDeck(
+                                    null,
+                                    userInfo.id,
+                                    item.shared_from_following_data.deck_id
+                                )} className={"feed-button"}>COPY</button>
+                            </div>
                         )}
                         {item.type === 'following_subscribed_data' && (
                             <div className="feed-page-inside">
-                                <p>{item.following_subscribed_data.follower_name} is following you.</p>
-                                <p>You are following {item.following_subscribed_data.author_name}</p>
+                                <p>{item.following_subscribed_data.follower_name} is followed to {item.following_subscribed_data.author_name}</p>
                             </div>
                         )}
                     </div>
                 ))}
             </div>
-            <p className="home-button" onClick={returnToHome}>Return to Home</p>
+            <button onClick={returnToHome}>Return to Home</button>
         </div>
     );
 };

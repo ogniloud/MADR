@@ -1,5 +1,3 @@
-import React, {useEffect, useRef, useState} from 'react';
-import {Link, Route, Routes, useNavigate} from 'react-router-dom';
 import {jwtDecode} from 'jwt-decode';
 
 
@@ -125,6 +123,41 @@ export const fetchFeedData = async (token) => {
     }
 };
 
+    export const acceptInvite = async (token, user_id, group_id) => {
+        try {
+            const requestBody = { user_id: user_id, group_id: group_id };
+            const response = await fetch('http://localhost:8080/api/invite/accept', {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(requestBody)
+            });
+            return response.ok;
+        } catch (error) {
+            console.error('Error unfollowing user:', error);
+            throw error;
+        }
+    }
+
+export const copyDeck = async (token, copier_id, deck_id) => {
+    try {
+        const requestBody = { copier_id: copier_id, deck_id: deck_id };
+        const response = await fetch('http://localhost:8080/api/social/copy', {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(requestBody)
+        });
+        return response.ok;
+    } catch (error) {
+        console.error('Error unfollowing user:', error);
+        throw error;
+    }
+}
 
 {/* API's for FeedsPage.js */}
 

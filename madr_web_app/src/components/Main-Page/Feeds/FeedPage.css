@@ -23,9 +23,8 @@
 }
 
 .feed-item {
+    min-width: 400px;
     position: relative;
-    height: 80px;
-    width: 620px;
     padding: 10px;
     border-radius: 5px;
     border: 1px solid #333; /* Dark gray border */
@@ -38,13 +37,16 @@
 
 
 .home-button{
-    position: absolute;
-    top: 620px;
-    right: 690px;
     font-weight: 600;
 }
 
 .home-button:hover{
     color: #415A80;
+}
 
+.feed-button {
+    text-align: center;
+    width: 100px;
+    height: 40px;
+    margin: 5px;
 }
