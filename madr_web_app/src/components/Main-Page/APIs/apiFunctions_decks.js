@@ -119,6 +119,52 @@ export const shareDeck = async (deckId, userId, token) => {
     }
 }
 
+export const checkIfSharedByGroups = async (deckId, userId, token) => {
+    try {
+        const response = await fetch('http://localhost:8080/api/social/groups_shared', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify({
+                deck_id: deckId,
+                creator_id: userId,
+            }),
+        });
+
+        if (!response.ok) {
+            throw new Error('Failed to share deck');
+        }
+        return response.json()
+    } catch (error) {
+        throw new Error('Error sharing deck');
+    }
+}
+
+export const shareGroup = async (userId, groupId, deckId, token) => {
+    try {
+        const response = await fetch('http://localhost:8080/api/groups/share', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify({
+                deck_id: deckId,
+                user_id: userId,
+                group_id: groupId
+            }),
+        });
+
+        if (!response.ok) {
+            throw new Error('Failed to share deck');
+        }
+    } catch (error) {
+        throw new Error('Error sharing deck');
+    }
+}
+
 {/* API's for DeckPage.js */}
 
 

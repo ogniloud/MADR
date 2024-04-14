@@ -73,4 +73,6 @@ type Storage interface {
 	ShareWithFollowers(ctx context.Context, userId models.UserId, deckId models.DeckId) error
 
 	GetParticipantsByGroupId(ctx context.Context, id models.GroupId) ([]models.UserInfo, error)
+
+	GetGroupsDeckShared(ctx context.Context, userId cardmodels.UserId, deckId models.DeckId) ([]models.GroupsShared, error)
 }

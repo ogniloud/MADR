@@ -64,3 +64,10 @@ type Groups map[GroupId]GroupConfig
 
 // Members is a map of members of a group.
 type Members map[UserId]MemberInfo
+
+type GroupsShared struct {
+	DeckId    DeckId  `json:"deck_id"`
+	GroupId   GroupId `json:"group_id"`
+	GroupName string  `json:"group_name"`
+	Shared    bool    `json:"shared"`
+}

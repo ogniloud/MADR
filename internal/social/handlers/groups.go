@@ -380,3 +380,28 @@ func (e Endpoints) GetParticipantsByGroupId(w http.ResponseWriter, r *http.Reque
 		return
 	}
 }
+
+func (e Endpoints) GetGroupsDeckShared(w http.ResponseWriter, r *http.Request) {
+	reqBody := models.GetGroupsDeckSharedRequest{}
+	respBody := models.GetGroupsDeckSharedResponse{}
+
+	if err := ioutil.FromJSON(&reqBody, r.Body); err != nil {
+		e.logger.Errorf("json not parsed: %v", err)
+		e.ew.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	groups, err := e.s.GetGroupsDeckShared(r.Context(), reqBody.CreatorId, reqBody.DeckId)
+	if err != nil {
+		e.logger.Errorf("reqBody: %+v, error: %v", reqBody, err)
+		e.ew.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	respBody.Groups = groups
+	if err := ioutil.ToJSON(respBody, w); err != nil {
+		e.logger.Errorf("To json error: %v", err)
+		e.ew.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+}

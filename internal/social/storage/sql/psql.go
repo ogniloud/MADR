@@ -858,6 +858,47 @@ func (d *Storage) GetParticipantsByGroupId(ctx context.Context, id models.GroupI
 	return userInfos, nil
 }
 
+func (d *Storage) GetGroupsDeckShared(ctx context.Context, userId models.UserId, deckId models.DeckId) ([]models.GroupsShared, error) {
+	rows, err := d.Conn.Query(ctx, `
+	SELECT g.group_id, g.name, count(q.c) FROM groups g
+	LEFT JOIN (SELECT g.group_id, g.name, count(gd.deck_id) c FROM groups g
+	JOIN public.group_decks gd on g.group_id = gd.group_id
+	WHERE gd.deck_id = $1
+	GROUP BY g.group_id) q ON q.group_id = g.group_id
+	WHERE g.creator_id = $2
+	GROUP BY g.group_id`, deckId, userId,
+	)
+	if err != nil {
+		d.Conn.Logger().Errorf("get groups: %v", err)
+		return nil, fmt.Errorf("get groups: %w", err)
+	}
+	defer rows.Close()
+
+	var group models.GroupsShared
+	var num byte
+
+	var groups []models.GroupsShared
+	_, err = pgx.ForEachRow(rows, []any{&group.GroupId, &group.GroupName, &num}, func() error {
+		groups = append(groups, models.GroupsShared{
+			DeckId:    deckId,
+			GroupId:   group.GroupId,
+			GroupName: group.GroupName,
+			Shared:    num == 1,
+		})
+
+		return nil
+	})
+	if err != nil {
+		d.Conn.Logger().Errorf("get groups: %v", err)
+		return nil, fmt.Errorf("get groups: %w", err)
+	}
+
+	groups1 := make([]models.GroupsShared, len(groups))
+	copy(groups1, groups)
+
+	return groups1, nil
+}
+
 func (d *Storage) saveToFeed(ctx context.Context, userId models.UserId, posts ...*models.Post) error {
 	t := time.Now().UTC()
 

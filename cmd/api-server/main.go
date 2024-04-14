@@ -185,6 +185,7 @@ func main() {
 			r.Post("/feed", socialEndpoints.Feed)
 			r.Post("/share", socialEndpoints.ShareWithFollowers)
 			r.Post("/is_shared", socialEndpoints.CheckIfSharedWithFollowers)
+			r.Post("/groups_shared", socialEndpoints.GetGroupsDeckShared)
 		})
 
 		r.Route("/groups", func(r chi.Router) {

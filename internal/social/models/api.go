@@ -493,3 +493,12 @@ type GetParticipantsByGroupIdRequest struct {
 type GetParticipantsByGroupIdResponse struct {
 	Participants []UserInfo `json:"participants"`
 }
+
+type GetGroupsDeckSharedRequest struct {
+	CreatorId UserId `json:"creator_id"`
+	DeckId    DeckId `json:"deck_id"`
+}
+
+type GetGroupsDeckSharedResponse struct {
+	Groups []GroupsShared `json:"groups"`
+}
