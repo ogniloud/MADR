@@ -363,3 +363,29 @@ func (e Endpoints) ShareWithFollowers(w http.ResponseWriter, r *http.Request) {
 
 	w.WriteHeader(http.StatusNoContent)
 }
+
+// CheckIfSharedWithFollowers /api/social/is_shared
+func (e Endpoints) CheckIfSharedWithFollowers(w http.ResponseWriter, r *http.Request) {
+	reqBody := models.CheckIfSharedWithFollowersRequest{}
+	respBody := models.CheckIfSharedWithFollowersResponse{}
+
+	if err := ioutil.FromJSON(&reqBody, r.Body); err != nil {
+		e.logger.Errorf("json not parsed: %v", err)
+		e.ew.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	ok, err := e.s.CheckIfSharedFollowers(r.Context(), reqBody.UserId, reqBody.DeckId)
+	if err != nil {
+		e.logger.Errorf("reqBody: %+v, error: %v", reqBody, err)
+		e.ew.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	respBody.Ok = ok
+	if err := ioutil.ToJSON(respBody, w); err != nil {
+		e.logger.Errorf("To json error: %v", err)
+		e.ew.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+}

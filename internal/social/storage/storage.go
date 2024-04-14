@@ -68,6 +68,8 @@ type Storage interface {
 
 	Feed(ctx context.Context, userId models.UserId, page int) ([]models.Post, error)
 
+	CheckIfSharedFollowers(ctx context.Context, userId models.UserId, deckId models.DeckId) (bool, error)
+
 	ShareWithFollowers(ctx context.Context, userId models.UserId, deckId models.DeckId) error
 
 	GetParticipantsByGroupId(ctx context.Context, id models.GroupId) ([]models.UserInfo, error)

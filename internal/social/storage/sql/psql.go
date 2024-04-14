@@ -19,6 +19,7 @@ var (
 	ErrNotFound       = errors.New("not found")
 	ErrUserNotCreator = errors.New("the user is not a group creator")
 	ErrAlreadyCopied  = errors.New("deck already copied")
+	ErrAlreadyShared  = errors.New("deck already shared")
 )
 
 type Storage struct {
@@ -736,6 +737,13 @@ func (d *Storage) Feed(ctx context.Context, userId models.UserId, page int) (dat
 	return data1, nil
 }
 func (d *Storage) ShareWithFollowers(ctx context.Context, userId models.UserId, deckId models.DeckId) error {
+	if ok, err := d.CheckIfSharedFollowers(ctx, userId, deckId); err != nil {
+		d.Conn.Logger().Errorf("ShareWithFollowers: %v", err)
+		return fmt.Errorf("ShareWithFollowers: %w", err)
+	} else if ok {
+		return ErrAlreadyShared
+	}
+
 	var deckName, userName string
 
 	rowUser := d.Conn.QueryRow(ctx, `SELECT username FROM user_credentials WHERE user_id=$1`, userId)
@@ -748,6 +756,12 @@ func (d *Storage) ShareWithFollowers(ctx context.Context, userId models.UserId, 
 	if err := rowDeck.Scan(&deckName); err != nil {
 		d.Conn.Logger().Errorf("share: deckname get error: %v", err)
 		return fmt.Errorf("share: deckname get error: %w", err)
+	}
+
+	_, err := d.Conn.Exec(ctx, `INSERT INTO public_shared VALUES ($1, now())`, deckId)
+	if err != nil {
+		d.Conn.Logger().Errorf("share: insert error: %v", err)
+		return fmt.Errorf("share: insert error: %w", err)
 	}
 
 	data := &models.SharedFromFollowingData{
@@ -764,7 +778,7 @@ func (d *Storage) ShareWithFollowers(ctx context.Context, userId models.UserId, 
 
 	b, _ := json.Marshal(post)
 
-	_, err := d.Conn.Exec(ctx, `INSERT INTO feed (
+	_, err = d.Conn.Exec(ctx, `INSERT INTO feed (
                   SELECT f.follower_id, $1, now() FROM followers f WHERE f.user_id=$2
 )`, string(b), userId)
 	if err != nil {
@@ -773,6 +787,17 @@ func (d *Storage) ShareWithFollowers(ctx context.Context, userId models.UserId, 
 	}
 
 	return nil
+}
+
+func (d *Storage) CheckIfSharedFollowers(ctx context.Context, userId models.UserId, deckId models.DeckId) (bool, error) {
+	row := d.Conn.QueryRow(ctx, `SELECT COUNT(*) FROM public_shared WHERE deck_id=$1`, deckId)
+	var count int
+	if err := row.Scan(&count); err != nil {
+		d.Conn.Logger().Errorf("checkIfSharedFollowers error: %v", err)
+		return false, fmt.Errorf("checkIfSharedFollowers error: %v", err)
+	}
+
+	return count == 1, nil
 }
 
 func (d *Storage) GetParticipantsByGroupId(ctx context.Context, id models.GroupId) ([]models.UserInfo, error) {
