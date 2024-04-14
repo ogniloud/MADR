@@ -899,6 +899,52 @@ func (d *Storage) GetGroupsDeckShared(ctx context.Context, userId models.UserId,
 	return groups1, nil
 }
 
+func (d *Storage) GetFollowersNotJoinedGroup(ctx context.Context, userId models.UserId, groupId models.GroupId) ([]models.GroupsFollowed, error) {
+	row := d.Conn.QueryRow(ctx, `
+SELECT count(*) FROM groups WHERE group_id=$1 AND creator_id=$2
+`, groupId, userId)
+	var count int
+	if err := row.Scan(&count); err != nil {
+		d.Conn.Logger().Errorf("check group creator: %v", err)
+		return nil, fmt.Errorf("check group creator: %w", err)
+	}
+
+	if count == 0 {
+		return nil, ErrUserNotCreator
+	}
+
+	rows, err := d.Conn.Query(ctx, `
+SELECT uc.user_id, uc.username  FROM followers f
+LEFT JOIN (SELECT * FROM group_members gm
+        WHERE gm.group_id=$1) gmm ON f.follower_id = gmm.user_id
+JOIN user_credentials uc ON f.follower_id = uc.user_id
+WHERE f.user_id = $2 AND gmm.user_id IS NULL
+`, groupId, userId)
+	if err != nil {
+		d.Conn.Logger().Errorf("get followers: %v", err)
+		return nil, fmt.Errorf("get followers: %w", err)
+	}
+	defer rows.Close()
+
+	var followers []models.GroupsFollowed
+	var follower models.GroupsFollowed
+	follower.GroupId = groupId
+
+	_, err = pgx.ForEachRow(rows, []any{&follower.FollowerId, &follower.FollowerName}, func() error {
+		followers = append(followers, follower)
+		return nil
+	})
+	if err != nil {
+		d.Conn.Logger().Errorf("get followers: %v", err)
+		return nil, fmt.Errorf("get followers: %w", err)
+	}
+
+	followers1 := make([]models.GroupsFollowed, len(followers))
+	copy(followers1, followers)
+
+	return followers1, nil
+}
+
 func (d *Storage) saveToFeed(ctx context.Context, userId models.UserId, posts ...*models.Post) error {
 	t := time.Now().UTC()
 

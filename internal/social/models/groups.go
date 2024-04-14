@@ -71,3 +71,9 @@ type GroupsShared struct {
 	GroupName string  `json:"group_name"`
 	Shared    bool    `json:"shared"`
 }
+
+type GroupsFollowed struct {
+	GroupId      GroupId `json:"group_id"`
+	FollowerId   UserId  `json:"follower_id"`
+	FollowerName string  `json:"follower_name"`
+}

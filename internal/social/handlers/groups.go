@@ -405,3 +405,28 @@ func (e Endpoints) GetGroupsDeckShared(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 }
+
+func (e Endpoints) GetFollowersNotJoinedGroup(w http.ResponseWriter, r *http.Request) {
+	reqBody := models.GetFollowersNotJoinedGroupRequest{}
+	respBody := models.GetFollowersNotJoinedGroupResponse{}
+
+	if err := ioutil.FromJSON(&reqBody, r.Body); err != nil {
+		e.logger.Errorf("json not parsed: %v", err)
+		e.ew.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	followers, err := e.s.GetFollowersNotJoinedGroup(r.Context(), reqBody.CreatorId, reqBody.GroupId)
+	if err != nil {
+		e.logger.Errorf("reqBody: %+v, error: %v", reqBody, err)
+		e.ew.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	respBody.Followers = followers
+	if err := ioutil.ToJSON(respBody, w); err != nil {
+		e.logger.Errorf("To json error: %v", err)
+		e.ew.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+}

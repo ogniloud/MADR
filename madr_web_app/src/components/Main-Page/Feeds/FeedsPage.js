@@ -16,6 +16,7 @@ const FeedsPage = () => {
 
             const decodedToken = jwtDecode(token);
             setUserInfo(decodedToken);
+            console.log(userInfo)
         }
 
     }, []);
@@ -43,8 +44,8 @@ const FeedsPage = () => {
                                     group {item.invite_data.group_name}</p>
                                 <button onClick={() => acceptInvite(
                                     null,
-                                        userInfo.id,
-                                        item.invite_data.group_id
+                                    parseInt(userInfo.user_id),
+                                    parseInt(item.invite_data.group_id)
                                     )} className="feed-button">ACCEPT</button>
                             </div>
                         )}
@@ -52,11 +53,12 @@ const FeedsPage = () => {
                             <div>
                                 <p>New deck "{item.shared_from_group_data.deck_name}" added to
                                     group {item.shared_from_group_data.group_name}</p>
-                                <button onClick={() => acceptInvite(
+                                <button onClick={() =>
+                                    copyDeck(
                                     null,
-                                    userInfo.id,
-                                    item.shared_from_group_data.deck_id
-                                )} className="feed-button">ACCEPT</button>
+                                    parseInt(userInfo.user_id),
+                                    parseInt(item.shared_from_group_data.deck_id)
+                                )} className="feed-button">COPY</button>
                             </div>
                         )}
                         {item.type === 'shared_from_following_data' && (
@@ -65,8 +67,8 @@ const FeedsPage = () => {
                                     user {item.shared_from_following_data.author_name}</p>
                                 <button onClick={() => copyDeck(
                                     null,
-                                    userInfo.id,
-                                    item.shared_from_following_data.deck_id
+                                    parseInt(userInfo.user_id),
+                                    parseInt(item.shared_from_following_data.deck_id)
                                 )} className={"feed-button"}>COPY</button>
                             </div>
                         )}

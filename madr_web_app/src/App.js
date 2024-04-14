@@ -1,10 +1,5 @@
 import React from 'react';
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
-
-
-
-{/* Imported pages and components */}
-
+import {BrowserRouter as Router, Route, Routes} from 'react-router-dom';
 import Form from './components/User-Components/SignUp';
 import SignIn from './components/User-Components/SignIn';
 import MainPage from './components/Main-Page/MainPage';
@@ -22,6 +17,10 @@ import TheHottest from "./components/Main-Page/Decks/Browse Cards/TheHottest";
 import Warm from "./components/Main-Page/Decks/Browse Cards/Warm";
 import FillGaps from "./components/Main-Page/Decks/Exercise Cards/FillGaps";
 import Texts from "./components/Main-Page/Decks/Exercise Cards/Texts";
+import SocialGroupDetail from "./components/Social Site/social_group_detail";
+
+
+{/* Imported pages and components */}
 
 
 function App() {
@@ -54,7 +53,7 @@ function App() {
 
               {/*  Social sites and user's profile*/}
             <Route path = "/social_group" element={<SocialGroup/>} />
-
+            <Route path="/social_group/:group_id" element={<SocialGroupDetail />} />
 
           </Routes>
         </Router>

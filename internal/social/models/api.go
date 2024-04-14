@@ -502,3 +502,12 @@ type GetGroupsDeckSharedRequest struct {
 type GetGroupsDeckSharedResponse struct {
 	Groups []GroupsShared `json:"groups"`
 }
+
+type GetFollowersNotJoinedGroupRequest struct {
+	CreatorId UserId  `json:"creator_id"`
+	GroupId   GroupId `json:"group_id"`
+}
+
+type GetFollowersNotJoinedGroupResponse struct {
+	Followers []GroupsFollowed `json:"followers"`
+}

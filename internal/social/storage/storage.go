@@ -75,4 +75,6 @@ type Storage interface {
 	GetParticipantsByGroupId(ctx context.Context, id models.GroupId) ([]models.UserInfo, error)
 
 	GetGroupsDeckShared(ctx context.Context, userId cardmodels.UserId, deckId models.DeckId) ([]models.GroupsShared, error)
+
+	GetFollowersNotJoinedGroup(ctx context.Context, userId models.UserId, groupId models.GroupId) ([]models.GroupsFollowed, error)
 }

@@ -200,6 +200,7 @@ func main() {
 			r.Delete("/delete", socialEndpoints.DeleteGroup)
 			r.Delete("/quit", socialEndpoints.QuitGroup)
 			r.Post("/participants", socialEndpoints.GetParticipantsByGroupId)
+			r.Post("/followers_not_joined", socialEndpoints.GetFollowersNotJoinedGroup)
 		})
 
 		r.Route("/invite", func(r chi.Router) {
