@@ -90,8 +90,10 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    z-index: 9999; /* Ensure the overlay is above other content */
+    z-index: 9999;
+    border-radius: 25px;
 }
+
 
 .popup-user-profile {
     backdrop-filter: blur(10px); /* Adjust the blur radius as needed */
@@ -151,7 +153,9 @@
 }
 
 .follower-button-user-details,
+.create-group-button,
 .followings-button-user-details {
+    font-family: "Google Sans", "sans-serif";
     display: flex;
     justify-content: center;
     align-items: center;
@@ -162,7 +166,11 @@
     width: 130px;
 }
 
+.create-group-button{
+    position: absolute;
+    top:120px;
 
+}
 .group-button-user-details{
     display: flex;
     position: absolute;
@@ -361,3 +369,57 @@
 .dropdown:hover .dropbtn {
     background-color: #3e8e41;
 }
+
+
+.creating-group{
+    position: relative;
+    top: 120px;
+}
+
+
+.dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: #f9f9f9;
+    min-width: 160px;
+    box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2);
+    z-index: 1;
+}
+
+.dropdown-content p {
+    color: black; /* Adjust the text color here */
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+}
+
+.dropdown-content p:hover {
+    background-color: #f1f1f1;
+}
+
+.show {
+    display: block;
+}
+
+
+
+
+.creating-group-popup {
+    background-color: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Drop shadow */
+}
+
+.creating-group-popup input {
+    margin-bottom: 10px;
+}
+
+.creating-group-popup button {
+    margin-right: 10px;
+}
+
+.creating-group-popup p {
+    margin-top: 10px;
+}
+

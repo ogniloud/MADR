@@ -6,7 +6,7 @@ import { jwtDecode } from 'jwt-decode';
 import './Styles/MainPage.css';
 import defaultProfilePicture from './imgs/default-profile-picture.png';
 import closeIcon from './imgs/close-circle.png';
-import { fetchFollowers, fetchFollowings, searchUsers, followUser, unfollowUser } from './APIs/apiFunctions_main_feeds';
+import { fetchFollowers, fetchFollowings, searchUsers, followUser, unfollowUser, createGroup } from './APIs/apiFunctions_main_feeds';
 
 const MainPage = () => {
     const [userInfo, setUserInfo] = useState(null);
@@ -18,6 +18,10 @@ const MainPage = () => {
     const [searchClicked, setSearchClicked] = useState(false);
     const navigate = useNavigate();
     const searchResultsRef = useRef(null);
+    const [showGroupDialog, setShowGroupDialog] = useState(false);
+    const [groupName, setGroupName] = useState('');
+    const [groupCreationError, setGroupCreationError] = useState('');
+    const [groupCreationSuccess, setGroupCreationSuccess] = useState('');
 
     useEffect(() => {
         const fetchUserData = async () => {
@@ -73,13 +77,28 @@ const MainPage = () => {
             const token = localStorage.getItem('token');
             if (token) {
                 const searchData = await searchUsers(token, searchQuery);
-                setSearchResults(searchData);
+                console.log('Search Data:', searchData);
+                // Update search results with follow status
+                const updatedSearchResults = searchData.map(user => {
+                    // Check if the user is already being followed
+                    const isFollowing = followings.some(following => following.userId === user.ID);
+                    return {
+                        ...user,
+                        isFollowing: isFollowing
+                    };
+                });
+                console.log('Updated Search Results:', updatedSearchResults);
+                setSearchResults(updatedSearchResults);
                 setSearchClicked(true);
             }
         } catch (error) {
             console.error('Error fetching search results:', error);
         }
     };
+
+
+
+
 
     const handleKeyPress = (event) => {
         if (event.key === 'Enter') {
@@ -90,27 +109,90 @@ const MainPage = () => {
     const handleFollow = async (user) => {
         try {
             const token = localStorage.getItem('token');
-            if (token) {
-                if (userInfo && userInfo.user_id) {
-                    if (followings.some((following) => following.userId === user.ID)) {
-                        const response = await unfollowUser(token, user.ID, userInfo.user_id);
-                        if (response) {
-                            setFollowings(followings.filter((following) => following.userId !== user.ID));
-                        }
-                    } else {
-                        const response = await followUser(token, user.ID, userInfo.user_id);
-                        if (response) {
-                            setFollowings([...followings, { userId: user.ID, username: user.Username }]);
-                        }
+            if (token && userInfo && userInfo.user_id) {
+                if (user.isFollowing) {
+                    // Unfollow user
+                    console.log('Unfollowing user:', user);
+                    const response = await unfollowUser(token, user.ID, userInfo.user_id);
+                    console.log('Unfollow response:', response);
+                    if (response) {
+                        // Remove the unfollowed user from the followings state
+                        setFollowings(followings.filter((following) => following.userId !== user.ID));
+                        // Update the search results to reflect the unfollow action
+                        setSearchResults(searchResults.map(result => ({
+                            ...result,
+                            isFollowing: result.ID === user.ID ? !user.isFollowing : result.isFollowing
+                        })));
+                        console.log('Updated search results after unfollow:', searchResults);
                     }
                 } else {
-                    console.log('User info is not available or missing user_id.');
+                    // Follow user
+                    console.log('Following user:', user);
+                    const response = await followUser(token, user.ID, userInfo.user_id);
+                    console.log('Follow response:', response);
+                    if (response) {
+                        // Add the followed user to the followings state
+                        setFollowings([...followings, { userId: user.ID, username: user.Username }]);
+                        // Update the search results to reflect the follow action
+                        setSearchResults(searchResults.map(result => ({
+                            ...result,
+                            isFollowing: result.ID === user.ID ? !user.isFollowing : result.isFollowing
+                        })));
+                        console.log('Updated search results after follow:', searchResults);
+                    }
                 }
+            } else {
+                console.log('Token or user info is missing.');
             }
         } catch (error) {
             console.error('Error following/unfollowing user:', error);
         }
     };
+
+
+
+
+
+
+
+
+
+    const handleCreateGroup = async () => {
+        try {
+            const token = localStorage.getItem('token');
+            const userId = userInfo.user_id;
+
+            if (token && userId && groupName.trim() !== '') {
+                const response = await createGroup(token, userId, groupName);
+
+                if (response && response.group_id) {
+                    setShowGroupDialog(false);
+                    setGroupCreationSuccess('Group created successfully!');
+                    setGroupCreationError('');
+                } else {
+                    // Group creation failed
+                    setShowGroupDialog(true);
+                    setGroupCreationError('Failed to create group');
+                    setGroupCreationSuccess('');
+                }
+            } else {
+
+                setShowGroupDialog(true);
+                setGroupCreationError('Invalid group name or user ID');
+
+                setGroupCreationSuccess('');
+            }
+        } catch (error) {
+            console.error('Error creating group:', error);
+            setShowGroupDialog(true);
+            setGroupCreationError('An error occurred while creating the group');
+            setGroupCreationSuccess('');
+        }
+    };
+
+
+
+
 
     return (
         <div className="main-page">
@@ -159,15 +241,46 @@ const MainPage = () => {
                                     <div className="group-dropdown-content">
                                         {/* Dropdown content here */}
                                     </div>
+                                    {/* Add button to open group creation dialog */}
+                                    <button className="create-group-button" onClick={() => setShowGroupDialog(true)}>Create Group</button>
                                 </div>
 
                             </div>
+
+
+
+                            {/* Dialog box for group creation */}
+                            {showGroupDialog && (
+                                <div className="popup-overlay">
+                                    <div className="creating-group-popup">
+                                        <input
+                                            type="text"
+                                            placeholder="Enter group name"
+                                            value={groupName}
+                                            onChange={(e) => setGroupName(e.target.value)}
+                                        />
+                                        <button onClick={handleCreateGroup}>Create</button>
+                                        <button onClick={() => setShowGroupDialog(false)}>Cancel</button>
+
+                                        {groupCreationError && <p>{groupCreationError}</p>}
+                                        {groupCreationSuccess && !groupCreationError && <p>{groupCreationSuccess}</p>}
+
+
+
+                                    </div>
+                                </div>
+                            )}
+
 
                             <button className="popup-logout-button" onClick={handleLogout}>
                                 Logout
                             </button>
                         </div>
                     )}
+
+
+
+
                 </div>
                 <Link className="main-page-feed-button" to="/feed">
                     Feed
@@ -175,6 +288,7 @@ const MainPage = () => {
 
             </nav>
 
+            {/* Search results */}
             {searchClicked && (
                 <div className="main-page-search-results" ref={searchResultsRef}>
                     {searchResults.length > 0 ? (
@@ -183,20 +297,34 @@ const MainPage = () => {
                                 <li key={index}>
                                     <p>Username: {user.Username}</p>
                                     <p>Email: {user.Email}</p>
-                                    <button className="main-page-follow-unfollow-button" onClick={() => handleFollow(user)}>
-                                        {followings.some((following) => following.userId === user.userId)
-                                            ? 'Unfollow'
-                                            : 'Follow'}
-                                    </button>
+                                    {/* Display "Follow" or "Unfollow" based on user's follow status */}
+                                    {user.isFollowing ? (
+                                        <React.Fragment>
+                                            <button className="main-page-follow-unfollow-button" onClick={() => handleFollow(user)}>
+                                                Unfollow
+                                            </button>
+                                            {/* Display message indicating user is already followed */}
+                                            <p className="user-following-message">You are already following this user</p>
+                                        </React.Fragment>
+                                    ) : (
+                                        <button className="main-page-follow-unfollow-button" onClick={() => handleFollow(user)}>
+                                            Follow
+                                        </button>
+                                    )}
                                 </li>
                             ))}
                         </ul>
                     ) : (
                         <p>No users found</p>
                     )}
+
                 </div>
             )}
 
+
+
+
+            {/* Routes and lower-part section */}
             <Routes>
                 <Route path="/create-deck" element={<CreateDeck />} />
                 <Route path="/feed" element={<Feed />} />
@@ -212,6 +340,7 @@ const MainPage = () => {
             </div>
         </div>
     );
+
 };
 
 export default MainPage;

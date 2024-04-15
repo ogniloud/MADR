@@ -93,6 +93,34 @@ export const unfollowUser = async (token, userId, followerId) => {
     }
 };
 
+export const createGroup = async (token, userId, groupName) => {
+    try {
+        const requestBody = {
+            name: groupName,
+            user_id: userId,
+        };
+
+        const response = await fetch('http://localhost:8080/api/groups/create', {
+            method: 'PUT',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(requestBody),
+        });
+
+        if (response.ok) {
+            return await response.json();
+        } else {
+            console.error('Failed to create group:', response.statusText);
+            return null;
+        }
+    } catch (error) {
+        console.error('Error creating group:', error);
+        throw error;
+    }
+};
+
 {/* API's for MainPage.js */}
 
 
