@@ -184,6 +184,8 @@ func main() {
 			r.Get("/search", socialEndpoints.SearchUser)
 			r.Post("/feed", socialEndpoints.Feed)
 			r.Post("/share", socialEndpoints.ShareWithFollowers)
+			r.Post("/is_shared", socialEndpoints.CheckIfSharedWithFollowers)
+			r.Post("/groups_shared", socialEndpoints.GetGroupsDeckShared)
 		})
 
 		r.Route("/groups", func(r chi.Router) {
@@ -198,6 +200,7 @@ func main() {
 			r.Delete("/delete", socialEndpoints.DeleteGroup)
 			r.Delete("/quit", socialEndpoints.QuitGroup)
 			r.Post("/participants", socialEndpoints.GetParticipantsByGroupId)
+			r.Post("/followers_not_joined", socialEndpoints.GetFollowersNotJoinedGroup)
 		})
 
 		r.Route("/invite", func(r chi.Router) {

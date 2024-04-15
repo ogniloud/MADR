@@ -477,10 +477,37 @@ type ShareWithFollowersRequest struct {
 	DeckId DeckId `json:"deck_id"`
 }
 
+type CheckIfSharedWithFollowersRequest struct {
+	UserId UserId `json:"user_id"`
+	DeckId DeckId `json:"deck_id"`
+}
+
+type CheckIfSharedWithFollowersResponse struct {
+	Ok bool `json:"ok"`
+}
+
 type GetParticipantsByGroupIdRequest struct {
 	GroupId GroupId `json:"group_id"`
 }
 
 type GetParticipantsByGroupIdResponse struct {
 	Participants []UserInfo `json:"participants"`
+}
+
+type GetGroupsDeckSharedRequest struct {
+	CreatorId UserId `json:"creator_id"`
+	DeckId    DeckId `json:"deck_id"`
+}
+
+type GetGroupsDeckSharedResponse struct {
+	Groups []GroupsShared `json:"groups"`
+}
+
+type GetFollowersNotJoinedGroupRequest struct {
+	CreatorId UserId  `json:"creator_id"`
+	GroupId   GroupId `json:"group_id"`
+}
+
+type GetFollowersNotJoinedGroupResponse struct {
+	Followers []GroupsFollowed `json:"followers"`
 }

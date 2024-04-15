@@ -19,6 +19,7 @@ var (
 	ErrNotFound       = errors.New("not found")
 	ErrUserNotCreator = errors.New("the user is not a group creator")
 	ErrAlreadyCopied  = errors.New("deck already copied")
+	ErrAlreadyShared  = errors.New("deck already shared")
 )
 
 type Storage struct {
@@ -259,7 +260,7 @@ func (d *Storage) AcceptInvite(ctx context.Context, id models.UserId, groupId mo
 	return d.addMember(ctx, id, groupId)
 }
 
-func (d *Storage) SendInvite(ctx context.Context, creatorId models.UserId, invitee models.UserId, groupId models.GroupId) error {
+func (d *Storage) SendInvite(ctx context.Context, creatorId models.UserId, inviteeId models.UserId, groupId models.GroupId) error {
 	group, err := d.GetGroupByGroupId(ctx, groupId)
 	if err != nil {
 		return fmt.Errorf("couldn't get the group the invite is supposed to be sent from, error: %w", err)
@@ -269,7 +270,7 @@ func (d *Storage) SendInvite(ctx context.Context, creatorId models.UserId, invit
 	}
 
 	row := d.Conn.QueryRow(ctx,
-		`INSERT INTO group_invites (group_id, user_id, time_sent) VALUES ($1, $2, now()) RETURNING group_id`, groupId, invitee)
+		`INSERT INTO group_invites (group_id, user_id, time_sent) VALUES ($1, $2, now()) RETURNING group_id`, groupId, inviteeId)
 	if err := row.Scan(&groupId); err != nil {
 		return fmt.Errorf("send invite error: %w", err)
 	}
@@ -277,9 +278,9 @@ func (d *Storage) SendInvite(ctx context.Context, creatorId models.UserId, invit
 	c := make(chan struct{})
 	go func() {
 		defer func() { c <- struct{}{} }()
-		row := d.Conn.QueryRow(ctx, `SELECT username FROM user_credentials WHERE user_id=$1`, invitee)
-		inviteeName := ""
-		_ = row.Scan(&inviteeName)
+		row := d.Conn.QueryRow(ctx, `SELECT username FROM user_credentials WHERE user_id=$1`, creatorId)
+		creatorName := ""
+		_ = row.Scan(&creatorName)
 
 		row = d.Conn.QueryRow(ctx, `SELECT name FROM groups WHERE group_id=$1`, groupId)
 		groupName := ""
@@ -288,8 +289,8 @@ func (d *Storage) SendInvite(ctx context.Context, creatorId models.UserId, invit
 		data := &models.Post{
 			Type: models.Invite,
 			InviteData: &models.InviteData{
-				InviteeId:   invitee,
-				InviteeName: inviteeName,
+				InviteeId:   creatorId,
+				InviteeName: creatorName,
 				GroupId:     groupId,
 				GroupName:   groupName,
 			},
@@ -298,7 +299,7 @@ func (d *Storage) SendInvite(ctx context.Context, creatorId models.UserId, invit
 		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 		defer cancel()
 
-		if err := d.saveToFeed(ctx, invitee, data); err != nil {
+		if err := d.saveToFeed(ctx, inviteeId, data); err != nil {
 			d.Conn.Logger().Errorf("invite: %v", err)
 		}
 	}()
@@ -736,6 +737,13 @@ func (d *Storage) Feed(ctx context.Context, userId models.UserId, page int) (dat
 	return data1, nil
 }
 func (d *Storage) ShareWithFollowers(ctx context.Context, userId models.UserId, deckId models.DeckId) error {
+	if ok, err := d.CheckIfSharedFollowers(ctx, userId, deckId); err != nil {
+		d.Conn.Logger().Errorf("ShareWithFollowers: %v", err)
+		return fmt.Errorf("ShareWithFollowers: %w", err)
+	} else if ok {
+		return ErrAlreadyShared
+	}
+
 	var deckName, userName string
 
 	rowUser := d.Conn.QueryRow(ctx, `SELECT username FROM user_credentials WHERE user_id=$1`, userId)
@@ -748,6 +756,12 @@ func (d *Storage) ShareWithFollowers(ctx context.Context, userId models.UserId, 
 	if err := rowDeck.Scan(&deckName); err != nil {
 		d.Conn.Logger().Errorf("share: deckname get error: %v", err)
 		return fmt.Errorf("share: deckname get error: %w", err)
+	}
+
+	_, err := d.Conn.Exec(ctx, `INSERT INTO public_shared VALUES ($1, now())`, deckId)
+	if err != nil {
+		d.Conn.Logger().Errorf("share: insert error: %v", err)
+		return fmt.Errorf("share: insert error: %w", err)
 	}
 
 	data := &models.SharedFromFollowingData{
@@ -764,7 +778,7 @@ func (d *Storage) ShareWithFollowers(ctx context.Context, userId models.UserId, 
 
 	b, _ := json.Marshal(post)
 
-	_, err := d.Conn.Exec(ctx, `INSERT INTO feed (
+	_, err = d.Conn.Exec(ctx, `INSERT INTO feed (
                   SELECT f.follower_id, $1, now() FROM followers f WHERE f.user_id=$2
 )`, string(b), userId)
 	if err != nil {
@@ -773,6 +787,17 @@ func (d *Storage) ShareWithFollowers(ctx context.Context, userId models.UserId, 
 	}
 
 	return nil
+}
+
+func (d *Storage) CheckIfSharedFollowers(ctx context.Context, userId models.UserId, deckId models.DeckId) (bool, error) {
+	row := d.Conn.QueryRow(ctx, `SELECT COUNT(*) FROM public_shared WHERE deck_id=$1`, deckId)
+	var count int
+	if err := row.Scan(&count); err != nil {
+		d.Conn.Logger().Errorf("checkIfSharedFollowers error: %v", err)
+		return false, fmt.Errorf("checkIfSharedFollowers error: %v", err)
+	}
+
+	return count == 1, nil
 }
 
 func (d *Storage) GetParticipantsByGroupId(ctx context.Context, id models.GroupId) ([]models.UserInfo, error) {
@@ -831,6 +856,93 @@ func (d *Storage) GetParticipantsByGroupId(ctx context.Context, id models.GroupI
 	}
 
 	return userInfos, nil
+}
+
+func (d *Storage) GetGroupsDeckShared(ctx context.Context, userId models.UserId, deckId models.DeckId) ([]models.GroupsShared, error) {
+	rows, err := d.Conn.Query(ctx, `
+	SELECT g.group_id, g.name, count(q.c) FROM groups g
+	LEFT JOIN (SELECT g.group_id, g.name, count(gd.deck_id) c FROM groups g
+	JOIN public.group_decks gd on g.group_id = gd.group_id
+	WHERE gd.deck_id = $1
+	GROUP BY g.group_id) q ON q.group_id = g.group_id
+	WHERE g.creator_id = $2
+	GROUP BY g.group_id`, deckId, userId,
+	)
+	if err != nil {
+		d.Conn.Logger().Errorf("get groups: %v", err)
+		return nil, fmt.Errorf("get groups: %w", err)
+	}
+	defer rows.Close()
+
+	var group models.GroupsShared
+	var num byte
+
+	var groups []models.GroupsShared
+	_, err = pgx.ForEachRow(rows, []any{&group.GroupId, &group.GroupName, &num}, func() error {
+		groups = append(groups, models.GroupsShared{
+			DeckId:    deckId,
+			GroupId:   group.GroupId,
+			GroupName: group.GroupName,
+			Shared:    num == 1,
+		})
+
+		return nil
+	})
+	if err != nil {
+		d.Conn.Logger().Errorf("get groups: %v", err)
+		return nil, fmt.Errorf("get groups: %w", err)
+	}
+
+	groups1 := make([]models.GroupsShared, len(groups))
+	copy(groups1, groups)
+
+	return groups1, nil
+}
+
+func (d *Storage) GetFollowersNotJoinedGroup(ctx context.Context, userId models.UserId, groupId models.GroupId) ([]models.GroupsFollowed, error) {
+	row := d.Conn.QueryRow(ctx, `
+SELECT count(*) FROM groups WHERE group_id=$1 AND creator_id=$2
+`, groupId, userId)
+	var count int
+	if err := row.Scan(&count); err != nil {
+		d.Conn.Logger().Errorf("check group creator: %v", err)
+		return nil, fmt.Errorf("check group creator: %w", err)
+	}
+
+	if count == 0 {
+		return nil, ErrUserNotCreator
+	}
+
+	rows, err := d.Conn.Query(ctx, `
+SELECT uc.user_id, uc.username  FROM followers f
+LEFT JOIN (SELECT * FROM group_members gm
+        WHERE gm.group_id=$1) gmm ON f.follower_id = gmm.user_id
+JOIN user_credentials uc ON f.follower_id = uc.user_id
+WHERE f.user_id = $2 AND gmm.user_id IS NULL
+`, groupId, userId)
+	if err != nil {
+		d.Conn.Logger().Errorf("get followers: %v", err)
+		return nil, fmt.Errorf("get followers: %w", err)
+	}
+	defer rows.Close()
+
+	var followers []models.GroupsFollowed
+	var follower models.GroupsFollowed
+	follower.GroupId = groupId
+
+	_, err = pgx.ForEachRow(rows, []any{&follower.FollowerId, &follower.FollowerName}, func() error {
+		followers = append(followers, follower)
+		return nil
+	})
+	if err != nil {
+		d.Conn.Logger().Errorf("get followers: %v", err)
+		return nil, fmt.Errorf("get followers: %w", err)
+	}
+
+	followers1 := make([]models.GroupsFollowed, len(followers))
+	copy(followers1, followers)
+
+	return followers1, nil
 }
 
 func (d *Storage) saveToFeed(ctx context.Context, userId models.UserId, posts ...*models.Post) error {

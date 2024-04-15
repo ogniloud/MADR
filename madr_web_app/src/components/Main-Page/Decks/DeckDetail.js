@@ -1,6 +1,6 @@
-import React, {useState, useEffect} from 'react';
-import { useParams, Link, Route, Routes, useNavigate } from 'react-router-dom';
-import { jwtDecode } from 'jwt-decode';
+import React, {useEffect, useState} from 'react';
+import {Link, Route, Routes, useNavigate, useParams} from 'react-router-dom';
+import {jwtDecode} from 'jwt-decode';
 import AllWords from './Browse Cards/AllWords';
 import TheHottest from './Browse Cards/TheHottest';
 import Warm from './Browse Cards/Warm';
@@ -10,6 +10,7 @@ import Texts from './Exercise Cards/Texts';
 import WordMatch from './Exercise Cards/WordMatch';
 import FillGaps from './Exercise Cards/FillGaps';
 import './Styles/DeckDetails.css';
+import {checkIfShared, checkIfSharedByGroups, shareDeck, shareGroup} from "../APIs/apiFunctions_decks";
 
 const DeckDetail = () => {
     const { deck_id } = useParams();
@@ -17,14 +18,29 @@ const DeckDetail = () => {
     const [deckToDelete, setDeckToDelete] = useState(null);
     const decodedToken = jwtDecode(localStorage.getItem('token'));
     const userId = decodedToken.user_id;
+    const [isShared, setIsShared] = useState(null)
+    const [listGroupShared, setListGroupShared] = useState([]);
+    const [listGroupHTML, setListGroupHTML] = useState(null);
+    const [showList, setShowList] = useState(true);
 
     useEffect(() => {
-        if (deck_id) {
-            setDeckToDelete(deck_id);
-        }
+        handleShare()
+        handleSharedGroup()
     }, [deck_id]);
 
+    const handleShare = () => {
+        checkIfShared(parseInt(deck_id), parseInt(userId), decodedToken).then((response) => {
+            setIsShared(response.ok)
+            console.log(response)
+        })
+    }
 
+    const handleSharedGroup = () => {
+        checkIfSharedByGroups(parseInt(deck_id), parseInt(userId), decodedToken).then((response) => {
+            setListGroupShared(response.groups)
+            console.log(response.groups)
+        })
+    }
 
     return (
         <div className="deck-details-container">
@@ -75,6 +91,56 @@ const DeckDetail = () => {
                 <Route path="/decks/:deck_id/exercise/word-match" element={<WordMatch />} />
                 <Route path="/decks/:deck_id/exercise/fill-gaps" element={<FillGaps />} />
             </Routes>
+
+            <div style={{display: "flex"}}>
+                <div className="">
+                    {isShared === true && (
+                        <div className="deck-details-flashcard flashcard-link">
+                            Already shared!
+                        </div>
+                    ) || isShared === false && (
+                        <div onClick={() => {
+                            shareDeck(parseInt(deck_id), parseInt(userId), decodedToken)
+                            setIsShared(true)
+                        }} className="deck-details-flashcard flashcard-link">
+                            Share to followers
+                        </div>
+                    )}
+
+                </div>
+                <div className="">
+                    <div onClick={
+                        () => {
+                            setShowList(!showList)
+                            showList && setListGroupHTML(
+                                <div>
+                                    <p>Choose:</p>
+                                    {listGroupShared.map((item) => (
+                                        <div>
+                                        {item.shared === false && (
+                                            <div onClick={() => {
+                                                shareGroup(parseInt(userId), parseInt(item.group_id), parseInt(deck_id), decodedToken)
+                                                item.shared = true
+                                            }} className="deck-details-flashcard flashcard-link">
+                                                {item.group_name}
+                                            </div>
+                                        ) || item.shared === true && (
+                                            <div className="deck-details-flashcard flashcard-link">
+                                                {item.group_name}: shared
+                                            </div>
+                                        )}
+                                        </div>
+                                    ))}
+                                </div>
+                            ) || !showList && setListGroupHTML("")
+                        }
+                        } className="deck-details-flashcard flashcard-link">
+                        Share to groups
+                    </div>
+                    {listGroupHTML}
+                </div>
+            </div>
+
         </div>
     );
 };
