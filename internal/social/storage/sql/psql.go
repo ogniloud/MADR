@@ -215,7 +215,7 @@ func (d *Storage) CreateGroup(ctx context.Context, id models.UserId, name string
 
 	groupId := 0
 
-	err := row.Scan(&id)
+	err := row.Scan(&groupId)
 	if err != nil {
 		d.Conn.Logger().Errorf("create group failed: %v", err)
 		return 0, fmt.Errorf("psql error: %w", err)
