@@ -1,11 +1,8 @@
-import React, { useEffect, useState } from 'react';
-import { getCreatedGroupsByUserId, getGroupsByUserId } from "../API-Components/apiFunctions_groups";
+
 import './Styles/social_group.css'
-import { jwtDecode } from "jwt-decode";
 import {useNavigate} from "react-router-dom"; // Import useNavigation
 import React, {useEffect, useState} from 'react';
 import {getCreatedGroupsByUserId, getGroupsByUserId} from "../API-Components/apiFunctions_groups";
-import './Styles/social_group.css';
 import {jwtDecode} from "jwt-decode";
 
 
