@@ -1,35 +1,85 @@
 .social-group-container {
-    margin-top: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
+
+
+.upper-part {
+    width: 100%;
+    padding: 20px;
+    background-color: #97D7CB; /* Change to desired color */
+    position: fixed; /* Fixed positioning to keep it at the top */
+    top: 0; /* Align to the top */
+    z-index: 999; /* Ensure it's above other elements */
+}
+
+.social-group-title {
+    margin-left: 50px;
+    color: white;
+    position: relative;
+}
+
+.groups-container {
+    font-family: "Google Sans", "sans-serif";
+    padding-top: 230px; /* Adjust as needed */
+    margin-bottom: 105px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: calc(100vh - 120px); /* Adjust the total height as needed */
+    overflow-y: scroll; /* Show scrollbar if needed */
+    scrollbar-width: none; /* Hide scrollbar in Firefox */
+    -ms-overflow-style: none; /* Hide scrollbar in IE and Edge */
+}
+
+.groups-container::-webkit-scrollbar {
+    display: none; /* Hide scrollbar in Chrome, Safari, and Opera */
+}
+
+
+
+
+
 
 .group-cards {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-    gap: 20px;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px; /* Adjust spacing between cards */
+    margin-bottom: 20px;
 }
 
 .group-card {
-    background-color: #f0f0f0;
-    border-radius: 8px;
+    background-color: lightcoral; /* Card background color */
+    color: white;
     padding: 20px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
+
 
 .group-card h3 {
     margin-top: 0;
 }
 
-.group-card p {
-    margin: 5px 0;
+.social-group-home-button {
+    font-family: "Google Sans", "sans-serif";
+    position: fixed;
+    width: 250px;
+    bottom: 20px; /* Adjust the distance from the bottom as needed */
+    left: 50%; /* Center horizontally */
+    transform: translateX(-50%);
+    padding: 10px 20px;
+    background-color: black; /* Button color */
+    color: #ffffff; /* Button text color */
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
 }
 
-/* Loading state */
-.loading-message {
-    text-align: center;
-    margin-top: 20px;
+.social-group-home-button:hover{
+    background: cornflowerblue;
+    color: white;
 }
 
-/* Message when user has no groups */
-.no-groups-message {
-    margin-top: 20px;
-}
+

@@ -5,26 +5,28 @@ import CreateDeck from './Decks/CreateDecks';
 import { jwtDecode } from 'jwt-decode';
 import './Styles/MainPage.css';
 import defaultProfilePicture from './resource/default-profile-picture.png';
-import closeIcon from './resource/close-circle.png';
 import { fetchFollowers, fetchFollowings, searchUsers, followUser, unfollowUser, createGroup } from './API-Components/apiFunctions_main_feeds';
 import SocialGroup from "./Social Site Components/social_group";
-
+import UserDrawer from "./Drawer-Components/Drawer";
 
 const MainPage = () => {
     const [userInfo, setUserInfo] = useState(null);
     const [showPopup, setShowPopup] = useState(false);
     const [followers, setFollowers] = useState([]);
     const [followings, setFollowings] = useState([]);
+    const [followersData, setFollowersData] = useState([]);
+    const [followingsData, setFollowingsData] = useState([]);
     const [searchQuery, setSearchQuery] = useState('');
     const [searchResults, setSearchResults] = useState([]);
     const [searchClicked, setSearchClicked] = useState(false);
-    const navigate = useNavigate();
+    const navigate = useNavigate(); // Get the navigate function
     const searchResultsRef = useRef(null);
     const [showGroupDialog, setShowGroupDialog] = useState(false);
     const [groupName, setGroupName] = useState('');
     const [groupCreationError, setGroupCreationError] = useState('');
     const [groupCreationSuccess, setGroupCreationSuccess] = useState('');
     const [groups, setGroups] = useState([]);
+    const [drawerOpen, setDrawerOpen] = useState(false);
 
     useEffect(() => {
         const fetchUserData = async () => {
@@ -71,6 +73,11 @@ const MainPage = () => {
         setShowPopup(!showPopup);
     };
 
+    const toggleDrawer = (open) => () => {
+        setDrawerOpen(open);
+    };
+
+
     const stopPropagation = (event) => {
         event.stopPropagation();
     };
@@ -98,10 +105,6 @@ const MainPage = () => {
             console.error('Error fetching search results:', error);
         }
     };
-
-
-
-
 
     const handleKeyPress = (event) => {
         if (event.key === 'Enter') {
@@ -152,13 +155,9 @@ const MainPage = () => {
         }
     };
 
-
-
-
-
-
-
-
+    const handleViewGroups = () => {
+        navigate('/social_group'); // Navigate to the groups page
+    };
 
     const handleCreateGroup = async () => {
         try {
@@ -172,17 +171,19 @@ const MainPage = () => {
                     setShowGroupDialog(false);
                     setGroupCreationSuccess('Group created successfully!');
                     setGroupCreationError('');
+                    // Navigate to the social group page after successful creation
+                    navigate('/social_group');
+                    // Fetch the updated list of groups after successful creation
+                    const updatedGroups = await fetchGroups();
+                    setGroups(updatedGroups);
                 } else {
-                    // Group creation failed
                     setShowGroupDialog(true);
                     setGroupCreationError('Failed to create group');
                     setGroupCreationSuccess('');
                 }
             } else {
-
                 setShowGroupDialog(true);
                 setGroupCreationError('Invalid group name or user ID');
-
                 setGroupCreationSuccess('');
             }
         } catch (error) {
@@ -193,13 +194,42 @@ const MainPage = () => {
         }
     };
 
-
-
-
-
     return (
         <div className="main-page">
+
             <nav className="upper-part">
+                {/* Display user-name and profile picture */}
+
+                <div className="user-info" onClick={toggleDrawer(true)}>
+
+                    <h3 className="title-user-name">{userInfo && userInfo.username}</h3>
+
+                </div>
+
+                {/* Drawer component */}
+                <UserDrawer
+                    open={drawerOpen}
+                    onClose={toggleDrawer(false)}
+                    userInfo={userInfo}
+                    handleLogout={handleLogout}
+                    followers={followers}
+                    followings={followings}
+                    handleFollow={handleFollow}
+                    handleCreateGroup={handleCreateGroup}
+                    handleViewGroups={handleViewGroups}
+                    groups={groups}
+                    showGroupDialog={showGroupDialog}
+                    setShowGroupDialog={setShowGroupDialog}
+                    groupName={groupName}
+                    setGroupName={setGroupName}
+                    groupCreationError={groupCreationError}
+                    setGroupCreationError={setGroupCreationError}
+                    groupCreationSuccess={groupCreationSuccess}
+                    setGroupCreationSuccess={setGroupCreationSuccess}
+                    defaultProfilePicture={defaultProfilePicture}
+                />
+
+
                 <div className="main-page-search-container">
                     <input
                         type="text"
@@ -211,86 +241,6 @@ const MainPage = () => {
                     <button className="main-page-search-btn" onClick={handleSearch}>Search</button>
                 </div>
 
-                <div className="user-info" onClick={togglePopup}>
-                    <h2 className="title-user-name">{userInfo && userInfo.username}</h2>
-                    {showPopup && (
-                        <div className="popup-user-profile" onClick={stopPropagation}>
-                            <div className="popup-header">
-                                <h3 className="popup-user-name">{userInfo && userInfo.username}</h3>
-                                <button className="popup-close-btn" onClick={togglePopup}>
-                                    <img src={closeIcon} alt="Close" />
-                                </button>
-                            </div>
-
-                            <div className="popup-content-user-profile">
-                                <img src={defaultProfilePicture} alt="Profile" />
-                            </div>
-
-                            <div className="popup-content-user-details">
-                                <p className="follower-button-user-details">Followers: {followers.length}</p>
-                                <ul>
-                                    {followers.map((follower, index) => (
-                                        <li key={index}>{follower.tierName}</li>
-                                    ))}
-                                </ul>
-                                <p className="followings-button-user-details">Followings: {followings.length}</p>
-                                <ul>
-                                    {followings.map((following, index) => (
-                                        <li key={index}>{following.username}</li>
-                                    ))}
-                                </ul>
-                                <div className="group-button-user-details">
-                                    <button className="group-dropbtn">Groups</button>
-                                    <div className="group-dropdown-content">
-                                        {/* Dropdown content here */}
-                                    </div>
-                                    {/* Add button to open group creation dialog */}
-                                    <button className="create-group-button" onClick={() => setShowGroupDialog(true)}>Create Group</button>
-                                </div>
-
-                                <div>
-                                    <Link className="view-groups-button" to="/social_group">
-                                        View Groups
-                                    </Link>
-                                </div>
-
-                            </div>
-
-
-
-                            {/* Dialog box for group creation */}
-                            {showGroupDialog && (
-                                <div className="popup-overlay">
-                                    <div className="creating-group-popup">
-                                        <input className="Create-group-input"
-                                            type="text"
-                                            placeholder="Enter group name"
-                                            value={groupName}
-                                            onChange={(e) => setGroupName(e.target.value)}
-                                        />
-                                        <button className="Create-group-button" onClick={handleCreateGroup}>Create</button>
-                                        <button className="Cancel-group-button" onClick={() => setShowGroupDialog(false)}>Cancel</button>
-
-                                        {groupCreationError && <p>{groupCreationError}</p>}
-                                        {groupCreationSuccess && !groupCreationError && <p>{groupCreationSuccess}</p>}
-
-
-
-                                    </div>
-                                </div>
-                            )}
-
-
-                            <button className="popup-logout-button" onClick={handleLogout}>
-                                Logout
-                            </button>
-                        </div>
-                    )}
-
-
-
-
-                </div>
                 <Link className="main-page-feed-button" to="/feed">
                     Feed
                 </Link>
@@ -299,10 +249,8 @@ const MainPage = () => {
                 {groups.length > 0 && (
                     <SocialGroup userId={userInfo && userInfo.user_id} />
                 )}
-
-
-
             </nav>
+
 
             {/* Search results */}
             {searchClicked && (
@@ -337,9 +285,6 @@ const MainPage = () => {
                 </div>
             )}
 
-
-
-
             {/* Routes and lower-part section */}
             <Routes>
                 <Route path="/create-deck" element={<CreateDeck />} />
@@ -355,9 +300,25 @@ const MainPage = () => {
                 </Link>
 
             </div>
+
+            {showGroupDialog && (
+                <div className="creating-group-popup">
+                    <input
+                        className="Create-group-input"
+                        type="text"
+                        placeholder="Enter group name"
+                        value={groupName}
+                        onChange={(e) => setGroupName(e.target.value)}
+                    />
+                    <button className="Create-group-button" onClick={handleCreateGroup}>Create</button>
+                    <button className="Cancel-group-button" onClick={() => setShowGroupDialog(false)}>Cancel</button>
+
+                    {groupCreationError && <p>{groupCreationError}</p>}
+                    {groupCreationSuccess && !groupCreationError && <p>{groupCreationSuccess}</p>}
+                </div>
+            )}
         </div>
     );
-
 };
 
 export default MainPage;

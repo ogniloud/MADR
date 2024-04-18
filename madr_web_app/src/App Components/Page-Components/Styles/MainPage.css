@@ -18,7 +18,7 @@
 
 
 .upper-part {
-    position: absolute;
+    position: fixed;
     top: 0;
     right: 0;
     width: 100%;
@@ -28,17 +28,10 @@
     align-items: center;
     justify-content: space-between;
     padding: 1em 2em;
+    z-index: 999;
 }
 
 
-.logout-button {
-
-    background-color: transparent;
-    border: 1px solid #fff;
-    padding: 0.5em 1em;
-    color: #fff;
-    cursor: pointer;
-}
 .lower-part {
     position: absolute;
     display: flex;
@@ -62,8 +55,8 @@
     border-radius: 8px;
     cursor: pointer;
     transition: transform 0.3s ease-in-out;
-    width: 240px; /* Approximate pixel value for 3 inches at 80 pixels per inch */
-    height: 400px; /* Approximate pixel value for 5 inches at 80 pixels per inch */
+    width: 240px;
+    height: 400px;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -75,200 +68,6 @@
     transform: scale(1.05);
     box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
 }
-
-
-
-/* Style for the User-Popup window*/
-
-.popup-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.5); /* Transparent black */
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 9999;
-    border-radius: 25px;
-}
-
-
-.popup-user-profile {
-    backdrop-filter: blur(10px); /* Adjust the blur radius as needed */
-    background-color: rgba(0, 125, 125, 0.5); /* White with 50% opacity */
-    border: none;
-    padding: 10px;
-    border-radius:15px;
-    max-width: 600px;
-    width: 90%;
-    height: 500px;
-    z-index: 10000;
-    position: absolute;
-    left: 600px;
-    font-family: "Google Sans","sans-serif";
-}
-
-.popup-user-name {
-    display: grid;
-    text-align: center;
-    position: absolute;
-    left:140px;
-    font-size: 25px;
-    top:100px;
-}
-
-
-.popup-logout-button{
-    background: none;
-    font-family: "Google Sans", "sans-serif";
-    font-size: 15px;
-    border: 2px solid white;
-    border-radius: 10px;
-    position: relative;
-    height: 40px;
-    width: 120px;
-    top:260px;
-
-}
-
-.popup-logout-button:hover{
-    background: transparent;
-    border: 2px solid black;
-
-}
-
-.follower-button-user-details{
-    position: absolute;
-    top: 150px;
-    left:140px;
-}
-
-
-.followings-button-user-details{
-    position: absolute;
-    top:150px;
-    left:280px;
-}
-
-.follower-button-user-details,
-.create-group-button,
-.followings-button-user-details,
-.view-groups-button,
-.group-button-user-details{
-    font-family: "Google Sans", "sans-serif";
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    color: white;
-    background-color: black;
-    border-radius: 4px;
-    height: 36px;
-    width: 130px;
-    font-size: 15px;
-}
-
-.Create-group-button,
-.Cancel-group-button{
-    font-family: "Google Sans", "sans-serif";
-    background: black;
-    border-radius: 4px;
-    border: 2px solid black;
-}
-
-.Create-group-button:hover,
-.Cancel-group-button:hover{
-    background: none;
-    color: black;
-
-
-}
-
-.create-group-button{
-    position: absolute;
-    top:59px;
-    right: 120px;
-
-}
-
-
-.creating-group-popup,
-.Create-group-input{
-    font-family: "Google Sans", "sans-serif";
-}
-
-.view-groups-button{
-    position: absolute;
-    top:225px;
-    left:140px;
-    text-decoration: none;
-}
-
-.view-groups-button:hover,
-.create-group-button:hover{
-    color: white;
-    background: #8D89A3;
-}
-
-.group-button-user-details{
-    display: flex;
-    position: absolute;
-    color: white;
-    top:153px;
-    font-family: "Google Sans",sans-serif;
-    left: 420px;
-
-
-}
-
-.group-dropbtn{
-    background: black;
-    font-family: "Google Sans",sans-serif;
-    height: 36px;
-    width: 130px;
-
-}
-
-.popup-close-btn img{
-    height: 30px;
-    width: auto;
-    cursor: pointer;
-
-}
-
-.popup-close-btn {
-
-    border:none;
-    background: none;
-    height: 26px;
-    width: 20px;
-    padding: 0;
-    position: relative;
-    right: 260px;
-    bottom: 50px;
-}
-
-.popup-close-btn:hover {
-    background: none;
-}
-
-
-.popup-content-user-profile {
-    text-align: center;
-    position: absolute;
-    top:110px;
-    left: 30px;
-}
-
-
-.popup-content-user-profile img {
-    width: 100px;
-    height: 100px;
-    border-radius: 50%;
-    margin-bottom: 20px;
-}
-
 
 .main-page-search-container {
     font-family: "Google Sans", sans-serif;
@@ -337,7 +136,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    position: relative;
+    position: absolute;
     color: white;
     font-family: "Google Sans", sans-serif;
     border: 2px solid white;
@@ -345,7 +144,7 @@
     background: transparent;
     width: 200px;
     height: 35px;;
-    right: 1020px;
+    left: 300px;
     font-size: 20px;
     font-weight: bold;
 }
@@ -411,12 +210,6 @@
 }
 
 
-.creating-group{
-    position: relative;
-    top: 120px;
-}
-
-
 
 .dropdown-content {
     display: none;
@@ -442,27 +235,6 @@
     display: block;
 }
 
-
-
-
-.creating-group-popup {
-    background-color: white;
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Drop shadow */
-}
-
-.creating-group-popup input {
-    margin-bottom: 10px;
-}
-
-.creating-group-popup button {
-    margin-right: 10px;
-}
-
-.creating-group-popup p {
-    margin-top: 10px;
-}
 
 /* Styles for the drawer toggle button */
 .drawer-toggle-btn {
