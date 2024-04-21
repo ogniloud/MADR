@@ -47,7 +47,7 @@ export const sendInvite = async (creator_id, invitee_id, group_id, token) => {
 
 export const getGroupsByUserId = async (userId) => {
     try {
-        const response = await fetch('http://${process.env.REACT_APP_API_HOST}/api/groups/groups', {
+        const response = await fetch(`http://${process.env.REACT_APP_API_HOST}/api/groups/groups`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -69,7 +69,7 @@ export const getGroupsByUserId = async (userId) => {
 
 export const getCreatedGroupsByUserId = async (userId) => {
     try {
-        const response = await fetch('http://${process.env.REACT_APP_API_HOST}/api/groups/created_groups', {
+        const response = await fetch(`http://${process.env.REACT_APP_API_HOST}/api/groups/created_groups`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -80,11 +80,11 @@ export const getCreatedGroupsByUserId = async (userId) => {
             const groupsData = await response.json();
             return groupsData.groups || [];
         } else {
-            console.error('Failed to fetch groups:', response.statusText);
+            console.error('Failed to fetch created groups:', response.statusText);
             return [];
         }
     } catch (error) {
-        console.error('Error fetching groups:', error);
+        console.error('Error fetching created groups:', error);
         return [];
     }
 };

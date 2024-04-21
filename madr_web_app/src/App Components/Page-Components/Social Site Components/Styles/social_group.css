@@ -22,16 +22,16 @@
 
 .groups-container {
     font-family: "Google Sans", "sans-serif";
-    padding-top: 250px; /* Adjust as needed */
+    padding-top: calc(2px + (var(--card-height) * var(--num-cards)));
     margin-bottom: 105px;
     display: flex;
     flex-direction: column;
     align-items: center;
-    height: calc(100vh - 120px); /* Adjust the total height as needed */
-    overflow-y: scroll; /* Show scrollbar if needed */
-    scrollbar-width: none; /* Hide scrollbar in Firefox */
-    -ms-overflow-style: none; /* Hide scrollbar in IE and Edge */
+    max-height: calc(290vh - 5px); /* Limit height to viewport height minus header */
+    overflow-y: auto; /* Enable vertical scrolling */
+    overflow-x: hidden; /* Hide horizontal scrollbar if present */
 }
+
 
 .groups-container::-webkit-scrollbar {
     display: none; /* Hide scrollbar in Chrome, Safari, and Opera */
