@@ -22,7 +22,7 @@
 
 .groups-container {
     font-family: "Google Sans", "sans-serif";
-    padding-top: 230px; /* Adjust as needed */
+    padding-top: 250px; /* Adjust as needed */
     margin-bottom: 105px;
     display: flex;
     flex-direction: column;
@@ -36,9 +36,6 @@
 .groups-container::-webkit-scrollbar {
     display: none; /* Hide scrollbar in Chrome, Safari, and Opera */
 }
-
-
-
 
 
 
@@ -81,5 +78,4 @@
     background: cornflowerblue;
     color: white;
 }
-
 

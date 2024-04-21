@@ -4,7 +4,7 @@ import {useNavigate} from "react-router-dom"; // Import useNavigation
 import React, {useEffect, useState} from 'react';
 import {getCreatedGroupsByUserId, getGroupsByUserId} from "../API-Components/apiFunctions_groups";
 import {jwtDecode} from "jwt-decode";
-
+import InfiniteScroll from "react-infinite-scroll-component";
 
 const SocialGroup = () => {
     const navigate = useNavigate();
@@ -13,6 +13,7 @@ const SocialGroup = () => {
     const [groups, setGroups] = useState([]);
     const [createdGroups, setCreatedGroups] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
+
 
     useEffect(() => {
         const fetchGroups = async () => {
@@ -42,6 +43,9 @@ const SocialGroup = () => {
     const returnToHome = () => {
         navigation.navigate('MainPage'); // Use navigation.navigate to navigate to 'MainPage'
     };
+
+
+
 
     return (
         <div className="social-group-container">
