@@ -5,7 +5,7 @@ import axios from 'axios';
 export const createDeck = async (deckData, token) => {
     try {
         const response = await axios.put(
-            'http://localhost:8080/api/flashcards/new_deck',
+            'http://${process.env.REACT_APP_API_HOST}/api/flashcards/new_deck',
             deckData,
             {
                 headers: {
@@ -29,7 +29,7 @@ export const fetchUserDecks = async (token) => {
     try {
         const decodedToken = jwtDecode(token);
 
-        const response = await fetch('http://localhost:8080/api/flashcards/load', {
+        const response = await fetch('http://${process.env.REACT_APP_API_HOST}/api/flashcards/load', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -50,7 +50,7 @@ export const fetchUserDecks = async (token) => {
 
 export const deleteDeck = async (deckId, userId, token) => {
     try {
-        const response = await fetch('http://localhost:8080/api/flashcards/delete_deck', {
+        const response = await fetch('http://${process.env.REACT_APP_API_HOST}/api/flashcards/delete_deck', {
             method: 'DELETE',
             headers: {
                 'Content-Type': 'application/json',
@@ -75,7 +75,7 @@ export const deleteDeck = async (deckId, userId, token) => {
 
 export const checkIfShared = async (deckId, userId, token) => {
     try {
-        const response = await fetch('http://localhost:8080/api/social/is_shared', {
+        const response = await fetch('http://${process.env.REACT_APP_API_HOST}/api/social/is_shared', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -99,7 +99,7 @@ export const checkIfShared = async (deckId, userId, token) => {
 
 export const shareDeck = async (deckId, userId, token) => {
     try {
-        const response = await fetch('http://localhost:8080/api/social/share', {
+        const response = await fetch('http://${process.env.REACT_APP_API_HOST}/api/social/share', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -121,7 +121,7 @@ export const shareDeck = async (deckId, userId, token) => {
 
 export const checkIfSharedByGroups = async (deckId, userId, token) => {
     try {
-        const response = await fetch('http://localhost:8080/api/social/groups_shared', {
+        const response = await fetch('http://${process.env.REACT_APP_API_HOST}/api/social/groups_shared', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -144,7 +144,7 @@ export const checkIfSharedByGroups = async (deckId, userId, token) => {
 
 export const shareGroup = async (userId, groupId, deckId, token) => {
     try {
-        const response = await fetch('http://localhost:8080/api/groups/share', {
+        const response = await fetch('http://${process.env.REACT_APP_API_HOST}/api/groups/share', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
