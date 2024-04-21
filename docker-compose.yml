@@ -21,6 +21,14 @@ services:
       - TOKEN_EXPIRATION_TIME=48 # hours
       - TOKEN_SECRET=secret
       - SALT_LENGTH=16
+  madr-react-app:
+    build:
+      context: ./madr_web_app
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    networks:
+      mynetwork:
 
 networks:
   mynetwork:
