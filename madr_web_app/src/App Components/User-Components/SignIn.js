@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, {useState} from 'react';
 import './User-Components-Style/SignIn.css';
-import { useNavigate } from 'react-router-dom';
+import {useNavigate} from 'react-router-dom';
 
 function SignIn() {
   const [signInData, setSignInData] = useState({
@@ -23,7 +23,7 @@ function SignIn() {
     e.preventDefault();
 
     try {
-      const response = await fetch('http://localhost:8080/api/signin', {
+      const response = await fetch(`http://${process.env.REACT_APP_API_HOST}/api/signin`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

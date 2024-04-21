@@ -5,7 +5,7 @@ import {jwtDecode} from 'jwt-decode';
 
 export const fetchFollowers = async (token, userId) => {
     try {
-        const response = await fetch('http://localhost:8080/api/social/followers', {
+        const response = await fetch(`http://${process.env.REACT_APP_API_HOST}/api/social/followers`, {
             method: 'POST',
             headers: {
                 'Authorization': `Bearer ${token}`,
@@ -22,7 +22,7 @@ export const fetchFollowers = async (token, userId) => {
 
 export const fetchFollowings = async (token, userId) => {
     try {
-        const response = await fetch('http://localhost:8080/api/social/followings', {
+        const response = await fetch(`http://${process.env.REACT_APP_API_HOST}/api/social/followings`, {
             method: 'POST',
             headers: {
                 'Authorization': `Bearer ${token}`,
@@ -39,7 +39,7 @@ export const fetchFollowings = async (token, userId) => {
 
 export const searchUsers = async (token, query) => {
     try {
-        const response = await fetch(`http://localhost:8080/api/social/search?q=${encodeURIComponent(query)}`, {
+        const response = await fetch(`http://${process.env.REACT_APP_API_HOST}/api/social/search?q=${encodeURIComponent(query)}`, {
             headers: {
                 'Authorization': `Bearer ${token}`
             }
@@ -60,7 +60,7 @@ export const searchUsers = async (token, query) => {
 export const followUser = async (token, userId, followerId) => {
     try {
         const requestBody = { author_id: userId, follower_id: followerId };
-        const response = await fetch('http://localhost:8080/api/social/follow', {
+        const response = await fetch(`http://${process.env.REACT_APP_API_HOST}/api/social/follow`, {
             method: 'POST',
             headers: {
                 'Authorization': `Bearer ${token}`,
@@ -78,7 +78,7 @@ export const followUser = async (token, userId, followerId) => {
 export const unfollowUser = async (token, userId, followerId) => {
     try {
         const requestBody = { author_id: userId, follower_id: followerId };
-        const response = await fetch('http://localhost:8080/api/social/unfollow', {
+        const response = await fetch(`http://${process.env.REACT_APP_API_HOST}/api/social/unfollow`, {
             method: 'POST',
             headers: {
                 'Authorization': `Bearer ${token}`,
@@ -100,7 +100,7 @@ export const createGroup = async (token, userId, groupName) => {
             user_id: userId,
         };
 
-        const response = await fetch('http://localhost:8080/api/groups/create', {
+        const response = await fetch(`http://${process.env.REACT_APP_API_HOST}/api/groups/create`, {
             method: 'PUT',
             headers: {
                 'Authorization': `Bearer ${token}`,
@@ -129,7 +129,7 @@ export const fetchFeedData = async (token) => {
     try {
         const decodedToken = jwtDecode(token);
 
-        const response = await fetch('http://localhost:8080/api/social/feed', {
+        const response = await fetch(`http://${process.env.REACT_APP_API_HOST}/api/social/feed`, {
             method: 'POST',
             headers: {
                 'Authorization': `Bearer ${token}`,
@@ -154,7 +154,7 @@ export const fetchFeedData = async (token) => {
     export const acceptInvite = async (token, user_id, group_id) => {
         try {
             const requestBody = { user_id: user_id, group_id: group_id };
-            const response = await fetch('http://localhost:8080/api/invite/accept', {
+            const response = await fetch(`http://${process.env.REACT_APP_API_HOST}/api/invite/accept`, {
                 method: 'POST',
                 headers: {
                     'Authorization': `Bearer ${token}`,
@@ -172,7 +172,7 @@ export const fetchFeedData = async (token) => {
 export const copyDeck = async (token, copier_id, deck_id) => {
     try {
         const requestBody = { copier_id: copier_id, deck_id: deck_id };
-        const response = await fetch('http://localhost:8080/api/social/copy', {
+        const response = await fetch(`http://${process.env.REACT_APP_API_HOST}/api/social/copy`, {
             method: 'POST',
             headers: {
                 'Authorization': `Bearer ${token}`,
