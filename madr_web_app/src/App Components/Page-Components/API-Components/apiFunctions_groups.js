@@ -1,6 +1,6 @@
 export const followersNotJoined = async (user_id, group_id, token) => {
     try {
-        const response = await fetch('http://${process.env.REACT_APP_API_HOST}/api/groups/followers_not_joined', {
+        const response = await fetch(`http://${process.env.REACT_APP_API_HOST}/api/groups/followers_not_joined`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -24,7 +24,7 @@ export const followersNotJoined = async (user_id, group_id, token) => {
 
 export const sendInvite = async (creator_id, invitee_id, group_id, token) => {
     try {
-        const response = await fetch('http://${process.env.REACT_APP_API_HOST}/api/invite/send', {
+        const response = await fetch(`http://${process.env.REACT_APP_API_HOST}/api/invite/send`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
