@@ -1,0 +1,41 @@
+syntax = "proto3";
+
+package com.madr.external_dictionaries.mongomodel.protobuf;
+
+import "common.proto";
+
+message WiktionaryResponse {
+    repeated BakedWiktionaryWord words = 1;
+    SourceId source = 2;
+}
+
+message BakedWiktionaryWord {
+    WordId word = 1;
+    optional WordContents contents = 2;
+    repeated WiktionarySense senses = 3;
+}
+
+message WordContents {
+    optional string etymology = 3;
+    repeated Sound ipa = 4;
+}
+
+message Sound {
+    string ipa = 1;
+    repeated string tags = 2;
+}
+
+message WiktionarySense {
+    repeated WiktionaryExample examples = 1;
+    repeated Gloss glosses = 2;
+}
+
+message WiktionaryExample {
+    string text = 1;
+    optional string ref = 2;
+    optional string type = 3;
+}
+
+message Gloss {
+    string gloss = 1;
+}

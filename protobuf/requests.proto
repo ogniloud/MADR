@@ -1,0 +1,18 @@
+syntax = "proto3";
+
+package com.madr.external_dictionaries.mongomodel.protobuf;
+
+import "common.proto";
+
+message WiktionaryRequest {
+    RequestId word = 1;
+    RequestedContents contents = 2;
+    SourceId source = 3;
+}
+
+message RequestedContents {
+    bool definition = 1;
+    bool examples = 2;
+    bool etymology = 3;
+    bool ipa = 4;
+}
