@@ -370,6 +370,14 @@ WHERE f.deck_id = $2`, id, deckId)
 		return 0, fmt.Errorf("couldn't copy flashcards: %w", err)
 	}
 
+	_, err = tx.Exec(ctx, `INSERT INTO user_leitner(user_id, card_id, box, cool_down)
+SELECT $1, f.card_id, 0, now() FROM deck_config dc
+JOIN flashcard f ON f.deck_id = dc.deck_id
+WHERE f.deck_id = $2`, copier, id)
+	if err != nil {
+		return 0, fmt.Errorf("couldn't create leitners: %w", err)
+	}
+
 	// create a new record about copying
 	_, err = tx.Exec(ctx, `INSERT INTO copied_by VALUES ($1, $2, now())`, copier, deckId)
 	if err != nil {
