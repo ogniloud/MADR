@@ -5,9 +5,10 @@ import CreateDeck from './Decks/CreateDecks';
 import { jwtDecode } from 'jwt-decode';
 import './Styles/MainPage.css';
 import defaultProfilePicture from './resource/default-profile-picture.png';
-import { fetchFollowers, fetchFollowings, searchUsers, followUser, unfollowUser, createGroup } from './API-Components/apiFunctions_main_feeds';
+import { fetchFollowers, fetchFollowings, searchUsers, followUser, unfollowUser, createGroup, } from './API-Components/apiFunctions_main_feeds';
 import SocialGroup from "./Social Site Components/social_group";
 import UserDrawer from "./Drawer-Components/Drawer";
+import {fetchGroups} from "./API-Components/apiFunctions_groups";
 
 const MainPage = () => {
     const [userInfo, setUserInfo] = useState(null);
@@ -28,6 +29,8 @@ const MainPage = () => {
     const [groups, setGroups] = useState([]);
     const [drawerOpen, setDrawerOpen] = useState(false);
 
+
+
     useEffect(() => {
         const fetchUserData = async () => {
             const token = localStorage.getItem('token');
@@ -46,9 +49,9 @@ const MainPage = () => {
                 }
             }
         };
-
         fetchUserData();
     }, []);
+
 
     useEffect(() => {
         const handleOutsideClick = (event) => {

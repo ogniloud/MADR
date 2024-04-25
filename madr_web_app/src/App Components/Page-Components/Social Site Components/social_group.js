@@ -30,6 +30,7 @@ const SocialGroup = () => {
         fetchGroups();
     }, [userId]);
 
+
     console.log('Groups:', groups);
     console.log('Is loading:', isLoading);
 

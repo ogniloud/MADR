@@ -1,5 +1,15 @@
 import {jwtDecode} from 'jwt-decode';
 
+const getUserId = () => {
+    const token = localStorage.getItem('token');
+    if (!token) {
+        throw new Error('Token not found in local storage');
+    }
+
+    const decodedToken = jwtDecode(token);
+    return decodedToken.user_id;
+};
+
 
 {/* API's for AllWords.js */}
 export const fetchFlashcards = async (deckId) => {

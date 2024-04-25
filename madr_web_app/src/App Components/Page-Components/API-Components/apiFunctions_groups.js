@@ -91,3 +91,24 @@ export const getCreatedGroupsByUserId = async (userId) => {
 
 
 
+
+
+export const fetchGroups = async (userInfo) => {
+    try {
+        const token = localStorage.getItem('token');
+
+        if (token && userInfo) {
+            const userId = userInfo.user_id;
+            const groups = await getGroupsByUserId(userId);
+            return groups;
+        } else {
+            console.log('Token or user info is missing.');
+            return [];
+        }
+    } catch (error) {
+        console.error('Error fetching groups:', error);
+        throw error;
+    }
+};
+
+
