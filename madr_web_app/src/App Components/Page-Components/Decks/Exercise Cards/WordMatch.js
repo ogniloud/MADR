@@ -31,7 +31,7 @@ const WordMatch = () => {
 
     const fetchMatchingData = async () => {
         try {
-            const dataMatchingData = await fetchRandomMatchingData(5, userId);
+            const dataMatchingData = await fetchRandomMatchingData(5, parseInt(userId));
             setMatchingData(dataMatchingData.matching);
         } catch (error) {
             console.error(error.message);
