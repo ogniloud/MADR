@@ -85,6 +85,10 @@ services:
     extra_hosts:
       - "host.docker.internal:host-gateway"
     depends_on:
+      kafka1:
+        condition: service_started
+      kafka2:
+        condition: service_started
       monctionary:
         condition: service_completed_successfully
 
