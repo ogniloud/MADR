@@ -3,7 +3,7 @@ WORKDIR /app
 COPY package.json ./
 RUN npm install
 COPY . ./
-RUN npm run build .env # build with environment
+RUN npm run build .env
 
 # release step
 FROM nginx:1.21.5-alpine as release
