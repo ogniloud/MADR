@@ -1,6 +1,7 @@
 .drawer-content {
     font-family: "Google Sans", "sans-serif";
     width: 450px;
+    height: 100%;
     padding: 20px;
     background-color: #333; /* Dark background color */
     color: #fff; /* Text color */
@@ -13,6 +14,8 @@
     flex-direction: column;
     align-items: center;
     margin-bottom: 0;
+    height: 300px;
+    width: 100%;
 }
 
 .drawer-user-info img {
@@ -23,7 +26,7 @@
     right: 140px;
     border-radius: 50%;
     margin-bottom: 10px;
-    border: 3px solid #fff; /* White border around the profile picture */
+    border: 3px solid #fff;
 }
 
 .drawer-user-info h2 {
@@ -33,40 +36,34 @@
     bottom:100px;
 }
 
-.follower-button,
-.following-button{
-    position: relative;
+.followers-button,
+.followings-button {
     font-family: "Google Sans", "sans-serif";
-    height: 55px;
-    width: 25px;
-    background: none;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: auto;
+    width: 200px;
+    color: white;
+    padding: 10px;
+    margin-bottom: 10px; /* Add margin to separate buttons */
+    border: none; /* Remove button border */
+    cursor: pointer;
+    font-size: 15px;
 }
 
-.follower-button span,
-.following-button span {
-    display: block; /* Display each part on a new line */
-    margin-bottom: 5px; /* Add some space between elements */
+
+.followers-button{
     position: relative;
+    bottom: 100px;
+    right: 30px;
 }
 
-
-.follower-button span{
+.followings-button{
     position: relative;
-    bottom:113px;
-    right: 65px;
+    bottom: 160px;
+    left: 100px;
 }
-.following-button span{
-    position: relative;
-    bottom:200px;
-    left:45px;
-}
-
-.follower-button-number,
-.following-button-number {
-    margin-left: 25px;
-    font-size: 28px;
-}
-
 
 
 .drawer-user-info button {

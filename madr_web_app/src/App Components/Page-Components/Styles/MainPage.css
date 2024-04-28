@@ -72,8 +72,8 @@
 .main-page-search-container {
     font-family: "Google Sans", sans-serif;
     position: absolute;
-    top: 25px;
-    left: 720px;
+    margin-left: 900px;
+    margin-top: 10px;
     height: 30px;
     width: 500px;
     background: transparent;
@@ -103,17 +103,26 @@
 .main-page-search-results {
     position: relative;
     flex-direction: column;
-    padding: 50px;
-    top: 62px;
-    left: 140px;
-    background-color: #FFD708;
-    border-radius: 5px;
+    margin-left: 720px;
+    margin-top: 100px;
+    padding: 20px;
+    background-color: gray;
+    border-radius: 2px;
     color: white;
     z-index: 10000;
     height: auto;
-    max-height: 160px;
-    width: 500px;
+    max-height: 150px;
+    width: 640px;
     overflow-y: auto;
+}
+
+.search-user-name{
+    font-size: 30px;
+}
+
+.main-page-search-results::-webkit-scrollbar {
+    width: 0; /* Set the width to 0 to hide the scrollbar */
+    visibility: hidden; /* Optionally hide scrollbar on Firefox */
 }
 
 .main-page-search-results ul {
@@ -129,7 +138,7 @@
     border: 2px solid white;
     border-radius: 10px;
     position: relative;
-    bottom: 30px;
+    bottom: 70px;
 }
 
 .main-page-feed-button{
@@ -247,12 +256,67 @@
     position: fixed;
     top: 20px;
     left: 20px;
-    z-index: 9999; /* Adjust z-index as needed */
-    outline: none; /* Remove outline */
+    z-index: 9999;
+    outline: none;
 }
 
 .drawer-toggle-btn:hover {
-    color: #555; /* Change hover color as needed */
+    color: #555;
 }
 
 
+
+/* Adjustments for mobile view */
+@media only screen and (max-width: 768px) {
+    .upper-part {
+        height: auto;
+        padding: 1em;
+    }
+
+    .lower-part {
+        position: relative;
+        margin-top: 20px;
+        left: auto;
+        top: auto;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-wrap: wrap;
+    }
+
+    .lower-part a {
+        margin: 10px;
+        width: auto;
+        height: auto;
+        padding: 10px;
+        font-size: 16px;
+    }
+
+    .main-page-search-container {
+        position: relative;
+        top: auto;
+        left: auto;
+        margin: 20px auto;
+        width: 90%;
+        max-width: 500px;
+    }
+
+    .main-page-search-btn {
+        position: relative;
+        left: auto;
+        bottom: auto;
+        margin-top: 10px;
+        width: 100%;
+    }
+
+    .main-page-search-results {
+        position: relative;
+        top: auto;
+        left: auto;
+        padding: 20px;
+        width: 90%;
+        max-width: 500px;
+        margin: 20px auto;
+        overflow: hidden;
+    }
+}

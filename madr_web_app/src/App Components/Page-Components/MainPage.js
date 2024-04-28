@@ -259,11 +259,11 @@ const MainPage = () => {
             {searchClicked && (
                 <div className="main-page-search-results" ref={searchResultsRef}>
                     {searchResults.length > 0 ? (
-                        <ul>
+                        <ul className="after-search-user-card">
                             {searchResults.map((user, index) => (
                                 <li key={index}>
-                                    <p>Username: {user.Username}</p>
-                                    <p>Email: {user.Email}</p>
+                                    <p className="search-user-name">{user.Username}</p>
+                                    {/*<p>Email: {user.Email}</p>*/}
                                     {/* Display "Follow" or "Unfollow" based on user's follow status */}
                                     {user.isFollowing ? (
                                         <React.Fragment>
