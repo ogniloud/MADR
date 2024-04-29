@@ -2,10 +2,8 @@ package deck
 
 import (
 	"context"
-	"encoding/json"
 	"errors"
 	"fmt"
-	"strings"
 	"time"
 
 	"github.com/jackc/pgx/v5"
@@ -70,16 +68,10 @@ func (d *Storage) GetFlashcardById(ctx context.Context, id models.FlashcardId) (
 	row := d.Conn.QueryRow(ctx, `SELECT * FROM flashcard WHERE card_id=$1`, id)
 
 	flashcard := models.Flashcard{}
-	strBackside := ""
 
-	err := row.Scan(&flashcard.Id, &flashcard.W, &strBackside, &flashcard.DeckId, &flashcard.A)
+	err := row.Scan(&flashcard.Id, &flashcard.W, &flashcard.B, &flashcard.DeckId, &flashcard.A)
 	if err != nil {
 		return models.Flashcard{}, fmt.Errorf("psql error: %w", err)
-	}
-
-	err = json.NewDecoder(strings.NewReader(strBackside)).Decode(&flashcard.B)
-	if err != nil {
-		return models.Flashcard{}, fmt.Errorf("json error: %w", err)
 	}
 
 	return flashcard, nil
@@ -115,24 +107,21 @@ func (d *Storage) GetUserInfo(ctx context.Context, uid models.UserId) (models.Us
 }
 
 func (d *Storage) PutAllFlashcards(ctx context.Context, id models.DeckId, cards []models.Flashcard) ([]models.FlashcardId, error) {
-	values := strings.Builder{}
-	args := make([]any, 0, 4*len(cards))
+	batch := &pgx.Batch{}
 
-	for k, v := range cards {
-		values.WriteString(fmt.Sprintf(`($%v, $%v, $%v, $%v)`, 4*k+1, 4*k+2, 4*k+3, 4*k+4))
-		if k != len(cards)-1 {
-			values.WriteByte(',')
-			values.WriteByte('\n')
-		}
-
-		b, _ := json.Marshal(v.B)
-		args = append(args, v.W, string(b), id, v.A)
+	for _, v := range cards {
+		batch.Queue(`INSERT INTO flashcard (word, backside, deck_id, answer) 
+								VALUES ($1, $2, $3, $4) RETURNING card_id;`,
+			v.W, v.B, id, v.A,
+		)
 	}
 
-	s := fmt.Sprintf(`INSERT INTO flashcard (word, backside, deck_id, answer) VALUES %v RETURNING card_id;`, values.String())
-	rows, err := d.Conn.Query(ctx, s, args...)
+	results := d.Conn.SendBatch(ctx, batch)
+	defer func() { _ = results.Close() }()
+
+	rows, err := results.Query()
 	if err != nil {
-		return nil, fmt.Errorf("psql error: %w", err)
+		return nil, fmt.Errorf("batch exec error: %w", err)
 	}
 	defer rows.Close()
 
@@ -167,21 +156,19 @@ func (d *Storage) PutNewDeck(ctx context.Context, config models.DeckConfig) (mod
 }
 
 func (d *Storage) PutAllUserLeitner(ctx context.Context, uls []models.UserLeitner) ([]models.LeitnerId, error) {
-	values := strings.Builder{}
-	args := make([]any, 0, 4*len(uls))
+	batch := &pgx.Batch{}
 
-	for k, v := range uls {
-		values.WriteString(fmt.Sprintf(`($%v, $%v, $%v, $%v)`, 4*k+1, 4*k+2, 4*k+3, 4*k+4))
-		if k != len(uls)-1 {
-			values.WriteByte(',')
-			values.WriteByte('\n')
-		}
-
-		args = append(args, v.UserId, v.FlashcardId, v.Box, time.Time(v.CoolDown))
+	for _, v := range uls {
+		batch.Queue(`INSERT INTO user_leitner (user_id, card_id, box, cool_down) 
+								VALUES ($1, $2, $3, $4) RETURNING leitner_id;`,
+			v.UserId, v.FlashcardId, v.Box, time.Time(v.CoolDown),
+		)
 	}
 
-	s := fmt.Sprintf(`INSERT INTO user_leitner (user_id, card_id, box, cool_down) VALUES %v RETURNING leitner_id;`, values.String())
-	rows, err := d.Conn.Query(ctx, s, args...)
+	results := d.Conn.SendBatch(ctx, batch)
+	defer func() { _ = results.Close() }()
+
+	rows, err := results.Query()
 	if err != nil {
 		return nil, fmt.Errorf("psql error: %w", err)
 	}

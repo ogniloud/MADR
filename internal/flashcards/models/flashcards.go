@@ -1,6 +1,9 @@
 package models
 
 import (
+	"encoding/json"
+	"fmt"
+	"strings"
 	"time"
 )
 
@@ -59,6 +62,20 @@ const (
 type Backside struct {
 	Type  BacksideType `json:"type"`
 	Value string       `json:"value"`
+}
+
+func (b *Backside) Scan(value any) error {
+	var err error
+	switch t := value.(type) {
+	case []byte:
+		err = json.Unmarshal(t, b)
+	case string:
+		err = json.NewDecoder(strings.NewReader(t)).Decode(b)
+	default:
+		err = fmt.Errorf("%T: %v", t, value)
+	}
+
+	return err
 }
 
 // ParseBackside returns a new string from value of backside if needed.

@@ -16,7 +16,7 @@ CREATE TABLE IF NOT EXISTS deck_config (
 CREATE TABLE IF NOT EXISTS flashcard (
     card_id SERIAL PRIMARY KEY,
     word VARCHAR(100) NOT NULL,
-    backside TEXT NOT NULL,
+    backside json NOT NULL,
     deck_id SERIAL,
     answer VARCHAR(100) NOT NULL
 );
