@@ -15,4 +15,5 @@ message RequestedContents {
     bool examples = 2;
     bool etymology = 3;
     bool ipa = 4;
+    bool single = 5;
 }
