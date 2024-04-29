@@ -2,6 +2,7 @@ package deck
 
 import (
 	"context"
+	"database/sql"
 	"errors"
 	"fmt"
 	"time"
@@ -69,8 +70,20 @@ func (d *Storage) GetFlashcardById(ctx context.Context, id models.FlashcardId) (
 
 	flashcard := models.Flashcard{}
 
-	err := row.Scan(&flashcard.Id, &flashcard.W, &flashcard.B, &flashcard.DeckId, &flashcard.A)
+	err := row.Scan(
+		&flashcard.Id,
+		&flashcard.W,
+		&flashcard.B,
+		&flashcard.DeckId,
+		&flashcard.A,
+		&flashcard.MB,
+	)
+
 	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return models.Flashcard{}, fmt.Errorf("card not found: %w", err)
+		}
+
 		return models.Flashcard{}, fmt.Errorf("psql error: %w", err)
 	}
 
@@ -106,13 +119,26 @@ func (d *Storage) GetUserInfo(ctx context.Context, uid models.UserId) (models.Us
 	return i, nil
 }
 
+var ErrCardsNotFound = errors.New("cards not found")
+
 func (d *Storage) PutAllFlashcards(ctx context.Context, id models.DeckId, cards []models.Flashcard) ([]models.FlashcardId, error) {
+	if len(cards) == 0 {
+		return nil, ErrCardsNotFound
+	}
+
 	batch := &pgx.Batch{}
 
+	for i := range cards {
+		cards[i].MB = append(cards[i].MB, cards[i].B)
+		b := models.Backside{Type: models.Definition, Value: cards[i].A}
+		cards[i].B = b
+		cards[i].MB = append(cards[i].MB, b)
+	}
+
 	for _, v := range cards {
-		batch.Queue(`INSERT INTO flashcard (word, backside, deck_id, answer) 
-								VALUES ($1, $2, $3, $4) RETURNING card_id;`,
-			v.W, v.B, id, v.A,
+		batch.Queue(`INSERT INTO flashcard (word, backside, multiple_backside, deck_id, answer) 
+								VALUES ($1, $2, $3, $4, $5) RETURNING card_id;`,
+			v.W, v.B, v.MB, id, v.A,
 		)
 	}
 
@@ -206,7 +232,7 @@ func (d *Storage) DeleteFlashcardFromDeck(ctx context.Context, cardId models.Fla
 	}
 
 	row := tx.QueryRow(ctx,
-		`DELETE FROM flashcard WHERE card_id=$1 RETURNING card_id`, cardId)
+		`DELETE FROM flashcard WHERE card_id=$1 RETURNING card_id cascade`, cardId)
 
 	if err := row.Scan(&cardId); err != nil && !errors.Is(err, pgx.ErrNoRows) {
 		d.Conn.Logger().Errorf("delete flashcards failed: %v, rollback...", err)
