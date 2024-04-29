@@ -97,6 +97,7 @@ type Flashcard struct {
 	W  Word        `json:"word"`
 	A  Answer      `json:"answer"`
 	B  Backside    `json:"backside"`
+	MB []Backside  `json:"multiple_backside"`
 
 	// DeckId shows which deck the flashcard belongs to.
 	DeckId DeckId `json:"deck_id"`
