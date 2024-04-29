@@ -232,7 +232,7 @@ func (d *Storage) DeleteFlashcardFromDeck(ctx context.Context, cardId models.Fla
 	}
 
 	row := tx.QueryRow(ctx,
-		`DELETE FROM flashcard WHERE card_id=$1 RETURNING card_id cascade`, cardId)
+		`DELETE FROM flashcard WHERE card_id=$1 RETURNING card_id`, cardId)
 
 	if err := row.Scan(&cardId); err != nil && !errors.Is(err, pgx.ErrNoRows) {
 		d.Conn.Logger().Errorf("delete flashcards failed: %v, rollback...", err)
