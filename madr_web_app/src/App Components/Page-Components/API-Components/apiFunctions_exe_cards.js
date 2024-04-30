@@ -10,7 +10,7 @@ export const fetchRandomFlashcard = async (deckId, userId) => {
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({
-                deck_id: parseInt(deckId), // Convert deck_id to a number
+                deck_id: deckId, // Convert deck_id to a number
                 user_id: userId,
             }),
         });
