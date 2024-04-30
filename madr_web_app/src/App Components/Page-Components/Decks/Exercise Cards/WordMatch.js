@@ -20,6 +20,7 @@ const WordMatch = () => {
             if (token) {
                 const decodedToken = jwtDecode(token);
                 setUserId(parseInt(decodedToken.user_id));
+                fetchMatchingData();
             } else {
                 console.error('Error: User not authenticated.');
             }
