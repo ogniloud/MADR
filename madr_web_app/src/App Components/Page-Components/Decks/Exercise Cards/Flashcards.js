@@ -17,13 +17,13 @@ const Flashcards = () => {
         const token = localStorage.getItem('token');
         if (token) {
             const decodedToken = jwtDecode(token);
-            setUserId(decodedToken.user_id);
+            setUserId(parseInt(decodedToken.user_id));
         }
     }, [deck_id, userId]);
 
     const fetchFlashcard = async () => {
         try {
-            const fetchedFlashcard = await fetchRandomFlashcard(deck_id, userId);
+            const fetchedFlashcard = await fetchRandomFlashcard(parseInt(deck_id), userId);
             setFlashcard(fetchedFlashcard);
             setCardsSeen(cardsSeen + 1);
         } catch (error) {
