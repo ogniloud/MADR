@@ -45,9 +45,9 @@ const SocialGroup = () => {
                     {groupList.map((group) => (
                         <div key={group.group_id} className="group-card">
                             <h3>Group Name: {group.name}</h3>
-                            <p>ID: {group.group_id}</p>
                             <p>Creator ID: {group.creator_id}</p>
                             <p>Created At: {group.time_created}</p>
+                            <button onClick={()=>{navigate('/social_group/'+group.group_id)}}>Invite someone...</button>
                         </div>
                     ))}
                 </div>

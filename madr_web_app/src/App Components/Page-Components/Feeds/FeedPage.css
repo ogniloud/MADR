@@ -10,11 +10,6 @@
 }
 
 
-
-.feed-main {
-    margin-top: 150px;
-}
-
 .feed-items-list {
     display: flex;
     flex-direction: column;
