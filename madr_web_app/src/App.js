@@ -51,7 +51,7 @@ function App() {
 
               {/*  Social sites and user's profile*/}
             <Route path = "/social_group" element={<SocialGroup/>} />
-            <Route path="/mainpage/social_group/:group_id" element={<SocialGroupDetail />} />
+            <Route path="/social_group/:group_id" element={<SocialGroupDetail />} />
 
           </Routes>
         </Router>

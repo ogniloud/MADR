@@ -35,7 +35,7 @@ const SocialGroup = () => {
     console.log('Is loading:', isLoading);
 
     const returnToHome = () => {
-        navigate('MainPage'); // Use navigate to navigate to 'MainPage'
+        navigate('/mainpage'); // Use navigate to navigate to 'MainPage'
     };
 
     const renderGroupCards = (groupList, messageIfEmpty) => {
