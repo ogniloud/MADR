@@ -8,7 +8,7 @@ const WordMatch = () => {
     const [selectedPairs, setSelectedPairs] = useState({});
     const [successMessage, setSuccessMessage] = useState('');
     const [errorMessage, setErrorMessage] = useState('');
-    const [userId, setUserId] = useState(null);
+    const [userId, setUserId] = useState(-1);
 
     useEffect(() => {
         fetchUserIdAndMatchingData();
