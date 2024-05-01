@@ -307,11 +307,12 @@ const MainPage = () => {
             {showGroupDialog && (
                 <div className="creating-group-popup">
                     <input
-                        className="Create-group-input"
+                        //className="Create-group-input"
                         type="text"
                         placeholder="Enter group name"
                         value={groupName}
                         onChange={(e) => setGroupName(e.target.value)}
+                        onKeyPress={handleKeyPress}
                     />
                     <button className="Create-group-button" onClick={handleCreateGroup}>Create</button>
                     <button className="Cancel-group-button" onClick={() => setShowGroupDialog(false)}>Cancel</button>

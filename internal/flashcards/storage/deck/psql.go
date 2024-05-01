@@ -145,21 +145,22 @@ func (d *Storage) PutAllFlashcards(ctx context.Context, id models.DeckId, cards 
 	results := d.Conn.SendBatch(ctx, batch)
 	defer func() { _ = results.Close() }()
 
-	rows, err := results.Query()
-	if err != nil {
-		return nil, fmt.Errorf("batch exec error: %w", err)
-	}
-	defer rows.Close()
-
-	temp := 0
 	ids := make([]models.FlashcardId, 0, len(cards))
-	_, err = pgx.ForEachRow(rows, []any{&temp}, func() error {
-		ids = append(ids, temp)
-		return nil
-	})
+	for range batch.Len() {
+		rows, err := results.Query()
+		if err != nil {
+			return nil, fmt.Errorf("psql error: %w", err)
+		}
 
-	if err != nil {
-		return nil, err
+		func() {
+			defer rows.Close()
+
+			temp := 0
+			_, err = pgx.ForEachRow(rows, []any{&temp}, func() error {
+				ids = append(ids, temp)
+				return nil
+			})
+		}()
 	}
 
 	return ids, nil
@@ -175,6 +176,7 @@ func (d *Storage) PutNewDeck(ctx context.Context, config models.DeckConfig) (mod
 
 	err := row.Scan(&id)
 	if err != nil {
+		d.Conn.Logger().Errorf("psql error: %v", err)
 		return 0, fmt.Errorf("psql error: %w", err)
 	}
 
@@ -194,20 +196,22 @@ func (d *Storage) PutAllUserLeitner(ctx context.Context, uls []models.UserLeitne
 	results := d.Conn.SendBatch(ctx, batch)
 	defer func() { _ = results.Close() }()
 
-	rows, err := results.Query()
-	if err != nil {
-		return nil, fmt.Errorf("psql error: %w", err)
-	}
-	defer rows.Close()
-
-	temp := 0
 	ids := make([]models.LeitnerId, 0, len(uls))
-	_, err = pgx.ForEachRow(rows, []any{&temp}, func() error {
-		ids = append(ids, temp)
-		return nil
-	})
-	if err != nil {
-		return nil, err
+
+	for range batch.Len() {
+		rows, err := results.Query()
+		if err != nil {
+			return nil, fmt.Errorf("psql error: %w", err)
+		}
+		func() {
+			defer rows.Close()
+
+			temp := 0
+			_, err = pgx.ForEachRow(rows, []any{&temp}, func() error {
+				ids = append(ids, temp)
+				return nil
+			})
+		}()
 	}
 
 	return ids, nil

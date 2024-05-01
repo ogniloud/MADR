@@ -23,10 +23,11 @@ const SocialGroupDetail = () =>{
     }
 
     const returnToHome = () => {
-        navigate('/mainpage');
+        navigate('/social_group');
     };
 
     return <div>
+        <button onClick={returnToHome} >Return to back</button>
         <h3>Choose a member to invite</h3>
         {listFollowers.map((item, index) => (
             <div onClick={() => {
