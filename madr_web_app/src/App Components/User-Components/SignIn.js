@@ -62,7 +62,7 @@ function SignIn() {
                   name="username"
                   value={signInData.username}
                   onChange={handleSignInChange}
-                  placeholder="Enter your madr.org username"
+                  placeholder="Enter your username"
                   required
               />
             </div>
@@ -75,7 +75,7 @@ function SignIn() {
                   name="password"
                   value={signInData.password}
                   onChange={handleSignInChange}
-                  placeholder="Enter your madr.org password"
+                  placeholder="Enter your password"
                   required
               />
             </div>
