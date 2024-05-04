@@ -51,6 +51,10 @@ type IStudyService interface {
 	MakeTextDeck(ctx context.Context, uid models.UserId, id models.DeckId, down models.CoolDown, size int) (models.Text, error)
 }
 
+type IPalmService interface {
+	GenerateText(ctx context.Context, words []string) (string, error)
+}
+
 type Service struct {
 	// dsrv stands for deck.Service
 	dsrv deck.IService
@@ -323,7 +327,7 @@ func (s *Service) MakeTextBase(ctx context.Context, cardIds []models.FlashcardId
 		return models.Text{}, ErrCardsAmt
 	}
 
-	text, err := s.plmsrv.GenerateTextWithWords(words)
+	text, err := s.plmsrv.GenerateText(ctx, words)
 	if err != nil {
 		return models.Text{}, err
 	}
