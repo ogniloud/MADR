@@ -26,7 +26,7 @@ export const fetchFlashcards = async (deckId) => {
             deck_id: Number(deckId),
         };
 
-        const response = await fetch(`http://${process.env.REACT_APP_API_HOST}/api/flashcards/cards`, {
+        const response = await fetch(`${process.env.REACT_APP_API_HOST}/api/flashcards/cards`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -77,7 +77,7 @@ export const addFlashcard = async (flashcardData) => {
 
         console.log('Request Body:', JSON.stringify(requestBody));
 
-        const response = await fetch(`http://${process.env.REACT_APP_API_HOST}/api/flashcards/add_card`, {
+        const response = await fetch(`${process.env.REACT_APP_API_HOST}/api/flashcards/add_card`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
@@ -101,7 +101,7 @@ export const deleteFlashcard = async (flashcardId) => {
             return;
         }
 
-        const response = await fetch(`http://${process.env.REACT_APP_API_HOST}/api/flashcards/delete_card`, {
+        const response = await fetch(`${process.env.REACT_APP_API_HOST}/api/flashcards/delete_card`, {
             method: 'DELETE',
             headers: {
                 'Content-Type': 'application/json',

@@ -23,7 +23,7 @@ function Form() {
   e.preventDefault();
 
   try {
-    const response = await fetch(`http://${process.env.REACT_APP_API_HOST}/api/signup`, {
+    const response = await fetch(`${process.env.REACT_APP_API_HOST}/api/signup`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
