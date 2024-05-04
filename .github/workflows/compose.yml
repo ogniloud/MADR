@@ -13,5 +13,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: print files in current directory
+        run: ls -la
       - name: Docker Compose Action
         uses: hoverkraft-tech/compose-action@v2.0.0
