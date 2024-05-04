@@ -23,7 +23,7 @@ function SignIn() {
     e.preventDefault();
 
     try {
-      const response = await fetch(`http://${process.env.REACT_APP_API_HOST}/api/signin`, {
+      const response = await fetch(`${process.env.REACT_APP_API_HOST}/api/signin`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
