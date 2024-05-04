@@ -15,7 +15,5 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-      - name: print files in current directory
-        run: ls -la
       - name: Docker Compose Action
         uses: hoverkraft-tech/compose-action@v2.0.0
