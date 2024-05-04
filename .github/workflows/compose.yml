@@ -13,6 +13,8 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
       - name: print files in current directory
         run: ls -la
       - name: Docker Compose Action
