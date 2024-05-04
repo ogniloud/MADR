@@ -36,6 +36,6 @@ jobs:
       with:
         version: latest
     - name: Compose
-      uses: hoverkraft-tech/compose-action
+      uses: hoverkraft-tech/compose-action@v1.5.1
       with:
         version: latest
