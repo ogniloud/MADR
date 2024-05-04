@@ -58,7 +58,7 @@ function Form() {
         <p className="describtion">
           MADR is a modern language learning tool. It provides various vocabulary enrichment methods that are scientifically proven to be effective and engaging. Find all the necessary resources in the web application.
         </p>
-        <p className="madr_org">madr.org</p>
+        <p className="madr_space">madr.space</p>
         <p className="one_tab"> Just one browser tab</p>
       </div>
 
