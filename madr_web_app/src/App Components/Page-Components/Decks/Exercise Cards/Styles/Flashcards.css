@@ -1,0 +1,100 @@
+
+.ex-flash {
+    margin: 20px;
+    flex-wrap: wrap;
+    justify-content: space-around;
+    font-family: 'Poppins', sans-serif;
+    height: 100%;
+    width: 100%;
+}
+
+.ex-flash-title {
+    position: absolute;
+    top: -25px;
+    right: -70px;
+    width: 100%;
+    height: 60px;
+    background-color: #97D7CB;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1em 2em;
+}
+
+.ex-flashcard-container {
+    margin-top: 18.5%;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: center;
+
+}
+
+.ex-flashcard {
+    width: 250px; /* Approximation for 5 inches in pixels */
+    height: 390px; /* Approximation for 7 inches in pixels */
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    background-color: rgba(255, 255, 255, 0.9); /* Adjust the alpha value as needed */
+    cursor: pointer;
+    transition: transform 0.5s ease-in-out;
+    position: relative;
+    background-color: #8E6C90;
+    color: white;
+
+}
+
+.ex-show-back{
+   background-color: #97D7CB;
+}
+
+.ex-flashcard:hover {
+    transform: scale(1.05);
+}
+
+.card-content {
+    padding: 20px;
+    text-align: center;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-weight: bold;
+    font-size: 20px;
+
+}
+
+.ex-flashcard-buttons-container {
+    display: flex;
+    justify-content: center;
+    margin-top: 15px;
+    font-family: 'Poppins', sans-serif;
+}
+
+.ex-flashcard-button-1,
+.ex-flashcard-button-2,
+.ex-flashcard-button-3{
+    margin: 0 5px;
+    padding: 8px 15px;
+    font-size: 0.9em;
+    cursor: pointer;
+    background-color: black;
+
+}
+
+.ex-flashcard-delete{
+    position: absolute;
+    margin: 0 5px;
+    padding: 8px 15px;
+    font-size: 0.9em;
+    cursor: pointer;
+    background-color: black;
+    width: 500px;
+    top:420px;
+
+
+}
+
+

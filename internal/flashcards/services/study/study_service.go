@@ -225,7 +225,7 @@ func (s *Service) Rate(ctx context.Context, uid models.UserId, id models.Flashca
 	}
 
 	l.CoolDown.NextState(l.Box, func(box models.Box) time.Time {
-		return time.Now().Add(time.Minute * time.Duration(l.Box)).UTC()
+		return time.Now().Add(time.Second * time.Duration(l.Box)).UTC()
 	})
 
 	if err := s.dsrv.UpdateLeitner(ctx, l); err != nil {

@@ -1,6 +1,9 @@
 package deck
 
 import (
+	"database/sql"
+	"errors"
+	deck2 "github.com/ogniloud/madr/internal/flashcards/storage/deck"
 	"net/http"
 	"strconv"
 	"time"
@@ -59,7 +62,7 @@ func (d Endpoints) LoadDecks(w http.ResponseWriter, r *http.Request) {
 
 	if err := ioutil.FromJSON(&reqBody, r.Body); err != nil {
 		d.logger.Errorf("reqBody: %+v, error: %v", reqBody, err)
-		d.ew.Error(w, err.Error(), http.StatusBadRequest)
+		d.ew.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
@@ -110,12 +113,16 @@ func (d Endpoints) GetFlashcardsByDeckId(w http.ResponseWriter, r *http.Request)
 
 	if err := ioutil.FromJSON(&reqBody, r.Body); err != nil {
 		d.logger.Errorf("reqBody: %+v, error: %v", reqBody, err)
-		d.ew.Error(w, err.Error(), http.StatusBadRequest)
+		d.ew.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
 	ids, err := d.s.GetFlashcardsIdByDeckId(r.Context(), reqBody.DeckId)
 	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			d.ew.Error(w, err.Error(), http.StatusNotFound)
+			return
+		}
 		d.logger.Errorf("error while loading ids of cards: %v", err)
 		d.ew.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -171,7 +178,7 @@ func (d Endpoints) AddFlashcardToDeck(w http.ResponseWriter, r *http.Request) {
 
 	if err := ioutil.FromJSON(&reqBody, r.Body); err != nil {
 		d.logger.Errorf("reqBody: %+v, error: %v", reqBody, err)
-		d.ew.Error(w, err.Error(), http.StatusBadRequest)
+		d.ew.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
@@ -181,6 +188,12 @@ func (d Endpoints) AddFlashcardToDeck(w http.ResponseWriter, r *http.Request) {
 		A: reqBody.Answer,
 	}})
 	if err != nil {
+		if errors.Is(err, deck2.ErrCardsNotFound) {
+			d.logger.Errorf("error while putting a card: %v", err)
+			d.ew.Error(w, err.Error(), http.StatusNotFound)
+			return
+		}
+
 		d.logger.Errorf("error while putting a card: %v", err)
 		d.ew.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -230,7 +243,7 @@ func (d Endpoints) DeleteFlashcardFromDeck(w http.ResponseWriter, r *http.Reques
 	reqBody := models.DeleteFlashcardFromDeckRequest{}
 	if err := ioutil.FromJSON(&reqBody, r.Body); err != nil {
 		d.logger.Errorf("reqBody: %+v, error: %v", reqBody, err)
-		d.ew.Error(w, err.Error(), http.StatusBadRequest)
+		d.ew.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
@@ -273,7 +286,7 @@ func (d Endpoints) NewDeckWithFlashcards(w http.ResponseWriter, r *http.Request)
 	reqBody := models.NewDeckWithFlashcardsRequest{}
 	if err := ioutil.FromJSON(&reqBody, r.Body); err != nil {
 		d.logger.Errorf("reqBody: %+v, error: %v", reqBody, err)
-		d.ew.Error(w, err.Error(), http.StatusBadRequest)
+		d.ew.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
@@ -330,7 +343,7 @@ func (d Endpoints) DeleteDeck(w http.ResponseWriter, r *http.Request) {
 	reqBody := models.DeleteDeckRequest{}
 	if err := ioutil.FromJSON(&reqBody, r.Body); err != nil {
 		d.logger.Errorf("reqBody: %+v, error: %v", reqBody, err)
-		d.ew.Error(w, err.Error(), http.StatusBadRequest)
+		d.ew.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
@@ -360,7 +373,7 @@ func (d Endpoints) DeleteDeck(w http.ResponseWriter, r *http.Request) {
 //   in: query
 //   description: FlashcardId.
 //   required: true
-//   type: int
+//   type: integer
 //
 //
 // Responses:
@@ -373,7 +386,7 @@ func (d Endpoints) GetFlashcardById(w http.ResponseWriter, r *http.Request) {
 	id, err := strconv.Atoi(chi.URLParam(r, "id"))
 	if err != nil {
 		d.logger.Errorf("reqBody: %+v, error: %v", id, err)
-		d.ew.Error(w, "bad request", http.StatusBadRequest)
+		d.ew.Error(w, "bad request", http.StatusInternalServerError)
 		return
 	}
 

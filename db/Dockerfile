@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:1
-FROM postgres:16-alpine
+FROM postgres:14-alpine
 
 ENV POSTGRES_HOST_AUTH_METHOD trust
 

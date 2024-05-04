@@ -20,31 +20,66 @@ definitions:
         title: BacksideType tells how to imagine a value of Backside.
         type: integer
         x-go-package: github.com/ogniloud/madr/internal/flashcards/models
+    CreateGroupResponse:
+        description: |-
+            CreateGroupResponse is a struct that defines the request body for
+            creating a new group.
+        properties:
+            group_id:
+                description: GroupId is an ID of a group in the storage.
+                example: 189
+                format: int64
+                type: integer
+                x-go-name: GroupId
+        required:
+            - group_id
+        type: object
+        x-go-package: github.com/ogniloud/madr/internal/social/models
     DeckConfig:
         description: DeckId is not a primary key, for each user a configuration can be different.
         properties:
             deck_id:
+                description: DeckId is a unique identifier of the deck.
+                example: 1
                 format: int64
                 type: integer
                 x-go-name: DeckId
             name:
                 description: Name is a name of the deck which the user assigned to it.
+                example: Bangladesh famous words
                 type: string
                 x-go-name: Name
             user_id:
                 description: UserId means that a user with UserId has the deck with id DeckId.
+                example: 12
                 format: int64
                 type: integer
                 x-go-name: UserId
+        required:
+            - deck_id
+            - user_id
+            - name
         title: DeckConfig contains information about a particular deck.
         type: object
         x-go-package: github.com/ogniloud/madr/internal/flashcards/models
+    FeedPostType:
+        type: string
+        x-go-package: github.com/ogniloud/madr/internal/social/models
+    FeedResponse:
+        properties:
+            feed:
+                items:
+                    $ref: '#/definitions/Post'
+                type: array
+                x-go-name: Feed
+        type: object
+        x-go-package: github.com/ogniloud/madr/internal/social/models
     Flashcard:
         description: |-
             Flashcard is a model of real flashcards with front side with word
             and back side containing some information that describes a word.
         properties:
-            asnwer:
+            answer:
                 type: string
                 x-go-name: A
             backside:
@@ -58,11 +93,62 @@ definitions:
                 format: int64
                 type: integer
                 x-go-name: Id
+            multiple_backside:
+                items:
+                    $ref: '#/definitions/Backside'
+                type: array
+                x-go-name: MB
             word:
                 type: string
                 x-go-name: W
         type: object
         x-go-package: github.com/ogniloud/madr/internal/flashcards/models
+    FollowersResponse:
+        properties:
+            user_info:
+                items:
+                    $ref: '#/definitions/UserInfo'
+                type: array
+                x-go-name: UserInfo
+        title: FollowersResponse contains ids and names of the followers.
+        type: object
+        x-go-package: github.com/ogniloud/madr/internal/social/models
+    FollowingSubscribedData:
+        properties:
+            author_id:
+                description: AuthorId is a unique identifier of the author.
+                example: 1
+                format: int64
+                type: integer
+                x-go-name: AuthorId
+            author_name:
+                description: AuthorName is a name of the author.
+                example: Dima Krasnov
+                type: string
+                x-go-name: AuthorName
+            follower_id:
+                description: FollowerId is a unique identifier of the follower.
+                example: 1
+                format: int64
+                type: integer
+                x-go-name: FollowerId
+            follower_name:
+                description: FollowerName is a name of the follower.
+                example: John Doe
+                type: string
+                x-go-name: FollowerName
+        type: object
+        x-go-package: github.com/ogniloud/madr/internal/social/models
+    FollowingsResponse:
+        properties:
+            user_info:
+                items:
+                    $ref: '#/definitions/UserInfo'
+                type: array
+                x-go-name: UserInfo
+        title: FollowingsResponse contains ids and names of the followings.
+        type: object
+        x-go-package: github.com/ogniloud/madr/internal/social/models
     GenericError:
         properties:
             message:
@@ -73,6 +159,21 @@ definitions:
         title: GenericError is a generic error message returned by a server.
         type: object
         x-go-package: github.com/ogniloud/madr/internal/ioutil
+    GetDecksByGroupIdResponse:
+        description: |-
+            GetDecksByGroupIdResponse is a struct that defines the request body for
+            loading decks of a group.
+        properties:
+            decks:
+                description: Decks is a list of decks.
+                items:
+                    $ref: '#/definitions/DeckConfig'
+                type: array
+                x-go-name: Decks
+        required:
+            - decks
+        type: object
+        x-go-package: github.com/ogniloud/madr/internal/social/models
     GetFlashcardByIdResponse:
         properties:
             flashcard:
@@ -100,6 +201,80 @@ definitions:
                 x-property-value: value
         type: object
         x-go-package: github.com/ogniloud/madr/internal/flashcards/models
+    GetGroupsByUserIdResponse:
+        description: |-
+            GetGroupsByUserIdResponse is a struct that defines the request body for
+            loading groups the user is a member of.
+        properties:
+            groups:
+                description: Groups is a map from group id to group config.
+                items:
+                    $ref: '#/definitions/GroupConfig'
+                type: array
+                x-go-name: Groups
+        required:
+            - groups
+        type: object
+        x-go-package: github.com/ogniloud/madr/internal/social/models
+    GroupConfig:
+        properties:
+            creator_id:
+                description: CreatorId means that a user created the group and is authorized to share posts within it.
+                example: 12
+                format: int64
+                type: integer
+                x-go-name: CreatorId
+            group_id:
+                description: GroupId is a unique identifier of the group.
+                example: 1
+                format: int64
+                type: integer
+                x-go-name: GroupId
+            name:
+                description: Name is a name of the group which the user assigned to it.
+                example: vodka lovers
+                type: string
+                x-go-name: Name
+            time_created:
+                description: Timestamp when the group was created
+                example: "2020-01-01T00:00:00Z"
+                format: date-time
+                type: string
+                x-go-name: TimeCreated
+        required:
+            - group_id
+            - creator_id
+            - name
+            - time_created
+        title: GroupConfig contains information about a particular group.
+        type: object
+        x-go-package: github.com/ogniloud/madr/internal/social/models
+    InviteData:
+        properties:
+            group_id:
+                description: GroupId is a unique identifier of the group.
+                example: 1
+                format: int64
+                type: integer
+                x-go-name: GroupId
+            group_name:
+                description: GroupName is a name of the group.
+                example: vodka lovers
+                type: string
+                x-go-name: GroupName
+            invitee_id:
+                description: InviteeId is a unique identifier of the user that received the invitation.
+                example: 1
+                format: int64
+                type: integer
+                x-go-name: InviteeId
+            invitee_name:
+                description: InviteeName is a name of the user that received the invitation.
+                example: John Doe
+                type: string
+                x-go-name: InviteeName
+        type: object
+        x-go-package: github.com/ogniloud/madr/internal/social/models
     LoadDecksResponse:
         description: |-
             LoadDecksResponse is a struct that defines the response body for
@@ -142,6 +317,20 @@ definitions:
                 x-go-name: M
         type: object
         x-go-package: github.com/ogniloud/madr/internal/flashcards/models
+    Post:
+        properties:
+            following_subscribed_data:
+                $ref: '#/definitions/FollowingSubscribedData'
+            invite_data:
+                $ref: '#/definitions/InviteData'
+            shared_from_following_data:
+                $ref: '#/definitions/SharedFromFollowingData'
+            shared_from_group_data:
+                $ref: '#/definitions/SharedFromGroupData'
+            type:
+                $ref: '#/definitions/FeedPostType'
+        type: object
+        x-go-package: github.com/ogniloud/madr/internal/social/models
     RandomCardDeckResponse:
         description: |-
             RandomCardDeckResponse is a struct that defines the response body for
@@ -222,6 +411,70 @@ definitions:
                 $ref: '#/definitions/Text'
         type: object
         x-go-package: github.com/ogniloud/madr/internal/flashcards/models
+    SearchUserResponse:
+        description: |-
+            SearchUserResponse is a struct that defines the response body for
+            searching users by name.
+        properties:
+            users:
+                items:
+                    $ref: '#/definitions/UserInfo'
+                type: array
+                x-go-name: Users
+        type: object
+        x-go-package: github.com/ogniloud/madr/internal/social/models
+    SharedFromFollowingData:
+        properties:
+            author_id:
+                description: AuthorId is a unique identifier of the author.
+                example: 1
+                format: int64
+                type: integer
+                x-go-name: AuthorId
+            author_name:
+                description: AuthorName is a name of the author.
+                example: John Doe
+                type: string
+                x-go-name: AuthorName
+            deck_id:
+                description: DeckId is a unique identifier of the deck.
+                example: 1
+                format: int64
+                type: integer
+                x-go-name: DeckId
+            deck_name:
+                description: DeckName is a name of the deck.
+                example: russian curse words
+                type: string
+                x-go-name: DeckName
+        type: object
+        x-go-package: github.com/ogniloud/madr/internal/social/models
+    SharedFromGroupData:
+        properties:
+            deck_id:
+                description: DeckId is a unique identifier of the deck.
+                example: 1
+                format: int64
+                type: integer
+                x-go-name: DeckId
+            deck_name:
+                description: DeckName is a name of the deck.
+                example: Bangladesh famous words
+                type: string
+                x-go-name: DeckName
+            group_id:
+                description: GroupId is a unique identifier of the group.
+                example: 1
+                format: int64
+                type: integer
+                x-go-name: GroupId
+            group_name:
+                description: GroupName is a name of the group.
+                example: vodka lovers
+                type: string
+                x-go-name: GroupName
+        type: object
+        x-go-package: github.com/ogniloud/madr/internal/social/models
     SignInResponse:
         properties:
             authorization:
@@ -254,6 +507,41 @@ definitions:
                 x-go-name: T
         type: object
         x-go-package: github.com/ogniloud/madr/internal/flashcards/models
+    UserInfo:
+        properties:
+            Email:
+                type: string
+            ID:
+                format: int64
+                type: integer
+            Username:
+                type: string
+        title: UserInfo is a struct that defines the user info model.
+        type: object
+        x-go-package: github.com/ogniloud/madr/internal/social/models
+    acceptInviteRequest:
+        description: |-
+            AcceptInviteRequest is a struct that defines the request body for
+            accepting an invite to group.
+        properties:
+            group_id:
+                description: GroupId is an ID of a group in the storage.
+                example: 189
+                format: int64
+                type: integer
+                x-go-name: GroupId
+            user_id:
+                description: UserId is an ID of the user in a storage.
+                example: 189
+                format: int64
+                type: integer
+                x-go-name: UserId
+        required:
+            - user_id
+            - group_id
+        type: object
+        x-go-name: AcceptInviteRequest
+        x-go-package: github.com/ogniloud/madr/internal/social/models
     addFlashcardToDeckRequest:
         description: |-
             AddFlashcardToDeckRequest is a struct that defines the request body for
@@ -292,6 +580,51 @@ definitions:
         type: object
         x-go-name: AddFlashcardToDeckRequest
         x-go-package: github.com/ogniloud/madr/internal/flashcards/models
+    createGroupRequest:
+        description: |-
+            CreateGroupRequest is a struct that defines the request body for
+            creating a new group.
+        properties:
+            name:
+                description: Name is the new group's name
+                example: Eduard
+                type: string
+                x-go-name: Name
+            user_id:
+                description: UserId is an ID of the user in a storage.
+                example: 189
+                format: int64
+                type: integer
+                x-go-name: UserId
+        required:
+            - user_id
+            - name
+        type: object
+        x-go-name: CreateGroupRequest
+        x-go-package: github.com/ogniloud/madr/internal/social/models
+    deepCopyDeckRequest:
+        description: |-
+            DeepCopyDeckRequest is a struct that defines the request body for
+            deep copying a deck (with all its contents recursively copied).
+        properties:
+            copier_id:
+                description: CopierId is an ID of the user in a storage.
+                example: 189
+                format: int64
+                type: integer
+                x-go-name: CopierId
+            deck_id:
+                description: DeckId is an ID of the deck to copy.
+                example: 189
+                format: int64
+                type: integer
+                x-go-name: DeckId
+        required:
+            - copier_id
+            - deck_id
+        type: object
+        x-go-name: DeepCopyDeckRequest
+        x-go-package: github.com/ogniloud/madr/internal/social/models
     deleteDeckRequest:
         description: |-
             DeleteDeckRequest is a struct that defines the request body for the
@@ -338,6 +671,92 @@ definitions:
         type: object
         x-go-name: DeleteFlashcardFromDeckRequest
         x-go-package: github.com/ogniloud/madr/internal/flashcards/models
+    deleteGroupRequest:
+        description: |-
+            DeleteGroupRequest is a struct that defines the request body for
+            deleting a group.
+        properties:
+            group_id:
+                description: GroupId is an ID of a group in the storage.
+                example: 189
+                format: int64
+                type: integer
+                x-go-name: GroupId
+            user_id:
+                description: UserId is an ID of the user in a storage.
+                example: 189
+                format: int64
+                type: integer
+                x-go-name: UserId
+        required:
+            - user_id
+            - group_id
+        type: object
+        x-go-name: DeleteGroupRequest
+        x-go-package: github.com/ogniloud/madr/internal/social/models
+    feedRequest:
+        properties:
+            user_id:
+                format: int64
+                type: integer
+                x-go-name: UserId
+        title: FeedRequest is a struct that defines the request body for getting a user's feed.
+        type: object
+        x-go-name: FeedRequest
+        x-go-package: github.com/ogniloud/madr/internal/social/models
+    followRequest:
+        description: FollowRequest contains an id of the user that following to author
+        properties:
+            author_id:
+                description: AuthorId is an ID of the supplier of content.
+                example: 189
+                format: int64
+                type: integer
+                x-go-name: AuthorId
+            follower_id:
+                description: FollowerId is an ID of the user following the author.
+                example: 189
+                format: int64
+                type: integer
+                x-go-name: FollowerId
+        required:
+            - follower_id
+            - author_id
+        type: object
+        x-go-name: FollowRequest
+        x-go-package: github.com/ogniloud/madr/internal/social/models
+    getCreatedGroupsByUserId:
+        description: |-
+            GetCreatedGroupsByUserIdRequest is a struct that defines the request body for
+            loading groups the user is a creator of.
+        properties:
+            user_id:
+                description: UserId is an ID of the user in a storage.
+                example: 189
+                format: int64
+                type: integer
+                x-go-name: UserId
+        required:
+            - user_id
+        type: object
+        x-go-name: GetCreatedGroupsByUserIdRequest
+        x-go-package: github.com/ogniloud/madr/internal/social/models
+    getDecksByGroupIdRequest:
+        description: |-
+            GetDecksByGroupIdRequest is a struct that defines the request body for
+            loading decks of a group.
+        properties:
+            group_id:
+                description: GroupId is an ID of a group in the storage.
+                example: 189
+                format: int64
+                type: integer
+                x-go-name: GroupId
+        required:
+            - group_id
+        type: object
+        x-go-name: GetDecksByGroupIdRequest
+        x-go-package: github.com/ogniloud/madr/internal/social/models
     getFlashcardsByDeckIdRequest:
         description: |-
             GetFlashcardsByDeckIdRequest is a struct that defines the request body for
@@ -354,6 +773,98 @@ definitions:
         type: object
         x-go-name: GetFlashcardsByDeckIdRequest
         x-go-package: github.com/ogniloud/madr/internal/flashcards/models
+    getFollowersRequest:
+        properties:
+            user_id:
+                description: UserId is an ID of the user in a storage.
+                example: 189
+                format: int64
+                type: integer
+                x-go-name: UserId
+        required:
+            - user_id
+        title: FollowersRequest contains an id of the user to get their followers.
+        type: object
+        x-go-name: FollowersRequest
+        x-go-package: github.com/ogniloud/madr/internal/social/models
+    getFollowingsRequest:
+        properties:
+            user_id:
+                description: UserId is an ID of the user in a storage.
+                example: 189
+                format: int64
+                type: integer
+                x-go-name: UserId
+        required:
+            - user_id
+        title: FollowingsRequest contains an id of the user to get their followings.
+        type: object
+        x-go-name: FollowingsRequest
+        x-go-package: github.com/ogniloud/madr/internal/social/models
+    getGroupByGroupIdRequest:
+        description: |-
+            GetGroupByGroupIdRequest is a struct that defines the request body for
+            loading a config of the group.
+        properties:
+            group_id:
+                description: GroupId is an ID of a group in the storage.
+                example: 189
+                format: int64
+                type: integer
+                x-go-name: GroupId
+        required:
+            - group_id
+        type: object
+        x-go-name: GetGroupByGroupIdRequest
+        x-go-package: github.com/ogniloud/madr/internal/social/models
+    getGroupsByUserIdRequest:
+        description: |-
+            GetGroupsByUserIdRequest is a struct that defines the request body for
+            loading groups the user is a member of.
+        properties:
+            user_id:
+                description: UserId is an ID of the user in a storage.
+                example: 189
+                format: int64
+                type: integer
+                x-go-name: UserId
+        required:
+            - user_id
+        type: object
+        x-go-name: GetGroupsByUserIdRequest
+        x-go-package: github.com/ogniloud/madr/internal/social/models
+    getInvitesByGroupIdRequest:
+        description: |-
+            GetInvitesByGroupIdRequest is a struct that defines the request body for
+            loading invites to a group.
+        properties:
+            group_id:
+                description: GroupId is an ID of a group in the storage.
+                example: 189
+                format: int64
+                type: integer
+                x-go-name: GroupId
+        required:
+            - group_id
+        type: object
+        x-go-name: GetInvitesByGroupIdRequest
+        x-go-package: github.com/ogniloud/madr/internal/social/models
+    getInvitesByUserIdRequest:
+        description: |-
+            GetInvitesByUserIdRequest is a struct that defines the request body for
+            loading invites to a user.
+        properties:
+            user_id:
+                description: UserId is an ID of the user in a storage.
+                example: 189
+                format: int64
+                type: integer
+                x-go-name: UserId
+        required:
+            - user_id
+        type: object
+        x-go-name: GetInvitesByUserIdRequest
+        x-go-package: github.com/ogniloud/madr/internal/social/models
     getUserInfoRequest:
         type: object
         x-go-name: GetUserInfoRequest
@@ -373,6 +884,22 @@ definitions:
         type: object
         x-go-name: GetUserInfoResponse
         x-go-package: github.com/ogniloud/madr/internal/models
+    getUsersByGroupIdRequest:
+        description: |-
+            GetUsersByGroupIdRequest is a struct that defines the request body for
+            loading members of a group.
+        properties:
+            group_id:
+                description: GroupId is an ID of a group in the storage.
+                example: 189
+                format: int64
+                type: integer
+                x-go-name: GroupId
+        required:
+            - group_id
+        type: object
+        x-go-name: GetUsersByGroupIdRequest
+        x-go-package: github.com/ogniloud/madr/internal/social/models
     loadDecksRequest:
         description: |-
             LoadDecksRequest is a struct that defines the request body for
@@ -653,6 +1180,87 @@ definitions:
         type: object
         x-go-name: RateRequest
         x-go-package: github.com/ogniloud/madr/internal/flashcards/models
+    sendInviteRequest:
+        description: |-
+            SendInviteRequest is a struct that defines the request body for
+            sending an invite to group.
+        properties:
+            creator_id:
+                description: CreatorId is an ID of the user in a storage.
+                example: 189
+                format: int64
+                type: integer
+                x-go-name: CreatorId
+            group_id:
+                description: GroupId is an ID of a group in the storage.
+                example: 189
+                format: int64
+                type: integer
+                x-go-name: GroupId
+            invitee_id:
+                description: CreatorId is an ID of the user in a storage.
+                example: 189
+                format: int64
+                type: integer
+                x-go-name: InviteeId
+        required:
+            - creator_id
+            - invitee_id
+            - group_id
+        type: object
+        x-go-name: SendInviteRequest
+        x-go-package: github.com/ogniloud/madr/internal/social/models
+    shareAllGroupDecksRequest:
+        description: |-
+            ShareAllGroupDecksRequest is a struct that defines the request body for
+            sharing all the group decks to a new user.
+        properties:
+            group_id:
+                description: GroupId is an ID of a group in the storage.
+                example: 189
+                format: int64
+                type: integer
+                x-go-name: GroupId
+            user_id:
+                description: UserId is an ID of the user in a storage.
+                example: 189
+                format: int64
+                type: integer
+                x-go-name: UserId
+        required:
+            - user_id
+            - group_id
+        type: object
+        x-go-name: ShareAllGroupDecksRequest
+        x-go-package: github.com/ogniloud/madr/internal/social/models
+    shareGroupDeckRequest:
+        properties:
+            deck_id:
+                description: DeckId is an ID of a deck in the storage.
+                example: 3
+                format: int64
+                type: integer
+                x-go-name: DeckId
+            group_id:
+                description: GroupId is an ID of a group in the storage.
+                example: 222
+                format: int64
+                type: integer
+                x-go-name: GroupId
+            user_id:
+                description: UserId is an ID of the user in a storage.
+                example: 189
+                format: int64
+                type: integer
+                x-go-name: UserId
+        required:
+            - user_id
+            - group_id
+            - deck_id
+        title: ShareGroupDeckRequest contains values for sharing decks.
+        type: object
+        x-go-name: ShareGroupDeckRequest
+        x-go-package: github.com/ogniloud/madr/internal/social/models
     signInRequest:
         properties:
             password:
@@ -739,7 +1347,7 @@ paths:
                   in: query
                   name: id
                   required: true
-                  type: object
+                  type: integer
             produces:
                 - application/json
             responses:
@@ -882,6 +1490,102 @@ paths:
             schemes:
                 - http
             summary: Creates a new deck with flashcards.
+    /api/group/decks:
+        post:
+            consumes:
+                - application/json
+            operationId: GetDecksByGroupId
+            parameters:
+                - in: body
+                  name: request
+                  required: true
+                  schema:
+                    $ref: '#/definitions/getDecksByGroupIdRequest'
+                    type: object
+            produces:
+                - application/json
+            responses:
+                "200":
+                    $ref: '#/responses/getDecksByGroupIdOkResponse'
+                "400":
+                    $ref: '#/responses/getDecksByGroupIdBadRequestResponse'
+                "500":
+                    $ref: '#/responses/getDecksByGroupIdInternalServerErrorResponse'
+            schemes:
+                - http
+            summary: Get decks by group id.
+    /api/group/share:
+        post:
+            consumes:
+                - application/json
+            operationId: ShareGroupDeck
+            parameters:
+                - in: body
+                  name: request
+                  required: true
+                  schema:
+                    $ref: '#/definitions/shareGroupDeckRequest'
+                    type: object
+            produces:
+                - application/json
+            responses:
+                "204":
+                    $ref: '#/responses/shareGroupDeckNoContentResponse'
+                "400":
+                    $ref: '#/responses/shareGroupDeckBadRequestResponse'
+                "500":
+                    $ref: '#/responses/shareGroupDeckInternalServerErrorResponse'
+            schemes:
+                - http
+            summary: Share a deck with a group.
+    /api/groups/create:
+        put:
+            consumes:
+                - application/json
+            operationId: CreateGroup
+            parameters:
+                - in: body
+                  name: request
+                  required: true
+                  schema:
+                    $ref: '#/definitions/createGroupRequest'
+                    type: object
+            produces:
+                - application/json
+            responses:
+                "200":
+                    $ref: '#/responses/createGroupOkResponse'
+                "400":
+                    $ref: '#/responses/createGroupBadRequestResponse'
+                "500":
+                    $ref: '#/responses/createGroupInternalServerErrorResponse'
+            schemes:
+                - http
+            summary: Create a new group.
+    /api/groups/groups:
+        post:
+            consumes:
+                - application/json
+            operationId: GetGroupsByUserId
+            parameters:
+                - in: body
+                  name: request
+                  required: true
+                  schema:
+                    $ref: '#/definitions/getGroupsByUserIdRequest'
+                    type: object
+            produces:
+                - application/json
+            responses:
+                "200":
+                    $ref: '#/responses/getGroupsByUserIdOkResponse'
+                "400":
+                    $ref: '#/responses/getGroupsByUserIdBadRequestResponse'
+                "500":
+                    $ref: '#/responses/getGroupsByUserIdInternalServerErrorResponse'
+            schemes:
+                - http
+            summary: Get groups by user id.
     /api/signin:
         post:
             consumes:
@@ -938,6 +1642,151 @@ paths:
             schemes:
                 - http
             summary: Creates a new user.
+    /api/social/feed:
+        post:
+            consumes:
+                - application/json
+            operationId: Feed
+            parameters:
+                - description: request body
+                  in: body
+                  name: request
+                  required: true
+                  schema:
+                    $ref: '#/definitions/feedRequest'
+                    description: request body
+                    type: object
+            produces:
+                - application/json
+                - 'Scheme: http'
+            responses:
+                "200":
+                    $ref: '#/responses/feedOkResponse'
+                "400":
+                    $ref: '#/responses/feedBadRequestResponse'
+                "500":
+                    $ref: '#/responses/feedInternalServerErrorResponse'
+            summary: Returns user's feed.
+    /api/social/follow:
+        post:
+            consumes:
+                - application/json
+            operationId: follow
+            parameters:
+                - description: request body
+                  in: body
+                  name: request
+                  required: true
+                  schema:
+                    $ref: '#/definitions/followRequest'
+                    description: request body
+                    type: object
+            produces:
+                - application/json
+                - 'Scheme: http'
+            responses:
+                "204":
+                    $ref: '#/responses/followNoContentResponse'
+                "400":
+                    $ref: '#/responses/followBadRequestResponse'
+                "500":
+                    $ref: '#/responses/followInternalServerErrorResponse'
+            summary: Follows the user.
+    /api/social/followers:
+        post:
+            consumes:
+                - application/json
+            operationId: getFollowers
+            parameters:
+                - description: request body
+                  in: body
+                  name: request
+                  required: true
+                  schema:
+                    $ref: '#/definitions/getFollowersRequest'
+                    description: request body
+                    type: object
+            produces:
+                - application/json
+                - 'Scheme: http'
+            responses:
+                "200":
+                    $ref: '#/responses/getFollowersOkResponse'
+                "400":
+                    $ref: '#/responses/getFollowersBadRequestResponse'
+                "500":
+                    $ref: '#/responses/getFollowersInternalServerErrorResponse'
+            summary: Returns a list of followers of the user.
+    /api/social/followings:
+        post:
+            consumes:
+                - application/json
+            operationId: getFollowings
+            parameters:
+                - description: request body
+                  in: body
+                  name: request
+                  required: true
+                  schema:
+                    $ref: '#/definitions/getFollowingsRequest'
+                    description: request body
+                    type: object
+            produces:
+                - application/json
+                - 'Scheme: http'
+            responses:
+                "200":
+                    $ref: '#/responses/getFollowingsOkResponse'
+                "400":
+                    $ref: '#/responses/getFollowingsBadRequestResponse'
+                "500":
+                    $ref: '#/responses/getFollowingsInternalServerErrorResponse'
+            summary: Returns a list of followings of the user.
+    /api/social/search:
+        get:
+            consumes:
+                - application/json
+            operationId: search
+            parameters:
+                - description: search query
+                  in: query
+                  name: q
+                  required: true
+                  type: string
+            produces:
+                - application/json
+                - 'Scheme: http'
+            responses:
+                "200":
+                    $ref: '#/responses/searchUserOkResponse'
+                "500":
+                    $ref: '#/responses/searchUserInternalServerErrorResponse'
+            summary: Returns a list of users by name.
+    /api/social/unfollow:
+        post:
+            consumes:
+                - application/json
+            operationId: unfollow
+            parameters:
+                - description: request body
+                  in: body
+                  name: request
+                  required: true
+                  schema:
+                    $ref: '#/definitions/followRequest'
+                    description: request body
+                    type: object
+            produces:
+                - application/json
+                - 'Scheme: http'
+            responses:
+                "204":
+                    $ref: '#/responses/unfollowNoContentResponse'
+                "400":
+                    $ref: '#/responses/unfollowBadRequestResponse'
+                "500":
+                    $ref: '#/responses/unfollowInternalServerErrorResponse'
+            summary: Unfollows the user.
     /api/study/random:
         post:
             consumes:
@@ -1180,7 +2029,7 @@ paths:
                   in: query
                   name: id
                   required: true
-                  type: object
+                  type: integer
             produces:
                 - application/json
             responses:
@@ -1210,6 +2059,18 @@ responses:
         description: ""
         schema:
             $ref: '#/definitions/GenericError'
+    createGroupBadRequestResponse:
+        description: ""
+        schema:
+            $ref: '#/definitions/GenericError'
+    createGroupInternalServerErrorResponse:
+        description: ""
+        schema:
+            $ref: '#/definitions/GenericError'
+    createGroupOkResponse:
+        description: ""
+        schema:
+            $ref: '#/definitions/CreateGroupResponse'
     deleteDeckBadRequestError:
         description: ""
         schema:
@@ -1230,6 +2091,40 @@ responses:
             $ref: '#/definitions/GenericError'
     deleteFlashcardFromDeckNoContentResponse:
         description: ""
+    feedBadRequestResponse:
+        description: ""
+        schema:
+            $ref: '#/definitions/GenericError'
+    feedInternalServerErrorResponse:
+        description: ""
+        schema:
+            $ref: '#/definitions/GenericError'
+    feedOkResponse:
+        description: ""
+        schema:
+            $ref: '#/definitions/FeedResponse'
+    followBadRequestResponse:
+        description: ""
+        schema:
+            $ref: '#/definitions/GenericError'
+    followInternalServerErrorResponse:
+        description: ""
+        schema:
+            $ref: '#/definitions/GenericError'
+    followNoContentResponse:
+        description: ""
+    getDecksByGroupIdBadRequestResponse:
+        description: ""
+        schema:
+            $ref: '#/definitions/GenericError'
+    getDecksByGroupIdInternalServerErrorResponse:
+        description: ""
+        schema:
+            $ref: '#/definitions/GenericError'
+    getDecksByGroupIdOkResponse:
+        description: ""
+        schema:
+            $ref: '#/definitions/GetDecksByGroupIdResponse'
     getFlashcardByIdBadRequestError:
         description: ""
         schema:
@@ -1254,6 +2149,42 @@ responses:
         description: ""
         schema:
             $ref: '#/definitions/GetFlashcardsByDeckIdResponse'
+    getFollowersBadRequestResponse:
+        description: ""
+        schema:
+            $ref: '#/definitions/GenericError'
+    getFollowersInternalServerErrorResponse:
+        description: ""
+        schema:
+            $ref: '#/definitions/GenericError'
+    getFollowersOkResponse:
+        description: ""
+        schema:
+            $ref: '#/definitions/FollowersResponse'
+    getFollowingsBadRequestResponse:
+        description: ""
+        schema:
+            $ref: '#/definitions/GenericError'
+    getFollowingsInternalServerErrorResponse:
+        description: ""
+        schema:
+            $ref: '#/definitions/GenericError'
+    getFollowingsOkResponse:
+        description: ""
+        schema:
+            $ref: '#/definitions/FollowingsResponse'
+    getGroupsByUserIdBadRequestResponse:
+        description: ""
+        schema:
+            $ref: '#/definitions/GenericError'
+    getGroupsByUserIdInternalServerErrorResponse:
+        description: ""
+        schema:
+            $ref: '#/definitions/GenericError'
+    getGroupsByUserIdOkResponse:
+        description: ""
+        schema:
+            $ref: '#/definitions/GetGroupsByUserIdResponse'
     getUserInfoBadRequestError:
         description: ""
         schema:
@@ -1267,6 +2198,10 @@ responses:
         schema:
             $ref: '#/definitions/GenericError'
     loadDecksBadRequestError:
+        description: ""
+        schema:
+            $ref: '#/definitions/GenericError'
+    loadDecksInternalServerError:
         description: ""
         schema:
             $ref: '#/definitions/GenericError'
@@ -1390,6 +2325,24 @@ responses:
             $ref: '#/definitions/GenericError'
     rateNoContentResponse:
         description: ""
+    searchUserInternalServerErrorResponse:
+        description: ""
+        schema:
+            $ref: '#/definitions/GenericError'
+    searchUserOkResponse:
+        description: ""
+        schema:
+            $ref: '#/definitions/SearchUserResponse'
+    shareGroupDeckBadRequestResponse:
+        description: ""
+        schema:
+            $ref: '#/definitions/GenericError'
+    shareGroupDeckInternalServerErrorResponse:
+        description: ""
+        schema:
+            $ref: '#/definitions/GenericError'
+    shareGroupDeckNoContentResponse:
+        description: ""
     signInBadRequestError:
         description: ""
         schema:
@@ -1420,6 +2373,16 @@ responses:
         description: ""
         schema:
             $ref: '#/definitions/GenericError'
+    unfollowBadRequestResponse:
+        description: ""
+        schema:
+            $ref: '#/definitions/GenericError'
+    unfollowInternalServerErrorResponse:
+        description: ""
+        schema:
+            $ref: '#/definitions/GenericError'
+    unfollowNoContentResponse:
+        description: ""
 schemes:
     - http
 swagger: "2.0"
