@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 	"regexp"
+	"unicode"
 
 	"github.com/ogniloud/madr/internal/data"
 	"github.com/ogniloud/madr/internal/ioutil"
@@ -85,7 +86,26 @@ func (e *Endpoints) SignUp(w http.ResponseWriter, r *http.Request) {
 
 var _usernameValid = regexp.MustCompile(`^[A-Za-z0-9]+$`)
 var _emailValid = regexp.MustCompile(`^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$`)
-var _passwordValid = regexp.MustCompile(`^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$`)
+
+func verifyPassword(s string) bool {
+	var sevenOrMore, number, upper, special bool
+	letters := 0
+	for _, c := range s {
+		switch {
+		case unicode.IsNumber(c):
+			number = true
+		case unicode.IsUpper(c):
+			upper = true
+			letters++
+		case unicode.IsPunct(c) || unicode.IsSymbol(c):
+			special = true
+		case unicode.IsLetter(c) || c == ' ':
+			letters++
+		}
+	}
+	sevenOrMore = letters >= 7
+	return sevenOrMore && number && upper && special
+}
 
 func validate(req models.SignUpRequest) error {
 	if len(req.Username) < 3 || len(req.Username) > 50 {
@@ -100,8 +120,8 @@ func validate(req models.SignUpRequest) error {
 		return errors.New("email invalid")
 	}
 
-	if !_passwordValid.MatchString(req.Password) {
-		return errors.New("a password must be eight characters including one uppercase letter," +
+	if !verifyPassword(req.Password) {
+		return errors.New("a password must be seven characters including one uppercase letter," +
 			" one special character and alphanumeric characters")
 	}
 
