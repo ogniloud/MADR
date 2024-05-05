@@ -141,7 +141,7 @@ func validate(req models.SignUpRequest) error {
 	}
 
 	if !verifyPassword(req.Password) {
-		return errors.New("a password must be seven characters including one uppercase letter," +
+		return errors.New("a password must be seven or more characters including one uppercase letter," +
 			" one special character and alphanumeric characters")
 	}
 
