@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 	"regexp"
+	"strings"
 	"unicode"
 
 	"github.com/ogniloud/madr/internal/data"
@@ -87,6 +88,21 @@ func (e *Endpoints) SignUp(w http.ResponseWriter, r *http.Request) {
 var _usernameValid = regexp.MustCompile(`^[A-Za-z0-9]+$`)
 var _emailValid = regexp.MustCompile(`^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$`)
 
+var _filter = []string{"huy", "pizd", "xuy", "xyu", "pidor",
+	"ebl", "gavn", "suka", "manda", "mudak",
+	"mydak", "sex", "cekc", "hui", "siski", "jopa",
+	"boobs",
+}
+
+func verifyUsernameWords(s string) bool {
+	for _, f := range _filter {
+		if strings.Contains(s, f) {
+			return false
+		}
+	}
+	return true
+}
+
 func verifyPassword(s string) bool {
 	var sevenOrMore, number, upper, special bool
 	letters := 0
@@ -110,6 +126,10 @@ func verifyPassword(s string) bool {
 func validate(req models.SignUpRequest) error {
 	if len(req.Username) < 3 || len(req.Username) > 50 {
 		return errors.New("username must contain from 3 to 50 symbols")
+	}
+
+	if !verifyUsernameWords(req.Username) {
+		return errors.New("username contains forbidden symbols")
 	}
 
 	if !_usernameValid.MatchString(req.Username) {
