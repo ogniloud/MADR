@@ -2,7 +2,9 @@ package handlers
 
 import (
 	"errors"
+	"fmt"
 	"net/http"
+	"regexp"
 
 	"github.com/ogniloud/madr/internal/data"
 	"github.com/ogniloud/madr/internal/ioutil"
@@ -50,6 +52,11 @@ func (e *Endpoints) SignUp(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if err := validate(request); err != nil {
+		e.ew.Error(w, fmt.Sprintf("sign up: %v", err), http.StatusBadRequest)
+		return
+	}
+
 	// We create separate models for API request and datalayer request
 	// because we don't want to expose the datalayer models to the API
 	// users. This is a good practice to follow.
@@ -74,6 +81,31 @@ func (e *Endpoints) SignUp(w http.ResponseWriter, r *http.Request) {
 
 	// We set the status code to 201 to indicate that the resource is created
 	w.WriteHeader(http.StatusCreated)
+}
+
+var _usernameValid = regexp.MustCompile(`^[A-Za-z0-9]+$`)
+var _emailValid = regexp.MustCompile(`^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$`)
+var _passwordValid = regexp.MustCompile(`^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$`)
+
+func validate(req models.SignUpRequest) error {
+	if len(req.Username) < 3 || len(req.Username) > 50 {
+		return errors.New("username must contain from 3 to 50 symbols")
+	}
+
+	if !_usernameValid.MatchString(req.Username) {
+		return errors.New("username must contain latin letters or digits")
+	}
+
+	if !_emailValid.MatchString(req.Email) {
+		return errors.New("email invalid")
+	}
+
+	if !_passwordValid.MatchString(req.Password) {
+		return errors.New("a password must be eight characters including one uppercase letter," +
+			" one special character and alphanumeric characters")
+	}
+
+	return nil
 }
 
 // swagger:route POST /api/signin SignIn
