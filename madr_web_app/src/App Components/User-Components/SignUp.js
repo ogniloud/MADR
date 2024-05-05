@@ -10,6 +10,7 @@ function Form() {
   });
 
   const navigate = useNavigate(); // Initialize navigate
+  const [error, setError] = useState(null); // State to handle sign-in errors
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -38,12 +39,12 @@ function Form() {
       navigate('/signin'); // Redirect to the SignIn page
     } else {
       const data = await response.json().catch(() => null);
-      console.error('Registration Failed:', data);
 
       // If data is null, it means the response body is not a valid JSON
       if (data === null) {
         console.error('Invalid JSON in response body');
       }
+      setError(data.message)
     }
   } catch (error) {
     console.error('Error during registration', error);
@@ -81,6 +82,7 @@ function Form() {
           <button className="submit" type="submit">
             Create Account
           </button>
+          {error != null && <div className="error-message">{error}</div>}
         </form>
         <p>
           Already have an account? <Link to="/signin">Sign in</Link>
