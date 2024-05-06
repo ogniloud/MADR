@@ -1,0 +1,42 @@
+syntax = "proto3";
+
+package com.madr.external_dictionaries.mongomodel.protobuf;
+
+message SpanishVerbInflections {
+    string infinitive = 1;
+    string gerund = 2;
+    string past_participle = 3;
+    SpanishVerbIndicativeInflections indicative = 4;
+    SpanishVerbSubjunctiveInflections subjunctive = 5;
+    SpanishVerbImperativeInflections imperative = 6;
+}
+
+message SpanishVerbIndicativeInflections {
+    SpanishVerbPersonInflections present = 1;
+    SpanishVerbPersonInflections imperfect = 2;
+    SpanishVerbPersonInflections preterite = 3;
+    SpanishVerbPersonInflections future = 4;
+    SpanishVerbPersonInflections conditional = 5;
+}
+
+message SpanishVerbSubjunctiveInflections {
+    SpanishVerbPersonInflections present = 1;
+    SpanishVerbPersonInflections imperfect_ra = 2;
+    SpanishVerbPersonInflections imperfect_se = 3;
+    SpanishVerbPersonInflections future = 4;
+}
+
+message SpanishVerbImperativeInflections {
+    SpanishVerbPersonInflections affirmative = 1;
+    SpanishVerbPersonInflections negative = 4;
+}
+
+message SpanishVerbPersonInflections {
+    string yo = 1;
+    string tu = 2;
+    string vos = 3;
+    string ello_usted = 4;
+    string nosotros = 5;
+    string vosotros = 6;
+    string ellos_ustedes = 7;
+}

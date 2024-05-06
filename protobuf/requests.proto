@@ -16,4 +16,5 @@ message RequestedContents {
     bool etymology = 3;
     bool ipa = 4;
     bool single = 5;
+    bool inflections = 6;
 }

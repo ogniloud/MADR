@@ -3,6 +3,7 @@ syntax = "proto3";
 package com.madr.external_dictionaries.mongomodel.protobuf;
 
 import "common.proto";
+import "spanish.proto";
 
 message WiktionaryResponse {
     repeated BakedWiktionaryWord words = 1;
@@ -18,6 +19,9 @@ message BakedWiktionaryWord {
 message WordContents {
     optional string etymology = 3;
     repeated Sound ipa = 4;
+    oneof inflections {
+        SpanishVerbInflections spanish_verb_inflections = 5;
+    }
 }
 
 message Sound {
@@ -35,8 +39,4 @@ message WiktionaryExample {
     string text = 1;
     optional string ref = 2;
     optional string type = 3;
-}
-
-message Gloss {
-    string gloss = 1;
 }
