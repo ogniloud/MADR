@@ -8,7 +8,7 @@ const WordMatch = () => {
     const [selectedPairs, setSelectedPairs] = useState({});
     const [successMessage, setSuccessMessage] = useState('');
     const [errorMessage, setErrorMessage] = useState('');
-    const [userId, setUserId] = useState(null);
+    const [userId, setUserId] = useState(-1);
 
     useEffect(() => {
         fetchUserIdAndMatchingData();
@@ -19,7 +19,7 @@ const WordMatch = () => {
             const token = localStorage.getItem('token');
             if (token) {
                 const decodedToken = jwtDecode(token);
-                setUserId(decodedToken.user_id);
+                setUserId(parseInt(decodedToken.user_id));
                 fetchMatchingData();
             } else {
                 console.error('Error: User not authenticated.');

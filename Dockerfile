@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:1
-FROM golang:1.22.0-alpine AS build
+FROM golang:1.22.2-alpine AS build
 
 WORKDIR /usr/src/app
 
@@ -8,6 +8,7 @@ COPY go.mod go.sum ./
 RUN go mod download && go mod verify
 
 COPY . .
+RUN go test -v ./...
 RUN go build -C cmd/api-server -v -o /usr/local/bin/madr
 
 FROM gcr.io/distroless/static-debian12

@@ -1,6 +1,9 @@
 package models
 
 import (
+	"encoding/json"
+	"fmt"
+	"strings"
 	"time"
 )
 
@@ -61,6 +64,20 @@ type Backside struct {
 	Value string       `json:"value"`
 }
 
+func (b *Backside) Scan(value any) error {
+	var err error
+	switch t := value.(type) {
+	case []byte:
+		err = json.Unmarshal(t, b)
+	case string:
+		err = json.NewDecoder(strings.NewReader(t)).Decode(b)
+	default:
+		err = fmt.Errorf("%T: %v", t, value)
+	}
+
+	return err
+}
+
 // ParseBackside returns a new string from value of backside if needed.
 //
 // For example, from base64 to another string.
@@ -80,6 +97,7 @@ type Flashcard struct {
 	W  Word        `json:"word"`
 	A  Answer      `json:"answer"`
 	B  Backside    `json:"backside"`
+	MB []Backside  `json:"multiple_backside"`
 
 	// DeckId shows which deck the flashcard belongs to.
 	DeckId DeckId `json:"deck_id"`

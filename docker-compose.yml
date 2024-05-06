@@ -3,6 +3,7 @@ services:
     build:
       context: ./db
       dockerfile: Dockerfile
+    image: "cr.yandex/crp3ftp1b7dveeagva5g/madr-postgres:latest"
     ports:
       - "5432:5432"
     networks:
@@ -11,6 +12,7 @@ services:
       - TZ=Europe/Moscow
   madr:
     build: .
+    image: "cr.yandex/crp3ftp1b7dveeagva5g/madr-go-app:latest"
     ports:
       - "8080:8080"
     networks:
@@ -25,6 +27,7 @@ services:
     build:
       context: ./madr_web_app
       dockerfile: Dockerfile
+    image: "cr.yandex/crp3ftp1b7dveeagva5g/madr-react:latest"
     ports:
       - "80:80"
     networks:

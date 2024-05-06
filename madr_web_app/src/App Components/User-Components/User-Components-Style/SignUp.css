@@ -58,7 +58,7 @@ body {
   padding: 6px;
 }
 
-.madr_org{
+.madr_space{
   position: absolute;
   color: #FFF;
   font-size: 20px;
@@ -69,7 +69,7 @@ body {
   left: 40px;
 
 }
-.madr_org:hover{
+.madr_space:hover{
   color: blueviolet;
 }
 

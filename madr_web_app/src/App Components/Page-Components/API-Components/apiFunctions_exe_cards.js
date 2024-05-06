@@ -4,13 +4,13 @@ import {jwtDecode} from 'jwt-decode';
 {/* API's for Flashcards.js */}
 export const fetchRandomFlashcard = async (deckId, userId) => {
     try {
-        const response = await fetch(`http://${process.env.REACT_APP_API_HOST}/api/study/random_deck`, {
+        const response = await fetch(`${process.env.REACT_APP_API_HOST}/api/study/random_deck`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({
-                deck_id: parseInt(deckId), // Convert deck_id to a number
+                deck_id: deckId, // Convert deck_id to a number
                 user_id: userId,
             }),
         });
@@ -28,7 +28,7 @@ export const fetchRandomFlashcard = async (deckId, userId) => {
 
 export const rateFlashcard = async (flashcardId, mark, userId) => {
     try {
-        const response = await fetch(`http://${process.env.REACT_APP_API_HOST}/api/study/rate`, {
+        const response = await fetch(`${process.env.REACT_APP_API_HOST}/api/study/rate`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -50,7 +50,7 @@ export const rateFlashcard = async (flashcardId, mark, userId) => {
 
 export const deleteFlashcard = async (flashcardId, userId) => {
     try {
-        const response = await fetch(`http://${process.env.REACT_APP_API_HOST}/api/flashcards/delete_card`, {
+        const response = await fetch(`${process.env.REACT_APP_API_HOST}/api/flashcards/delete_card`, {
             method: 'DELETE',
             headers: {
                 'Content-Type': 'application/json',
@@ -82,7 +82,7 @@ const getUserId = () => {
 
 export const fetchRandomMatchingData = async (size, userId) => {
     try {
-        const response = await fetch(`http://${process.env.REACT_APP_API_HOST}/api/study/random_matching`, {
+        const response = await fetch(`${process.env.REACT_APP_API_HOST}/api/study/random_matching`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
