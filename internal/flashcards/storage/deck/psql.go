@@ -323,3 +323,38 @@ WHERE card_id=$4`, w, b, a, id)
 
 	return nil
 }
+
+var ErrNotOwner = fmt.Errorf("user is not owner of the flashcard")
+
+func (d *Storage) AppendBacksides(ctx context.Context,
+	userId models.UserId,
+	cardId models.FlashcardId,
+	backsides []models.Backside,
+) error {
+	row := d.Conn.QueryRow(ctx, `
+SELECT user_id FROM flashcard f
+	JOIN deck_config dc ON f.deck_id = dc.deck_id
+WHERE f.card_id=$1
+`, cardId)
+	userId2 := 0
+	if err := row.Scan(&userId2); err != nil {
+		d.Conn.Logger().Errorf("row scan error: %v", err)
+		return err
+	}
+
+	if userId2 != userId {
+		return ErrNotOwner
+	}
+
+	_, err := d.Conn.Exec(ctx, `
+UPDATE flashcard f
+SET multiple_backside = f.multiple_backside || ($1)::jsonb
+WHERE f.card_id=$2
+`, backsides, cardId)
+	if err != nil {
+		d.Conn.Logger().Errorf("update flashcard failed: %v", err)
+		return fmt.Errorf("update flashcard failed: %w", err)
+	}
+
+	return nil
+}
