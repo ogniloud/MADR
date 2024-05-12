@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
-import { jwtDecode } from 'jwt-decode';
-import { useNavigate } from 'react-router-dom';
+import React, {useState} from 'react';
+import {jwtDecode} from 'jwt-decode';
+import {useNavigate} from 'react-router-dom';
 import {createDeck} from "../API-Components/apiFunctions_decks";
 import './Styles/CreateDecks.css';
 
@@ -34,6 +34,12 @@ const CreateDecks = ({ fetchUserDecks }) => {
     };
 
     const handleSubmit = async () => {
+        for (let i = 0; i < flashcards.length; i++) {
+            if (flashcards[i].word === '' || flashcards[i].answer === '' || flashcards[i].backside) {
+                setErrorMessage("Some fields are empty")
+            }
+            return
+        }
         try {
             const deckData = {
                 flashcards,
@@ -63,9 +69,10 @@ const CreateDecks = ({ fetchUserDecks }) => {
 
             <div className="create-decks-container">
                 <h2 className="create-deck-title">Create a New Deck</h2>
-                <div className="deck-form">
+                <form className="deck-form">
                     <label htmlFor="deckName">Deck Name:</label>
                     <input
+                        required
                         type="text"
                         id="deckName"
                         value={deckName}
@@ -77,6 +84,7 @@ const CreateDecks = ({ fetchUserDecks }) => {
                         <div key={index} className="flashcard-form">
                             <label htmlFor={`word${index}`}>Word:</label>
                             <input
+                                required
                                 type="text"
                                 id={`word${index}`}
                                 value={flashcard.word}
@@ -85,6 +93,7 @@ const CreateDecks = ({ fetchUserDecks }) => {
 
                             <label htmlFor={`answer${index}`}>Answer:</label>
                             <input
+                                required
                                 type="text"
                                 id={`answer${index}`}
                                 value={flashcard.answer}
@@ -93,6 +102,7 @@ const CreateDecks = ({ fetchUserDecks }) => {
 
                             <label htmlFor={`backside${index}`}>Backside:</label>
                             <input
+                                required
                                 type="text"
                                 id={`backside${index}`}
                                 value={flashcard.backside.value}
@@ -105,7 +115,7 @@ const CreateDecks = ({ fetchUserDecks }) => {
 
                     <button onClick={addFlashcard}>Add Flashcard</button>
                     <button onClick={handleSubmit}>Create Deck</button>
-                </div>
+                </form>
             </div>
         </div>
     );
