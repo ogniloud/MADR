@@ -41,6 +41,8 @@ const (
 	idleTimeout     = 120 * time.Second
 )
 
+var initSqlPath = "./db/init.sql"
+
 func main() {
 	l := log.NewWithOptions(os.Stderr, log.Options{
 		ReportCaller:    true,
@@ -83,6 +85,21 @@ func main() {
 	err = psqlDB.Ping(cancelCtx)
 	if err != nil {
 		log.Fatal("Unable to ping database in main", "error", err)
+	}
+
+	_initSqlPath := os.Getenv("INIT_SQL_PATH")
+	if _initSqlPath != "" {
+		initSqlPath = _initSqlPath
+	}
+
+	b, err := os.ReadFile(initSqlPath)
+	if err != nil {
+		log.Fatal("read init.sql fail", "error", err)
+	}
+
+	_, err = psqlDB.Exec(ctx, string(b))
+	if err != nil {
+		log.Fatal("init.sql exec error", "error", err)
 	}
 
 	// storage by package definition
