@@ -30,6 +30,10 @@ const AllWords = () => {
 
     const handleAddFlashcard = async () => {
         try {
+            if (word.length === 0 || answer.length === 0 || backsideValue.length === 0) {
+                setErrorMessage("Some fields are empty")
+                return
+            }
             await addFlashcard({ word, answer, backsideType, backsideValue, deck_id });
             setSuccessMessage('Flashcard added successfully!');
             setErrorMessage('');
