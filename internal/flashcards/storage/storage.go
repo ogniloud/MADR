@@ -40,6 +40,8 @@ type FlashcardCRUD interface {
 		backsides []models.Backside,
 	) error
 
+	GetRandomCardDeckN(ctx context.Context, userId models.UserId, deckId models.DeckId, down models.CoolDown, n int) ([]models.FlashcardId, error)
+
 	// DeleteFlashcardFromDeck deletes a record from models.Flashcard storage about flashcard.
 	DeleteFlashcardFromDeck(ctx context.Context, cardId models.FlashcardId) error
 }
