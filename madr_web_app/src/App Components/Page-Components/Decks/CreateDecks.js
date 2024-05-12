@@ -63,9 +63,10 @@ const CreateDecks = ({ fetchUserDecks }) => {
 
             <div className="create-decks-container">
                 <h2 className="create-deck-title">Create a New Deck</h2>
-                <div className="deck-form">
+                <form className="deck-form">
                     <label htmlFor="deckName">Deck Name:</label>
                     <input
+                        required
                         type="text"
                         id="deckName"
                         value={deckName}
@@ -108,7 +109,7 @@ const CreateDecks = ({ fetchUserDecks }) => {
 
                     <button onClick={addFlashcard}>Add Flashcard</button>
                     <button onClick={handleSubmit}>Create Deck</button>
-                </div>
+                </form>
             </div>
         </div>
     );

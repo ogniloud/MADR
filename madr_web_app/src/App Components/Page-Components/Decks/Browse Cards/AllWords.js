@@ -91,7 +91,7 @@ const AllWords = () => {
                     ))}
                 </div>
             </div>
-            <div className="all-words-add-flashcards">
+            <form className="all-words-add-flashcards">
                 <h3 className="all-words-box-title"> Create New Cards </h3>
                 <label>
                     Word:
@@ -114,7 +114,7 @@ const AllWords = () => {
                 Backside Value:
                     <input required type="text" value={backsideValue} onChange={(e) => setBacksideValue(e.target.value)}/>
                 </label>
-            </div>
+            </form>
             <button className='all-words-submit-button' onClick={handleAddFlashcard}>Add New Card</button>
             {successMessage && <p className="all-words-success-message">{successMessage}</p>}
             {errorMessage && <p className="all-words-error-message">{errorMessage}</p>}

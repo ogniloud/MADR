@@ -312,22 +312,22 @@ const MainPage = () => {
             </div>
 
             {showGroupDialog && (
-                <div className="creating-group-popup">
+                <form className="creating-group-popup">
                     <input
-                        required
                         //className="Create-group-input"
                         type="text"
                         placeholder="Enter group name"
                         value={groupName}
                         onChange={(e) => setGroupName(e.target.value)}
                         onKeyPress={handleKeyPress}
+                        required
                     />
                     <button className="Create-group-button" onClick={handleCreateGroup}>Create</button>
                     <button className="Cancel-group-button" onClick={() => setShowGroupDialog(false)}>Cancel</button>
 
                     {groupCreationError && <p>{groupCreationError}</p>}
                     {groupCreationSuccess && !groupCreationError && <p>{groupCreationSuccess}</p>}
-                </div>
+                </form>
             )}
         </div>
     );
