@@ -1,11 +1,18 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { Link, Route, Routes, useNavigate } from 'react-router-dom';
+import React, {useEffect, useRef, useState} from 'react';
+import {Link, Route, Routes, useNavigate} from 'react-router-dom';
 import Feed from './Feeds/FeedsPage';
 import CreateDeck from './Decks/CreateDecks';
-import { jwtDecode } from 'jwt-decode';
+import {jwtDecode} from 'jwt-decode';
 import './Styles/MainPage.css';
 import defaultProfilePicture from './resource/default-profile-picture.png';
-import { fetchFollowers, fetchFollowings, searchUsers, followUser, unfollowUser, createGroup, } from './API-Components/apiFunctions_main_feeds';
+import {
+    createGroup,
+    fetchFollowers,
+    fetchFollowings,
+    followUser,
+    searchUsers,
+    unfollowUser,
+} from './API-Components/apiFunctions_main_feeds';
 import SocialGroup from "./Social Site Components/social_group";
 import UserDrawer from "./Drawer-Components/Drawer";
 import {fetchGroups} from "./API-Components/apiFunctions_groups";
@@ -307,6 +314,7 @@ const MainPage = () => {
             {showGroupDialog && (
                 <div className="creating-group-popup">
                     <input
+                        required
                         //className="Create-group-input"
                         type="text"
                         placeholder="Enter group name"
