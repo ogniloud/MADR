@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
-import { jwtDecode } from 'jwt-decode';
-import { useNavigate } from 'react-router-dom';
+import React, {useState} from 'react';
+import {jwtDecode} from 'jwt-decode';
+import {useNavigate} from 'react-router-dom';
 import {createDeck} from "../API-Components/apiFunctions_decks";
 import './Styles/CreateDecks.css';
 
@@ -77,6 +77,7 @@ const CreateDecks = ({ fetchUserDecks }) => {
                         <div key={index} className="flashcard-form">
                             <label htmlFor={`word${index}`}>Word:</label>
                             <input
+                                required
                                 type="text"
                                 id={`word${index}`}
                                 value={flashcard.word}
@@ -85,6 +86,7 @@ const CreateDecks = ({ fetchUserDecks }) => {
 
                             <label htmlFor={`answer${index}`}>Answer:</label>
                             <input
+                                required
                                 type="text"
                                 id={`answer${index}`}
                                 value={flashcard.answer}
@@ -93,6 +95,7 @@ const CreateDecks = ({ fetchUserDecks }) => {
 
                             <label htmlFor={`backside${index}`}>Backside:</label>
                             <input
+                                required
                                 type="text"
                                 id={`backside${index}`}
                                 value={flashcard.backside.value}

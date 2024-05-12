@@ -1,8 +1,7 @@
-
-import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
-import { jwtDecode } from 'jwt-decode';
-import {fetchFlashcards, addFlashcard, deleteFlashcard} from "../../API-Components/apiFunctions_browse_cards";
+import React, {useEffect, useState} from 'react';
+import {useParams} from 'react-router-dom';
+import {jwtDecode} from 'jwt-decode';
+import {addFlashcard, deleteFlashcard, fetchFlashcards} from "../../API-Components/apiFunctions_browse_cards";
 import './Styles/AllWords.css';
 
 const AllWords = () => {
@@ -96,21 +95,24 @@ const AllWords = () => {
                 <h3 className="all-words-box-title"> Create New Cards </h3>
                 <label>
                     Word:
-                    <input type="text" value={word} onChange={(e) => setWord(e.target.value)}/>
+                    <input required type="text" value={word} onChange={(e) => setWord(e.target.value)}/>
                 </label>
                 <label>
                     Answer:
-                    <input type="text" value={answer} onChange={(e) => setAnswer(e.target.value)}/>
+                    <input required type="text" value={answer} onChange={(e) => setAnswer(e.target.value)}/>
                 </label>
                 <label>
                     Backside Type:
                     <select value={backsideType} onChange={(e) => setBacksideType(Number(e.target.value))}>
-                        <option value={0}>Type 0</option>
+                        <option value={0}>Plain text</option>
+                        <option value={1}>Definition</option>
+                        <option value={2}>Translation</option>
+                        <option value={3}>Base64 PNG Image</option> {/*может сделаем, но пусть будет>*/}
                     </select>
                 </label>
                 <label>
-                    Backside Value:
-                    <input type="text" value={backsideValue} onChange={(e) => setBacksideValue(e.target.value)}/>
+                Backside Value:
+                    <input required type="text" value={backsideValue} onChange={(e) => setBacksideValue(e.target.value)}/>
                 </label>
             </div>
             <button className='all-words-submit-button' onClick={handleAddFlashcard}>Add New Card</button>
