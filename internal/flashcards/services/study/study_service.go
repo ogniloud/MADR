@@ -170,12 +170,7 @@ func (s *Service) GetNextRandom(ctx context.Context, uid models.UserId, down mod
 
 // GetNextRandomDeckN returns at most n random cards from the user's deck with expired CoolDown.
 func (s *Service) GetNextRandomDeckN(ctx context.Context, uid models.UserId, id models.DeckId, down models.CoolDown, n int) ([]models.FlashcardId, error) {
-	ids, err := s.dsrv.GetFlashcardsIdByDeckId(ctx, id)
-	if err != nil {
-		return nil, err
-	}
-
-	return s.ConvertIdsToCards(ctx, uid, down, n, ids)
+	return s.dsrv.GetRandomCardDeckN(ctx, uid, id, down, n)
 }
 
 // GetNextRandomN returns at most n random card from the entire set of user cards with expired CoolDown.

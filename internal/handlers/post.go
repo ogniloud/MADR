@@ -119,7 +119,7 @@ func verifyPassword(s string) bool {
 			letters++
 		}
 	}
-	sevenOrMore = letters >= 7
+	sevenOrMore = len(s) >= 7
 	return sevenOrMore && number && upper && special
 }
 

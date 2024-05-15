@@ -323,3 +323,75 @@ WHERE card_id=$4`, w, b, a, id)
 
 	return nil
 }
+
+var ErrNotOwner = fmt.Errorf("user is not owner of the flashcard")
+
+func (d *Storage) AppendBacksides(ctx context.Context,
+	userId models.UserId,
+	cardId models.FlashcardId,
+	backsides []models.Backside,
+) error {
+	row := d.Conn.QueryRow(ctx, `
+SELECT user_id FROM flashcard f
+	JOIN deck_config dc ON f.deck_id = dc.deck_id
+WHERE f.card_id=$1
+`, cardId)
+	userId2 := 0
+	if err := row.Scan(&userId2); err != nil {
+		d.Conn.Logger().Errorf("row scan error: %v", err)
+		return err
+	}
+
+	if userId2 != userId {
+		return ErrNotOwner
+	}
+
+	_, err := d.Conn.Exec(ctx, `
+UPDATE flashcard f
+SET multiple_backside = f.multiple_backside || ($1)::jsonb
+WHERE f.card_id=$2
+`, backsides, cardId)
+	if err != nil {
+		d.Conn.Logger().Errorf("update flashcard failed: %v", err)
+		return fmt.Errorf("update flashcard failed: %w", err)
+	}
+
+	return nil
+}
+
+func (d *Storage) GetRandomCardDeckN(ctx context.Context, userId models.UserId, deckId models.DeckId, down models.CoolDown, n int) ([]models.FlashcardId, error) {
+	row := d.Conn.QueryRow(ctx, `SELECT count(*) FROM deck_config WHERE user_id=$1 AND deck_id=$2`, userId, deckId)
+	var count int
+	if err := row.Scan(&count); err != nil {
+		d.Conn.Logger().Errorf("row scan error: %v", err)
+		return nil, err
+	}
+
+	if count == 0 {
+		return nil, ErrNotOwner
+	}
+
+	rows, err := d.Conn.Query(ctx, `
+SELECT f.card_id FROM flashcard f
+JOIN user_leitner u ON f.card_id = u.card_id
+WHERE f.deck_id=$1 AND $2::timestamp >= u.cool_down::timestamp
+ORDER BY random() LIMIT $3`, deckId, time.Time(down), n)
+	if err != nil {
+		d.Conn.Logger().Errorf("get random deck failed: %v", err)
+		return nil, fmt.Errorf("get random deck failed: %w", err)
+	}
+
+	defer rows.Close()
+	flashcards := make([]models.FlashcardId, 0, n)
+	for rows.Next() {
+		var flashcard models.FlashcardId
+		err = rows.Scan(&flashcard)
+		if err != nil {
+			d.Conn.Logger().Errorf("scan flashcard failed: %v", err)
+			return nil, fmt.Errorf("scan flashcard failed: %w", err)
+		}
+		flashcards = append(flashcards, flashcard)
+	}
+
+	return flashcards, nil
+}
