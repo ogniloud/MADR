@@ -115,7 +115,7 @@ const AllWords = () => {
                     </select>
                 </label>
                 <label>
-                Backside Value:
+                    Backside Value:
                     <input required type="text" value={backsideValue} onChange={(e) => setBacksideValue(e.target.value)}/>
                 </label>
             </form>
