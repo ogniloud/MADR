@@ -139,7 +139,7 @@ const WordMatch = () => {
                     </div>
 
                     <div className="wm-button">
-                        <button className="wm-submit-button" onClick={handleCheckAnswers}>Check Answers</button>
+                        <button className="wm-submit-button" onClick={() => {handleCheckAnswers(); fetchMatchingData(userId)}}>Check Answers</button>
                         {successMessage && (
                             <p className="wm-successMessage" style={{ color: 'green' }}>{successMessage}</p>
                         )}
