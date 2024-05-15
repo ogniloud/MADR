@@ -16,19 +16,18 @@ CREATE TABLE IF NOT EXISTS deck_config (
 CREATE TABLE IF NOT EXISTS flashcard (
     card_id SERIAL PRIMARY KEY,
     word VARCHAR(100) NOT NULL,
-    backside json NOT NULL,
+    backside jsonb NOT NULL,
     deck_id SERIAL,
     answer VARCHAR(100) NOT NULL
 );
 
 
 ALTER TABLE IF EXISTS flashcard
-    ALTER COLUMN backside
-        TYPE jsonb;
+    ADD IF NOT EXISTS multiple_backside jsonb DEFAULT '[]';
 
-
-
-
+UPDATE flashcard f
+SET multiple_backside = '[]'::jsonb || f.backside::jsonb
+WHERE multiple_backside IS NULL;
 
 CREATE TABLE IF NOT EXISTS user_info (
     user_id SERIAL PRIMARY KEY,

@@ -418,3 +418,11 @@ type RandomTextDeckResponse struct {
 type GetFlashcardByIdResponse struct {
 	Flashcard Flashcard `json:"flashcard"`
 }
+
+type AppendBacksideRequest struct {
+	UserId    UserId      `json:"user_id"`
+	CardId    FlashcardId `json:"card_id"`
+	Backsides []Backside  `json:"backsides"`
+}
+
+type AppendBacksideResponse struct{}

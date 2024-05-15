@@ -14,6 +14,20 @@ type Storage struct {
 	mock.Mock
 }
 
+// AppendBacksides provides a mock function with given fields: ctx, userId, cardId, backsides
+func (_m *Storage) AppendBacksides(ctx context.Context, userId int, cardId int, backsides []models.Backside) error {
+	ret := _m.Called(ctx, userId, cardId, backsides)
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(context.Context, int, int, []models.Backside) error); ok {
+		r0 = rf(ctx, userId, cardId, backsides)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
+}
+
 // DeleteFlashcardFromDeck provides a mock function with given fields: ctx, cardId
 func (_m *Storage) DeleteFlashcardFromDeck(ctx context.Context, cardId int) error {
 	ret := _m.Called(ctx, cardId)
@@ -149,6 +163,32 @@ func (_m *Storage) GetLeitnerByUserIdCardId(ctx context.Context, id int, flashca
 
 	if rf, ok := ret.Get(1).(func(context.Context, int, int) error); ok {
 		r1 = rf(ctx, id, flashcardId)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+// GetRandomCardDeckN provides a mock function with given fields: ctx, userId, deckId, down, n
+func (_m *Storage) GetRandomCardDeckN(ctx context.Context, userId int, deckId int, down models.CoolDown, n int) ([]int, error) {
+	ret := _m.Called(ctx, userId, deckId, down, n)
+
+	var r0 []int
+	var r1 error
+	if rf, ok := ret.Get(0).(func(context.Context, int, int, models.CoolDown, int) ([]int, error)); ok {
+		return rf(ctx, userId, deckId, down, n)
+	}
+	if rf, ok := ret.Get(0).(func(context.Context, int, int, models.CoolDown, int) []int); ok {
+		r0 = rf(ctx, userId, deckId, down, n)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).([]int)
+		}
+	}
+
+	if rf, ok := ret.Get(1).(func(context.Context, int, int, models.CoolDown, int) error); ok {
+		r1 = rf(ctx, userId, deckId, down, n)
 	} else {
 		r1 = ret.Error(1)
 	}
