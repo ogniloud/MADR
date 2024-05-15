@@ -21,8 +21,14 @@ CREATE TABLE IF NOT EXISTS flashcard (
     answer VARCHAR(100) NOT NULL
 );
 
+
 ALTER TABLE IF EXISTS flashcard
-    ADD IF NOT EXISTS multiple_backside json NULL;
+    ALTER COLUMN backside
+        TYPE jsonb;
+
+
+
+
 
 CREATE TABLE IF NOT EXISTS user_info (
     user_id SERIAL PRIMARY KEY,

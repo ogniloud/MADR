@@ -8,19 +8,25 @@ const WordMatch = () => {
     const [selectedPairs, setSelectedPairs] = useState({});
     const [successMessage, setSuccessMessage] = useState('');
     const [errorMessage, setErrorMessage] = useState('');
-    const [userId, setUserId] = useState(-1);
+    const [userId, setUserId] = useState(null);
 
     useEffect(() => {
         fetchUserIdAndMatchingData();
-    }, [userId]);
+    }, []);
+
 
     const fetchUserIdAndMatchingData = async () => {
         try {
             const token = localStorage.getItem('token');
             if (token) {
                 const decodedToken = jwtDecode(token);
-                setUserId(parseInt(decodedToken.user_id));
-                fetchMatchingData();
+                const userIdFromToken = decodedToken.user_id;
+                if (userIdFromToken !== undefined) {
+                    setUserId(userIdFromToken);
+                    fetchMatchingData(userIdFromToken);
+                } else {
+                    console.error('Error: Invalid user ID from token.');
+                }
             } else {
                 console.error('Error: User not authenticated.');
             }
@@ -29,14 +35,22 @@ const WordMatch = () => {
         }
     };
 
-    const fetchMatchingData = async () => {
+    const fetchMatchingData = async (userId) => {
         try {
-            const dataMatchingData = await fetchRandomMatchingData(5, parseInt(userId));
-            setMatchingData(dataMatchingData.matching);
+            if (userId !== undefined) {
+                const dataMatchingData = await fetchRandomMatchingData(5, userId);
+                if (dataMatchingData && dataMatchingData.matching) {
+                    setMatchingData(dataMatchingData.matching);
+                } else {
+                    console.error('No matching cards available.');
+                }
+            }
         } catch (error) {
-            console.error(error.message);
+            console.error('Error fetching matching data:', error);
         }
     };
+
+    console.log('Matching data:', matchingData); // Debugging
 
     const handlePairSelect = (property, value) => {
         setSelectedPairs({ ...selectedPairs, [property]: value });

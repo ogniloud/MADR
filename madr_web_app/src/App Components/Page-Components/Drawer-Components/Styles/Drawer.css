@@ -39,6 +39,7 @@
 .followers-button,
 .followings-button {
     font-family: "Google Sans", "sans-serif";
+    position: static;
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -61,7 +62,7 @@
 
 .followings-button{
     position: relative;
-    bottom: 160px;
+    bottom: 150px;
     left: 100px;
 }
 

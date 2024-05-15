@@ -100,7 +100,20 @@
     color: white;
 }
 
-.main-page-search-results {
+.search-prompt{
+    position: relative;
+    right: 128px;
+    margin-top: 190px;
+    padding: 20px;
+    background-color: gray;
+    border-radius: 2px;
+    color: white;
+    z-index: 10000;
+    max-height: 150px;
+    width: 640px;
+}
+
+.main-page-search-results{
     position: relative;
     flex-direction: column;
     margin-left: 720px;
@@ -320,3 +333,7 @@
         overflow: hidden;
     }
 }
+
+
+
+
