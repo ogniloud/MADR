@@ -1,8 +1,8 @@
 import React from 'react';
 import Drawer from '@mui/material/Drawer';
-import Button from '@mui/material/Button';
+import Menu from '@mui/material/Menu';
+import MenuItem from '@mui/material/MenuItem';
 import './Styles/Drawer.css';
-
 
 const UserDrawer = ({
                         open,
@@ -24,8 +24,24 @@ const UserDrawer = ({
                         groupCreationSuccess,
                         setGroupCreationSuccess,
                         defaultProfilePicture
-
                     }) => {
+    const [anchorElFollowers, setAnchorElFollowers] = React.useState(null);
+    const [anchorElFollowings, setAnchorElFollowings] = React.useState(null);
+
+    const handleClickFollowers = (event) => {
+        setAnchorElFollowers(event.currentTarget);
+    };
+
+    const handleClickFollowings = (event) => {
+        setAnchorElFollowings(event.currentTarget);
+    };
+
+    const handleClose = () => {
+        setAnchorElFollowers(null);
+        setAnchorElFollowings(null);
+    };
+
+
     return (
         <Drawer open={open} onClose={onClose}>
             <div className="drawer-content">
@@ -35,15 +51,68 @@ const UserDrawer = ({
                         <img src={defaultProfilePicture} alt="Profile"/>
                         <h2>{userInfo && userInfo.username}</h2>
                     </div>
-                    <p className="follower-button">
-                        <span className= "follower-button-name">Followers</span>
-                        <span className= "follower-button-number">{followers.length}</span>
-                    </p>
-                    {/* Followings */}
-                    <p className="following-button">
-                        <span className= "following-button-name">Followings</span>
-                        <span className= "following-button-number">{followings.length}</span>
-                    </p>
+
+
+                    <div className="dropdown-container">
+                        <div className="dropdown-container-followers">
+                            <button className="followers-button" onClick={handleClickFollowers}>
+                                Followers ({followers.length})
+                            </button>
+                            <Menu
+                                className="menu-dropdown"
+                                anchorEl={anchorElFollowers}
+                                open={Boolean(anchorElFollowers)}
+                                onClose={handleClose}
+                                anchorOrigin={{
+                                    vertical: 'bottom',
+                                    horizontal: 'left',
+                                }}
+                                transformOrigin={{
+                                    vertical: 'top',
+                                    horizontal: 'left',
+                                }}
+                            >
+                                {followers.map((follower, index) => {
+                                    console.log('Follower:', follower);
+                                    return (
+                                        <MenuItem key={index} onClick={handleClose}>
+                                            {follower.username}
+                                        </MenuItem>
+                                    );
+                                })}
+                            </Menu>
+                        </div>
+                        {/* Followings dropdown */}
+                        <div className="dropdown-container-followings">
+                            <button className="followings-button" onClick={handleClickFollowings}>
+                                Followings ({followings.length})
+                            </button>
+                            <Menu
+                                className="menu-dropdown"
+                                anchorEl={anchorElFollowings}
+                                open={Boolean(anchorElFollowings)}
+                                onClose={handleClose}
+                                anchorOrigin={{
+                                    vertical: 'bottom',
+                                    horizontal: 'left',
+                                }}
+                                transformOrigin={{
+                                    vertical: 'top',
+                                    horizontal: 'left',
+                                }}
+                            >
+                                {followings.map((following, index) => {
+                                    console.log('Following:', following);
+                                    return (
+                                        <MenuItem key={index} onClick={handleClose}>
+                                            {following.username}
+                                        </MenuItem>
+                                    );
+                                })}
+                            </Menu>
+                        </div>
+                    </div>
+
 
                     {/* Create Group */}
                     <button className="create-group-button" onClick={() => setShowGroupDialog(true)}>Create Group

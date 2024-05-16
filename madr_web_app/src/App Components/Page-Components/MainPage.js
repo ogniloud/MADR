@@ -35,6 +35,8 @@ const MainPage = () => {
     const [groupCreationSuccess, setGroupCreationSuccess] = useState('');
     const [groups, setGroups] = useState([]);
     const [drawerOpen, setDrawerOpen] = useState(false);
+    const [showSearchPrompt, setShowSearchPrompt] = useState(false);
+
 
 
 
@@ -96,25 +98,61 @@ const MainPage = () => {
         try {
             const token = localStorage.getItem('token');
             if (token) {
-                const searchData = await searchUsers(token, searchQuery);
-                console.log('Search Data:', searchData);
-                // Update search results with follow status
-                const updatedSearchResults = searchData.map(user => {
-                    // Check if the user is already being followed
-                    const isFollowing = followings.some(following => following.userId === user.ID);
-                    return {
-                        ...user,
-                        isFollowing: isFollowing
-                    };
-                });
-                console.log('Updated Search Results:', updatedSearchResults);
-                setSearchResults(updatedSearchResults);
-                setSearchClicked(true);
+                if (searchQuery.trim() !== '') {
+                    const searchData = await searchUsers(token, searchQuery);
+                    console.log('Search Data:', searchData);
+                    const updatedSearchResults = searchData.map(user => {
+                        const isFollowing = followings.some(following => following.userId === user.ID);
+                        return {
+                            ...user,
+                            isFollowing: isFollowing
+                        };
+                    });
+                    console.log('Updated Search Results:', updatedSearchResults);
+                    setSearchResults(updatedSearchResults);
+                    setSearchClicked(true);
+                } else {
+                    // Show the search prompt pop-up window and set showSearchPrompt to true
+                    setShowSearchPrompt(true);
+                    // Reset search results
+                    setSearchResults([]);
+                    setSearchClicked(false);
+                }
             }
         } catch (error) {
             console.error('Error fetching search results:', error);
         }
     };
+
+
+
+
+
+    const SearchPrompt = () => {
+        return (
+            <div className="search-prompt">
+                <p>Please enter something in the search bar.</p>
+            </div>
+        );
+    };
+
+    const handleClickOutside = (event) => {
+        if (showSearchPrompt && !event.target.closest('.search-prompt')) {
+            setShowSearchPrompt(false);
+        }
+    };
+
+    useEffect(() => {
+        document.addEventListener('click', handleClickOutside);
+
+        return () => {
+            document.removeEventListener('click', handleClickOutside);
+        };
+    }, [showSearchPrompt]);
+
+
+
+
 
     const handleKeyPress = (event) => {
         if (event.key === 'Enter') {
@@ -251,6 +289,9 @@ const MainPage = () => {
                     <button className="main-page-search-btn" onClick={handleSearch}>Search</button>
                 </div>
 
+                {showSearchPrompt && <SearchPrompt />}
+
+
                 <Link className="main-page-feed-button" to="/feed">
                     Feed
                 </Link>
@@ -266,11 +307,11 @@ const MainPage = () => {
             {searchClicked && (
                 <div className="main-page-search-results" ref={searchResultsRef}>
                     {searchResults.length > 0 ? (
-                        <ul>
+                        <ul className="after-search-user-card">
                             {searchResults.map((user, index) => (
                                 <li key={index}>
-                                    <p>Username: {user.Username}</p>
-                                    <p>Email: {user.Email}</p>
+                                    <p className="search-user-name">{user.Username}</p>
+                                    {/*<p>Email: {user.Email}</p>*/}
                                     {/* Display "Follow" or "Unfollow" based on user's follow status */}
                                     {user.isFollowing ? (
                                         <React.Fragment>
