@@ -395,3 +395,29 @@ ORDER BY random() LIMIT $3`, deckId, time.Time(down), n)
 
 	return flashcards, nil
 }
+
+func (d *Storage) GetRandomCardN(ctx context.Context, userId models.UserId, down models.CoolDown, n int) ([]models.FlashcardId, error) {
+	rows, err := d.Conn.Query(ctx, `
+SELECT f.card_id FROM flashcard f
+JOIN user_leitner u ON f.card_id = u.card_id
+WHERE u.user_id=$1 AND $2::timestamp >= u.cool_down::timestamp
+ORDER BY random() LIMIT $3`, userId, time.Time(down), n)
+	if err != nil {
+		d.Conn.Logger().Errorf("get random deck failed: %v", err)
+		return nil, fmt.Errorf("get random deck failed: %w", err)
+	}
+
+	defer rows.Close()
+	flashcards := make([]models.FlashcardId, 0, n)
+	for rows.Next() {
+		var flashcard models.FlashcardId
+		err = rows.Scan(&flashcard)
+		if err != nil {
+			d.Conn.Logger().Errorf("scan flashcard failed: %v", err)
+			return nil, fmt.Errorf("scan flashcard failed: %w", err)
+		}
+		flashcards = append(flashcards, flashcard)
+	}
+
+	return flashcards, nil
+}
