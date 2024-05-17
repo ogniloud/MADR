@@ -16,10 +16,13 @@ CREATE TABLE IF NOT EXISTS deck_config (
 CREATE TABLE IF NOT EXISTS flashcard (
     card_id SERIAL PRIMARY KEY,
     word VARCHAR(100) NOT NULL,
-    backside jsonb NOT NULL,
+    backside text NOT NULL,
     deck_id SERIAL,
     answer VARCHAR(100) NOT NULL
 );
+
+ALTER TABLE IF EXISTS flashcard
+ALTER COLUMN backside TYPE jsonb;
 
 ALTER TABLE IF EXISTS flashcard
     ADD IF NOT EXISTS multiple_backside jsonb DEFAULT '[]';
@@ -166,4 +169,4 @@ CREATE TABLE IF NOT EXISTS feed (
     FOREIGN KEY (user_id) REFERENCES user_credentials(user_id)
 );
 
-CREATE INDEX feed_user_id_index ON feed (user_id);
+CREATE INDEX IF NOT EXISTS feed_user_id_index ON feed (user_id);
