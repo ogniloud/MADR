@@ -1,4 +1,4 @@
-FROM node:16.13.2-alpine as build
+FROM node:22.2.0-alpine as build
 WORKDIR /app
 COPY package.json ./
 COPY package-lock.json package-lock.json
@@ -7,7 +7,7 @@ COPY . ./
 RUN npm run build .env
 
 # release step
-FROM nginx:1.21.5-alpine as release
+FROM nginx:1.26.0-alpine as release
 COPY --from=build /app/build /usr/share/nginx/html/
 EXPOSE 80
 CMD ["nginx", "-g", "daemon off;"]
