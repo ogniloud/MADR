@@ -45,7 +45,7 @@ func Test_GetUserById(t *testing.T) {
 				id:       0,
 				username: "",
 				email:    "",
-				err:      fmt.Errorf("unable to get user info in GetUserById: some kind of error"),
+				err:      fmt.Errorf("unable to get user info in GetUserById: som1e kind of error"),
 			},
 			prepare: func(mocks mocks) {
 				mocks.userCredentials.EXPECT().GetUserInfo(context.Background(), 15).
