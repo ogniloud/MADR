@@ -1,9 +1,13 @@
 package deck
 
 import (
+	"database/sql"
+	"errors"
 	"net/http"
 	"strconv"
 	"time"
+
+	deck2 "github.com/ogniloud/madr/internal/flashcards/storage/deck"
 
 	"github.com/go-chi/chi/v5"
 
@@ -59,7 +63,7 @@ func (d Endpoints) LoadDecks(w http.ResponseWriter, r *http.Request) {
 
 	if err := ioutil.FromJSON(&reqBody, r.Body); err != nil {
 		d.logger.Errorf("reqBody: %+v, error: %v", reqBody, err)
-		d.ew.Error(w, err.Error(), http.StatusBadRequest)
+		d.ew.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
@@ -110,12 +114,16 @@ func (d Endpoints) GetFlashcardsByDeckId(w http.ResponseWriter, r *http.Request)
 
 	if err := ioutil.FromJSON(&reqBody, r.Body); err != nil {
 		d.logger.Errorf("reqBody: %+v, error: %v", reqBody, err)
-		d.ew.Error(w, err.Error(), http.StatusBadRequest)
+		d.ew.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
 	ids, err := d.s.GetFlashcardsIdByDeckId(r.Context(), reqBody.DeckId)
 	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			d.ew.Error(w, err.Error(), http.StatusNotFound)
+			return
+		}
 		d.logger.Errorf("error while loading ids of cards: %v", err)
 		d.ew.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -171,16 +179,28 @@ func (d Endpoints) AddFlashcardToDeck(w http.ResponseWriter, r *http.Request) {
 
 	if err := ioutil.FromJSON(&reqBody, r.Body); err != nil {
 		d.logger.Errorf("reqBody: %+v, error: %v", reqBody, err)
-		d.ew.Error(w, err.Error(), http.StatusBadRequest)
+		d.ew.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	id, err := d.s.PutAllFlashcards(r.Context(), reqBody.DeckId, []models.Flashcard{{
+	card := models.Flashcard{
 		W: reqBody.Word,
-		B: reqBody.Backside,
 		A: reqBody.Answer,
-	}})
+		B: reqBody.Backside,
+	}
+	if !validateFlashcard(card) {
+		d.ew.Error(w, "some fields are empty", http.StatusBadRequest)
+		return
+	}
+
+	id, err := d.s.PutAllFlashcards(r.Context(), reqBody.DeckId, []models.Flashcard{card})
 	if err != nil {
+		if errors.Is(err, deck2.ErrCardsNotFound) {
+			d.logger.Errorf("error while putting a card: %v", err)
+			d.ew.Error(w, err.Error(), http.StatusNotFound)
+			return
+		}
+
 		d.logger.Errorf("error while putting a card: %v", err)
 		d.ew.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -199,6 +219,10 @@ func (d Endpoints) AddFlashcardToDeck(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.WriteHeader(http.StatusCreated)
+}
+
+func validateFlashcard(card models.Flashcard) bool {
+	return !(card.W == "" || card.A == "" || card.B.Value == "")
 }
 
 // swagger:route DELETE /api/flashcards/delete_card DeleteCard
@@ -230,7 +254,7 @@ func (d Endpoints) DeleteFlashcardFromDeck(w http.ResponseWriter, r *http.Reques
 	reqBody := models.DeleteFlashcardFromDeckRequest{}
 	if err := ioutil.FromJSON(&reqBody, r.Body); err != nil {
 		d.logger.Errorf("reqBody: %+v, error: %v", reqBody, err)
-		d.ew.Error(w, err.Error(), http.StatusBadRequest)
+		d.ew.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
@@ -273,7 +297,7 @@ func (d Endpoints) NewDeckWithFlashcards(w http.ResponseWriter, r *http.Request)
 	reqBody := models.NewDeckWithFlashcardsRequest{}
 	if err := ioutil.FromJSON(&reqBody, r.Body); err != nil {
 		d.logger.Errorf("reqBody: %+v, error: %v", reqBody, err)
-		d.ew.Error(w, err.Error(), http.StatusBadRequest)
+		d.ew.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
@@ -283,7 +307,11 @@ func (d Endpoints) NewDeckWithFlashcards(w http.ResponseWriter, r *http.Request)
 		cards[i].B = reqBody.Flashcards[i].Backside
 		cards[i].A = reqBody.Flashcards[i].Answer
 	}
-	log.Print(cards)
+	if !validateFlashcards(cards) {
+		d.ew.Error(w, "some fields are empty", http.StatusBadRequest)
+		return
+	}
+
 	_, err := d.s.NewDeckWithFlashcards(r.Context(),
 		reqBody.UserId,
 		models.DeckConfig{
@@ -299,6 +327,18 @@ func (d Endpoints) NewDeckWithFlashcards(w http.ResponseWriter, r *http.Request)
 	}
 
 	w.WriteHeader(http.StatusCreated)
+}
+
+func validateFlashcards(cards []models.Flashcard) bool {
+	for _, card := range cards {
+		if card.W == "" ||
+			card.A == "" ||
+			card.B.Value == "" {
+			return false
+		}
+	}
+
+	return true
 }
 
 // swagger:route DELETE /api/flashcards/delete_deck DeleteDeck
@@ -330,7 +370,7 @@ func (d Endpoints) DeleteDeck(w http.ResponseWriter, r *http.Request) {
 	reqBody := models.DeleteDeckRequest{}
 	if err := ioutil.FromJSON(&reqBody, r.Body); err != nil {
 		d.logger.Errorf("reqBody: %+v, error: %v", reqBody, err)
-		d.ew.Error(w, err.Error(), http.StatusBadRequest)
+		d.ew.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
@@ -373,7 +413,7 @@ func (d Endpoints) GetFlashcardById(w http.ResponseWriter, r *http.Request) {
 	id, err := strconv.Atoi(chi.URLParam(r, "id"))
 	if err != nil {
 		d.logger.Errorf("reqBody: %+v, error: %v", id, err)
-		d.ew.Error(w, "bad request", http.StatusBadRequest)
+		d.ew.Error(w, "bad request", http.StatusInternalServerError)
 		return
 	}
 
@@ -396,4 +436,28 @@ func (d Endpoints) GetFlashcardById(w http.ResponseWriter, r *http.Request) {
 		d.logger.Error("unable to marshal flashcard", "error", err, "body", respBody)
 		return
 	}
+}
+
+// POST /api/flashcards/append
+func (d Endpoints) AppendBacksides(w http.ResponseWriter, r *http.Request) {
+	reqBody := models.AppendBacksideRequest{}
+	if err := ioutil.FromJSON(&reqBody, r.Body); err != nil {
+		d.logger.Errorf("reqBody: %+v, error: %v", reqBody, err)
+		d.ew.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	err := d.s.AppendBacksides(r.Context(), reqBody.UserId, reqBody.CardId, reqBody.Backsides)
+	if err != nil {
+		if errors.Is(err, deck2.ErrNotOwner) {
+			d.ew.Error(w, err.Error(), http.StatusForbidden)
+			return
+		}
+
+		d.logger.Errorf("error while deleting a deck: %v", err)
+		d.ew.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.WriteHeader(http.StatusNoContent)
 }

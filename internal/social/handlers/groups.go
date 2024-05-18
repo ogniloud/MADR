@@ -230,7 +230,7 @@ func (e Endpoints) GetGroupsByUserId(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-// GetCreatedGroupsByUserId POST /api/created_groups
+// GetCreatedGroupsByUserId POST /api/groups/created_groups
 func (e Endpoints) GetCreatedGroupsByUserId(w http.ResponseWriter, r *http.Request) {
 	reqBody := models.GetCreatedGroupsByUserIdRequest{}
 	respBody := models.GetCreatedGroupsByUserIdResponse{}

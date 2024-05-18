@@ -53,6 +53,15 @@ func (d *Storage) GetCreatedGroupsByUserId(ctx context.Context, id models.UserId
 }
 
 func (d *Storage) GetGroupsByUserId(ctx context.Context, id models.UserId) ([]models.GroupConfig, error) {
+	row := d.Conn.QueryRow(ctx, `SELECT count(*) FROM user_credentials WHERE user_id=$1`, id)
+	var count int
+	if err := row.Scan(&count); err != nil {
+		return nil, err
+	}
+	if count == 0 {
+		return nil, ErrNotFound
+	}
+
 	rows, err := d.Conn.Query(ctx, `
 	SELECT group_id, creator_id, name, time_created
 	FROM groups

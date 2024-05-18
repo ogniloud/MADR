@@ -248,18 +248,113 @@ func (_c *UserCredentials_HasEmailOrUsername_Call) RunAndReturn(run func(context
 	return _c
 }
 
-// InsertUser provides a mock function with given fields: ctx, username, salt, hash, email
-func (_m *UserCredentials) InsertUser(ctx context.Context, username string, salt string, hash string, email string) error {
-	ret := _m.Called(ctx, username, salt, hash, email)
+// ImportGoldenWords provides a mock function with given fields: ctx, userId
+func (_m *UserCredentials) ImportGoldenWords(ctx context.Context, userId int) error {
+	ret := _m.Called(ctx, userId)
 
 	var r0 error
-	if rf, ok := ret.Get(0).(func(context.Context, string, string, string, string) error); ok {
-		r0 = rf(ctx, username, salt, hash, email)
+	if rf, ok := ret.Get(0).(func(context.Context, int) error); ok {
+		r0 = rf(ctx, userId)
 	} else {
 		r0 = ret.Error(0)
 	}
 
 	return r0
+}
+
+// UserCredentials_ImportGoldenWords_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'ImportGoldenWords'
+type UserCredentials_ImportGoldenWords_Call struct {
+	*mock.Call
+}
+
+// ImportGoldenWords is a helper method to define mock.On call
+//   - ctx context.Context
+//   - userId int
+func (_e *UserCredentials_Expecter) ImportGoldenWords(ctx interface{}, userId interface{}) *UserCredentials_ImportGoldenWords_Call {
+	return &UserCredentials_ImportGoldenWords_Call{Call: _e.mock.On("ImportGoldenWords", ctx, userId)}
+}
+
+func (_c *UserCredentials_ImportGoldenWords_Call) Run(run func(ctx context.Context, userId int)) *UserCredentials_ImportGoldenWords_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run(args[0].(context.Context), args[1].(int))
+	})
+	return _c
+}
+
+func (_c *UserCredentials_ImportGoldenWords_Call) Return(_a0 error) *UserCredentials_ImportGoldenWords_Call {
+	_c.Call.Return(_a0)
+	return _c
+}
+
+func (_c *UserCredentials_ImportGoldenWords_Call) RunAndReturn(run func(context.Context, int) error) *UserCredentials_ImportGoldenWords_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
+// ImportGoldenWordsForOld provides a mock function with given fields: ctx
+func (_m *UserCredentials) ImportGoldenWordsForOld(ctx context.Context) error {
+	ret := _m.Called(ctx)
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(context.Context) error); ok {
+		r0 = rf(ctx)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
+}
+
+// UserCredentials_ImportGoldenWordsForOld_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'ImportGoldenWordsForOld'
+type UserCredentials_ImportGoldenWordsForOld_Call struct {
+	*mock.Call
+}
+
+// ImportGoldenWordsForOld is a helper method to define mock.On call
+//   - ctx context.Context
+func (_e *UserCredentials_Expecter) ImportGoldenWordsForOld(ctx interface{}) *UserCredentials_ImportGoldenWordsForOld_Call {
+	return &UserCredentials_ImportGoldenWordsForOld_Call{Call: _e.mock.On("ImportGoldenWordsForOld", ctx)}
+}
+
+func (_c *UserCredentials_ImportGoldenWordsForOld_Call) Run(run func(ctx context.Context)) *UserCredentials_ImportGoldenWordsForOld_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run(args[0].(context.Context))
+	})
+	return _c
+}
+
+func (_c *UserCredentials_ImportGoldenWordsForOld_Call) Return(_a0 error) *UserCredentials_ImportGoldenWordsForOld_Call {
+	_c.Call.Return(_a0)
+	return _c
+}
+
+func (_c *UserCredentials_ImportGoldenWordsForOld_Call) RunAndReturn(run func(context.Context) error) *UserCredentials_ImportGoldenWordsForOld_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
+// InsertUser provides a mock function with given fields: ctx, username, salt, hash, email
+func (_m *UserCredentials) InsertUser(ctx context.Context, username string, salt string, hash string, email string) (int, error) {
+	ret := _m.Called(ctx, username, salt, hash, email)
+
+	var r0 int
+	var r1 error
+	if rf, ok := ret.Get(0).(func(context.Context, string, string, string, string) (int, error)); ok {
+		return rf(ctx, username, salt, hash, email)
+	}
+	if rf, ok := ret.Get(0).(func(context.Context, string, string, string, string) int); ok {
+		r0 = rf(ctx, username, salt, hash, email)
+	} else {
+		r0 = ret.Get(0).(int)
+	}
+
+	if rf, ok := ret.Get(1).(func(context.Context, string, string, string, string) error); ok {
+		r1 = rf(ctx, username, salt, hash, email)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
 }
 
 // UserCredentials_InsertUser_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'InsertUser'
@@ -284,12 +379,12 @@ func (_c *UserCredentials_InsertUser_Call) Run(run func(ctx context.Context, use
 	return _c
 }
 
-func (_c *UserCredentials_InsertUser_Call) Return(_a0 error) *UserCredentials_InsertUser_Call {
-	_c.Call.Return(_a0)
+func (_c *UserCredentials_InsertUser_Call) Return(_a0 int, _a1 error) *UserCredentials_InsertUser_Call {
+	_c.Call.Return(_a0, _a1)
 	return _c
 }
 
-func (_c *UserCredentials_InsertUser_Call) RunAndReturn(run func(context.Context, string, string, string, string) error) *UserCredentials_InsertUser_Call {
+func (_c *UserCredentials_InsertUser_Call) RunAndReturn(run func(context.Context, string, string, string, string) (int, error)) *UserCredentials_InsertUser_Call {
 	_c.Call.Return(run)
 	return _c
 }
