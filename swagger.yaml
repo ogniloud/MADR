@@ -93,6 +93,11 @@ definitions:
                 format: int64
                 type: integer
                 x-go-name: Id
+            multiple_backside:
+                items:
+                    $ref: '#/definitions/Backside'
+                type: array
+                x-go-name: MB
             word:
                 type: string
                 x-go-name: W

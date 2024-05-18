@@ -17,7 +17,7 @@ import (
 )
 
 const (
-	jsonCredentials = `{"email":"blabla@gmail.com","password":"123","username":"boba"}`
+	jsonCredentials = `{"email":"blabla@gmail.com","password":"Aboba228!","username":"boba"}`
 )
 
 func TestEndpoints_SignUp(t *testing.T) {
@@ -35,7 +35,7 @@ func TestEndpoints_SignUp(t *testing.T) {
 	dl.EXPECT().CreateUser(request.Context(), models.User{
 		Username: "boba",
 		Email:    "blabla@gmail.com",
-		Password: "123",
+		Password: "Aboba228!",
 	}).Return(nil)
 
 	// logger
@@ -75,7 +75,7 @@ func TestEndpoints_SignUpExisting(t *testing.T) {
 	dl.EXPECT().CreateUser(firstRequest.Context(), models.User{
 		Username: "boba",
 		Email:    "blabla@gmail.com",
-		Password: "123",
+		Password: "Aboba228!",
 	}).Return(data.ErrEmailOrUsernameExists)
 
 	// logger
@@ -167,10 +167,10 @@ func TestEndpoints_SignIn(t *testing.T) {
 	dl.EXPECT().CreateUser(signUpRequest.Context(), models.User{
 		Username: "boba",
 		Email:    "blabla@gmail.com",
-		Password: "123",
+		Password: "Aboba228!",
 	}).Return(nil)
 
-	dl.EXPECT().SignInUser(signUpRequest.Context(), "boba", "123").
+	dl.EXPECT().SignInUser(signUpRequest.Context(), "boba", "Aboba228!").
 		Return("Bearer blablablaIMATOKENyouAREpoorBASTARD", nil)
 
 	// logger
@@ -184,7 +184,7 @@ func TestEndpoints_SignIn(t *testing.T) {
 	// sign in
 	bodyReader = strings.NewReader(jsonCredentials)
 
-	signInRequest, err := http.NewRequest(http.MethodPost, "/api/sigin", bodyReader)
+	signInRequest, err := http.NewRequest(http.MethodPost, "/api/signin", bodyReader)
 	if err != nil {
 		t.Errorf("failed to create signInRequest: %v", err)
 	}
@@ -246,7 +246,7 @@ func TestEndpoints_SignInBadRequest(t *testing.T) {
 func TestEndpoints_SignInUnauthorized(t *testing.T) {
 	bodyReader := strings.NewReader(jsonCredentials)
 
-	signInRequest, err := http.NewRequest(http.MethodPost, "/api/sigin", bodyReader)
+	signInRequest, err := http.NewRequest(http.MethodPost, "/api/signin", bodyReader)
 	if err != nil {
 		t.Errorf("failed to create signInRequest: %v", err)
 	}
@@ -255,7 +255,7 @@ func TestEndpoints_SignInUnauthorized(t *testing.T) {
 
 	// database mocks
 	dl := mocks.NewDatalayer(t)
-	dl.EXPECT().SignInUser(signInRequest.Context(), "boba", "123").Return("", models.ErrUnauthorized)
+	dl.EXPECT().SignInUser(signInRequest.Context(), "boba", "Aboba228!").Return("", models.ErrUnauthorized)
 
 	// logger
 	l := log.NewWithOptions(io.Discard, log.Options{})

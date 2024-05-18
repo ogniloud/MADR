@@ -41,6 +41,8 @@ const (
 	idleTimeout     = 120 * time.Second
 )
 
+var initSqlPath = "./db/init.sql"
+
 func main() {
 	l := log.NewWithOptions(os.Stderr, log.Options{
 		ReportCaller:    true,
@@ -85,10 +87,29 @@ func main() {
 		log.Fatal("Unable to ping database in main", "error", err)
 	}
 
+	_initSqlPath := os.Getenv("INIT_SQL_PATH")
+	if _initSqlPath != "" {
+		initSqlPath = _initSqlPath
+	}
+
+	b, err := os.ReadFile(initSqlPath)
+	if err != nil {
+		log.Fatal("read init.sql fail", "error", err)
+	}
+
+	_, err = psqlDB.Exec(ctx, string(b))
+	if err != nil {
+		log.Fatal("init.sql exec error", "error", err)
+	}
+
 	// storage by package definition
 	credentials := usercred.New(psqlDB)
 	deckStorage := &deckstorage.Storage{Conn: psqlDB}
 	socialStorage := &socialstorage.Storage{Conn: psqlDB}
+
+	if err := credentials.ImportGoldenWordsForOld(ctx); err != nil {
+		log.Error("Unable to import golden words for old users", "error", err)
+	}
 
 	// get salt length from env
 	saltLengthString := os.Getenv("SALT_LENGTH")
@@ -164,6 +185,7 @@ func main() {
 			r.Post("/load", deckEndpoints.LoadDecks)
 			r.Put("/new_deck", deckEndpoints.NewDeckWithFlashcards)
 			r.Get("/card/{id}", deckEndpoints.GetFlashcardById)
+			r.Post("/append", deckEndpoints.AppendBacksides)
 		})
 
 		// study handler

@@ -133,23 +133,7 @@ func (s *Service) ConvertIdsToCards(ctx context.Context, uid models.UserId, down
 
 // GetNextRandomN returns at most n random card from the entire set of user cards with expired CoolDown.
 func (s *Service) GetNextRandomN(ctx context.Context, uid models.UserId, down models.CoolDown, n int) ([]models.FlashcardId, error) {
-	decks, err := s.dsrv.LoadDecks(ctx, uid)
-	if err != nil {
-		return nil, err
-	}
-
-	keys := decks.Keys()
-
-	var ids []models.FlashcardId
-	for _, i := range keys {
-		currentCards, err := s.dsrv.GetFlashcardsIdByDeckId(ctx, i)
-		if err != nil {
-			continue
-		}
-		ids = append(ids, currentCards...)
-	}
-
-	return s.ConvertIdsToCards(ctx, uid, down, n, ids)
+	return s.dsrv.GetRandomCardN(ctx, uid, down, n)
 }
 
 // GetNextRandom returns a random card from the entire set of user cards with expired CoolDown.
@@ -170,15 +154,10 @@ func (s *Service) GetNextRandom(ctx context.Context, uid models.UserId, down mod
 
 // GetNextRandomDeckN returns at most n random cards from the user's deck with expired CoolDown.
 func (s *Service) GetNextRandomDeckN(ctx context.Context, uid models.UserId, id models.DeckId, down models.CoolDown, n int) ([]models.FlashcardId, error) {
-	ids, err := s.dsrv.GetFlashcardsIdByDeckId(ctx, id)
-	if err != nil {
-		return nil, err
-	}
-
-	return s.ConvertIdsToCards(ctx, uid, down, n, ids)
+	return s.dsrv.GetRandomCardDeckN(ctx, uid, id, down, n)
 }
 
-// GetNextRandomN returns at most n random card from the entire set of user cards with expired CoolDown.
+// GetNextRandomDeck returns at most n random card from the entire set of user cards with expired CoolDown.
 func (s *Service) GetNextRandomDeck(ctx context.Context, uid models.UserId, id models.DeckId, down models.CoolDown) (models.FlashcardId, error) {
 	cards, err := s.GetNextRandomDeckN(ctx, uid, id, down, 1)
 
@@ -221,7 +200,7 @@ func (s *Service) Rate(ctx context.Context, uid models.UserId, id models.Flashca
 	}
 
 	l.CoolDown.NextState(l.Box, func(box models.Box) time.Time {
-		return time.Now().Add(time.Minute * time.Duration(l.Box)).UTC()
+		return time.Now().Add(time.Second * time.Duration(l.Box)).UTC()
 	})
 
 	if err := s.dsrv.UpdateLeitner(ctx, l); err != nil {

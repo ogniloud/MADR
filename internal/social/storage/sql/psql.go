@@ -53,6 +53,15 @@ func (d *Storage) GetCreatedGroupsByUserId(ctx context.Context, id models.UserId
 }
 
 func (d *Storage) GetGroupsByUserId(ctx context.Context, id models.UserId) ([]models.GroupConfig, error) {
+	row := d.Conn.QueryRow(ctx, `SELECT count(*) FROM user_credentials WHERE user_id=$1`, id)
+	var count int
+	if err := row.Scan(&count); err != nil {
+		return nil, err
+	}
+	if count == 0 {
+		return nil, ErrNotFound
+	}
+
 	rows, err := d.Conn.Query(ctx, `
 	SELECT group_id, creator_id, name, time_created
 	FROM groups
@@ -359,6 +368,14 @@ SELECT f.word, f.backside, $1, f.answer FROM flashcard AS f
 WHERE f.deck_id = $2`, id, deckId)
 	if err != nil {
 		return 0, fmt.Errorf("couldn't copy flashcards: %w", err)
+	}
+
+	_, err = tx.Exec(ctx, `INSERT INTO user_leitner(user_id, card_id, box, cool_down)
+SELECT $1, f.card_id, 0, now() FROM deck_config dc
+JOIN flashcard f ON f.deck_id = dc.deck_id
+WHERE f.deck_id = $2`, copier, id)
+	if err != nil {
+		return 0, fmt.Errorf("couldn't create leitners: %w", err)
 	}
 
 	// create a new record about copying

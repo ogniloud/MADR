@@ -22,9 +22,11 @@ var ErrEmailOrUsernameExists = fmt.Errorf("user with this email or username alre
 type UserCredentials interface {
 	HasEmailOrUsername(ctx context.Context, username, email string) (bool, error)
 	GetSaltAndHash(ctx context.Context, username string) (salt, hash string, err error)
-	InsertUser(ctx context.Context, username, salt, hash, email string) error
+	InsertUser(ctx context.Context, username, salt, hash, email string) (int, error)
 	GetUserInfo(ctx context.Context, userId int) (username, email string, err error)
 	GetUserID(ctx context.Context, username string) (int64, error)
+	ImportGoldenWords(ctx context.Context, userId int) error
+	ImportGoldenWordsForOld(ctx context.Context) error
 }
 
 // Datalayer is a struct that helps us to interact with the data.
@@ -151,9 +153,14 @@ func (d *Datalayer) CreateUser(ctx context.Context, user models.User) error {
 		return fmt.Errorf("unable to hash password in CreateUser: %w", err)
 	}
 
-	err = d.db.InsertUser(ctx, user.Username, salt, string(hash), user.Email)
+	id, err := d.db.InsertUser(ctx, user.Username, salt, string(hash), user.Email)
 	if err != nil {
 		return fmt.Errorf("unable to insert user in CreateUser: %w", err)
+	}
+
+	err = d.db.ImportGoldenWords(ctx, id)
+	if err != nil {
+		return fmt.Errorf("unable to import user in CreateUser: %w", err)
 	}
 
 	return nil
