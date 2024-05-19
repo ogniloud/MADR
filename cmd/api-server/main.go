@@ -167,7 +167,7 @@ func main() {
 	producer := wordmaster.NewProducer(l, []string{"localhost:9092", "localhost:9093"}, "wiktionary")
 	producer.Produce(ctx, creq)
 
-	consumer := wordmaster.NewConsumer(l, []string{"localhost:9092", "localhost:9093"}, "wiktionary", time.Second)
+	consumer := wordmaster.NewConsumer(l, []string{"localhost:9092", "localhost:9093"}, "baked-words", time.Second)
 	cresp := consumer.Consume(ctx)
 
 	go func() {
@@ -179,10 +179,6 @@ func main() {
 						backsides = append(backsides, models.Backside{
 							Value: v,
 						})
-					}
-
-					for _, e := range s.Examples {
-						backsides = append(backsides, models.Backside{Value: e.Text})
 					}
 				}
 			}

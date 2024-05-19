@@ -39,6 +39,7 @@ func (c *Consumer) Consume(ctx context.Context) <-chan *WiktionaryResponse {
 			m, err := c.r.ReadMessage(ctx)
 			if err != nil {
 				if errors.Is(err, context.Canceled) || errors.Is(err, io.EOF) {
+					c.logger.Info("cancelled", "ctx", err)
 					return
 				}
 
