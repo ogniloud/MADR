@@ -34,13 +34,18 @@ const CreateDecks = ({ fetchUserDecks }) => {
     };
 
     const handleSubmit = async () => {
-        for (let i = 0; i < flashcards.length; i++) {
-            if (flashcards[i].word.length === 0 || flashcards[i].answer.length === 0 || flashcards[i].backside.length === 0) {
-                setErrorMessage("Some fields are empty")
-            }
-            return
-        }
         try {
+            let b = true;
+            flashcards.forEach((f, i) => {
+                if (f.word === "" || f.answer === "" || f.backside.value === "") {
+                    setErrorMessage("Some fields are empty")
+                    b = false
+                    return
+                }
+            })
+            if (!b) {
+                return
+            }
             const deckData = {
                 flashcards,
                 name: deckName,
