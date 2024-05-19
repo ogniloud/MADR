@@ -2,6 +2,8 @@ package main
 
 import (
 	"context"
+	"github.com/ogniloud/madr/internal/flashcards/models"
+	"github.com/ogniloud/madr/internal/wordmaster"
 	"net/http"
 	"os"
 	"os/signal"
@@ -159,7 +161,38 @@ func main() {
 		SpecURL:  "/api/swagger.yaml",
 	}, nil)
 
-	deckService := deckserv.NewService(deckStorage, cache.New(), l)
+	creq := make(chan *wordmaster.WiktionaryRequest)
+	defer close(creq)
+
+	producer := wordmaster.NewProducer(l, []string{"localhost:9092", "localhost:9093"}, "wiktionary")
+	producer.Produce(ctx, creq)
+
+	consumer := wordmaster.NewConsumer(l, []string{"localhost:9092", "localhost:9093"}, "wiktionary", time.Second)
+	cresp := consumer.Consume(ctx)
+
+	go func() {
+		for msg := range cresp {
+			var backsides []models.Backside
+			for _, w := range msg.Words {
+				for _, s := range w.Senses {
+					for _, v := range s.Glosses {
+						backsides = append(backsides, models.Backside{
+							Value: v,
+						})
+					}
+
+					for _, e := range s.Examples {
+						backsides = append(backsides, models.Backside{Value: e.Text})
+					}
+				}
+			}
+			if err := deckStorage.AppendBacksides(ctx, models.FlashcardId(msg.Source.CardId), backsides); err != nil {
+				l.Error("Unable to append backside to storage", "error", err)
+			}
+		}
+	}()
+
+	deckService := deckserv.NewService(deckStorage, cache.New(), l, creq)
 	studyService := study2.NewService(deckService)
 
 	deckEndpoints := deck.New(deckService, ioutil.JSONErrorWriter{Logger: l}, l)
