@@ -62,9 +62,46 @@ services:
 #
 #  monctionary:
 #    container_name: monctionary
-#    image: ghcr.io/ogniloud/external-dictionaries/monctionary:pr-1
+#    image: ghcr.io/ogniloud/external-dictionaries/monctionary:latest
 #    environment:
 #      SPRING_DATA_MONGODB_HOST: mongo
+#
+#      SPRING_APPLICATION_DICTIONARIES_0_WIKTIONARY_LANGUAGE: EN
+#      SPRING_APPLICATION_DICTIONARIES_0_WORDS_LANGUAGE: EN
+#      SPRING_APPLICATION_DICTIONARIES_0_DICTIONARY: ./mongo-entrypoint/en_to_en.json
+#
+#      SPRING_APPLICATION_DICTIONARIES_1_WIKTIONARY_LANGUAGE: EN
+#      SPRING_APPLICATION_DICTIONARIES_1_WORDS_LANGUAGE: RU
+#      SPRING_APPLICATION_DICTIONARIES_1_DICTIONARY: ./mongo-entrypoint/ru_to_en.json
+#
+#      SPRING_APPLICATION_DICTIONARIES_2_WIKTIONARY_LANGUAGE: EN
+#      SPRING_APPLICATION_DICTIONARIES_2_WORDS_LANGUAGE: ES
+#      SPRING_APPLICATION_DICTIONARIES_2_DICTIONARY: ./mongo-entrypoint/es_to_en.json
+#
+#      SPRING_APPLICATION_DICTIONARIES_3_WIKTIONARY_LANGUAGE: RU
+#      SPRING_APPLICATION_DICTIONARIES_3_WORDS_LANGUAGE: EN
+#      SPRING_APPLICATION_DICTIONARIES_3_DICTIONARY: ./mongo-entrypoint/en_to_ru.json
+#
+#      SPRING_APPLICATION_DICTIONARIES_4_WIKTIONARY_LANGUAGE: RU
+#      SPRING_APPLICATION_DICTIONARIES_4_WORDS_LANGUAGE: RU
+#      SPRING_APPLICATION_DICTIONARIES_4_DICTIONARY: ./mongo-entrypoint/ru_to_ru.json
+#
+#      SPRING_APPLICATION_DICTIONARIES_5_WIKTIONARY_LANGUAGE: RU
+#      SPRING_APPLICATION_DICTIONARIES_5_WORDS_LANGUAGE: ES
+#      SPRING_APPLICATION_DICTIONARIES_5_DICTIONARY: ./mongo-entrypoint/es_to_ru.json
+#
+#      SPRING_APPLICATION_DICTIONARIES_6_WIKTIONARY_LANGUAGE: ES
+#      SPRING_APPLICATION_DICTIONARIES_6_WORDS_LANGUAGE: EN
+#      SPRING_APPLICATION_DICTIONARIES_6_DICTIONARY: ./mongo-entrypoint/en_to_es.json
+#
+#      SPRING_APPLICATION_DICTIONARIES_7_WIKTIONARY_LANGUAGE: ES
+#      SPRING_APPLICATION_DICTIONARIES_7_WORDS_LANGUAGE: RU
+#      SPRING_APPLICATION_DICTIONARIES_7_DICTIONARY: ./mongo-entrypoint/ru_to_es.json
+#
+#      SPRING_APPLICATION_DICTIONARIES_8_WIKTIONARY_LANGUAGE: ES
+#      SPRING_APPLICATION_DICTIONARIES_8_WORDS_LANGUAGE: ES
+#      SPRING_APPLICATION_DICTIONARIES_8_DICTIONARY: ./mongo-entrypoint/es_to_es.json
+#
 #    networks:
 #      mynetwork:
 #    ports:
@@ -77,7 +114,7 @@ services:
 #
 #  wordmaster:
 #    container_name: wordmaster
-#    image: ghcr.io/ogniloud/external-dictionaries/wordmaster:pr-1
+#    image: ghcr.io/ogniloud/external-dictionaries/wordmaster:latest
 #    environment:
 #      SPRING_KAFKA_BOOTSTRAP-SERVERS: kafka1:19092,kafka2:19093
 #      SPRING_DATA_MONGODB_HOST: mongo
