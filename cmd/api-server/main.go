@@ -8,6 +8,7 @@ import (
 	"os"
 	"os/signal"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/go-chi/chi/v5"
@@ -164,10 +165,11 @@ func main() {
 	creq := make(chan *wordmaster.WiktionaryRequest)
 	defer close(creq)
 
-	producer := wordmaster.NewProducer(l, []string{"localhost:9092", "localhost:9093"}, "wiktionary")
+	brockers := strings.Split(os.Getenv("BROCKERS"), ",")
+	producer := wordmaster.NewProducer(l, brockers, "wiktionary")
 	producer.Produce(ctx, creq)
 
-	consumer := wordmaster.NewConsumer(l, []string{"localhost:9092", "localhost:9093"}, "baked-words", time.Second)
+	consumer := wordmaster.NewConsumer(l, brockers, "baked-words", time.Second)
 	cresp := consumer.Consume(ctx)
 
 	go func() {
