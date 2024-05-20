@@ -447,7 +447,7 @@ func (d Endpoints) AppendBacksides(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err := d.s.AppendBacksides(r.Context(), reqBody.UserId, reqBody.CardId, reqBody.Backsides)
+	err := d.s.AppendBacksides(r.Context(), reqBody.UserId, reqBody.Backsides)
 	if err != nil {
 		if errors.Is(err, deck2.ErrNotOwner) {
 			d.ew.Error(w, err.Error(), http.StatusForbidden)

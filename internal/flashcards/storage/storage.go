@@ -35,7 +35,6 @@ type FlashcardCRUD interface {
 		a models.Answer) error
 
 	AppendBacksides(ctx context.Context,
-		userId models.UserId,
 		cardId models.FlashcardId,
 		backsides []models.Backside,
 	) error

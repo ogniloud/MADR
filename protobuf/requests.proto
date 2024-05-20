@@ -1,6 +1,7 @@
 syntax = "proto3";
 
 package com.madr.external_dictionaries.mongomodel.protobuf;
+option go_package = "github.com/ogniloud/madr/internal/wordmaster";
 
 import "common.proto";
 
