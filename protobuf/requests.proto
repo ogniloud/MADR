@@ -1,0 +1,21 @@
+syntax = "proto3";
+
+package com.madr.external_dictionaries.mongomodel.protobuf;
+option go_package = "github.com/ogniloud/madr/internal/wordmaster";
+
+import "common.proto";
+
+message WiktionaryRequest {
+    RequestId word = 1;
+    RequestedContents contents = 2;
+    SourceId source = 3;
+}
+
+message RequestedContents {
+    bool definition = 1;
+    bool examples = 2;
+    bool etymology = 3;
+    bool ipa = 4;
+    bool single = 5;
+    bool inflections = 6;
+}

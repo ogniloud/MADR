@@ -1,0 +1,26 @@
+syntax = "proto3";
+
+package com.madr.external_dictionaries.mongomodel.protobuf;
+option go_package = "github.com/ogniloud/madr/internal/wordmaster";
+
+message RequestId {
+    SupportedLanguage wiktionary_language = 1;
+    SupportedLanguage word_language = 2;
+    WordId word_id = 3;
+}
+
+message WordId {
+    string word = 1;
+    optional string part_of_speech = 2;
+}
+
+enum SupportedLanguage {
+    EN = 0;
+    RU = 1;
+    ES = 2;
+}
+
+message SourceId {
+    int64 deck_id = 1;
+    int64 card_id = 2;
+}

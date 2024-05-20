@@ -3,6 +3,7 @@ package deck
 import (
 	"context"
 	"fmt"
+	"github.com/ogniloud/madr/internal/wordmaster"
 	"time"
 
 	"github.com/ogniloud/madr/internal/flashcards/cache"
@@ -40,14 +41,21 @@ type Service struct {
 	storage.Storage
 	c      cache.Cache
 	logger *log.Logger
+	creq   chan<- *wordmaster.WiktionaryRequest
 }
 
 // NewService creates a new IService creature.
-func NewService(s storage.Storage, c cache.Cache, logger *log.Logger) IService {
+func NewService(
+	s storage.Storage,
+	c cache.Cache,
+	logger *log.Logger,
+	creq chan<- *wordmaster.WiktionaryRequest,
+) IService {
 	return &Service{
 		Storage: s,
 		c:       c,
 		logger:  logger,
+		creq:    creq,
 	}
 }
 
@@ -110,6 +118,31 @@ func (s *Service) NewDeckWithFlashcards(ctx context.Context, userId models.UserI
 		s.logger.Errorf("cache store failed: %v", err)
 		_ = s.Cache().Delete(userId) // non-consistent cache
 	}
+
+	go func() {
+		for i := range ids {
+			req := &wordmaster.WiktionaryRequest{
+				Word: &wordmaster.RequestId{
+					WiktionaryLanguage: wordmaster.SupportedLanguage_RU,
+					WordLanguage:       wordmaster.SupportedLanguage_EN,
+					WordId: &wordmaster.WordId{
+						Word: flashcards[i].W,
+					},
+				},
+				Contents: &wordmaster.RequestedContents{
+					Definition: true,
+					Examples:   true,
+					Etymology:  true,
+					Ipa:        true,
+				},
+				Source: &wordmaster.SourceId{
+					DeckId: int64(cfg.DeckId),
+					CardId: int64(ids[i]),
+				},
+			}
+			s.creq <- req
+		}
+	}()
 
 	return id, nil
 }
