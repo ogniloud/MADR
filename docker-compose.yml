@@ -30,9 +30,31 @@ services:
     image: "cr.yandex/crp3ftp1b7dveeagva5g/madr-react:latest"
     ports:
       - "80:80"
+  liquibase-migrations:
+    image: liquibase/liquibase:4.25
+    depends_on:
+      - postgresql
+    command:
+      - --changelog-file=master.xml
+      - --search-path=/liquibase/changelog/
+      - --driver=org.postgresql.Driver
+      - --url=jdbc:postgresql://postgresql:5432/
+      - --username=postgres
+      - --password=postgres
+      - update
+    volumes:
+      - liquibase:/liquibase/changelog
     networks:
       mynetwork:
 
 networks:
   mynetwork:
     driver: bridge
+
+volumes:
+  liquibase:
+    driver: local
+    driver_opts:
+      type: 'none'
+      o: 'bind'
+      device: './db'
