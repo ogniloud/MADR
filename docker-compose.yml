@@ -129,8 +129,8 @@ services:
         condition: service_started
       kafka2:
         condition: service_started
-      monctionary:
-        condition: service_completed_successfully
+#      monctionary:
+#        condition: service_completed_successfully
 
   zoo1:
     image: confluentinc/cp-zookeeper:7.3.2
