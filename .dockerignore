@@ -6,3 +6,7 @@ Dockerfile
 LICENSE
 Makefile
 docker-compose.yaml
+mongo-entrypoint
+mongo
+protobuf
+madr_web_app

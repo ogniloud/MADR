@@ -104,7 +104,7 @@ func verifyUsernameWords(s string) bool {
 }
 
 func verifyPassword(s string) bool {
-	var sevenOrMore, number, upper, special bool
+	var sevenOrMore, number, upper bool
 	letters := 0
 	for _, c := range s {
 		switch {
@@ -113,14 +113,12 @@ func verifyPassword(s string) bool {
 		case unicode.IsUpper(c):
 			upper = true
 			letters++
-		case unicode.IsPunct(c) || unicode.IsSymbol(c):
-			special = true
 		case unicode.IsLetter(c) || c == ' ':
 			letters++
 		}
 	}
 	sevenOrMore = len(s) >= 7
-	return sevenOrMore && number && upper && special
+	return sevenOrMore && number && upper
 }
 
 func validate(req models.SignUpRequest) error {
