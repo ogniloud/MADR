@@ -1,19 +1,21 @@
 import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
-import { jwtDecode } from 'jwt-decode';
+import {useNavigate, useParams} from 'react-router-dom';
+import {jwtDecode} from 'jwt-decode';
 import { fetchRandomFlashcard, rateFlashcard, deleteFlashcard } from "../../API-Components/apiFunctions_exe_cards";
+import ReactCardFlip from 'react-card-flip';
 import './Styles/Flashcards.css';
 
 const Flashcards = () => {
     const { deck_id } = useParams();
+    const navigate = useNavigate();
     const [flashcard, setFlashcard] = useState(null);
     const [cardsSeen, setCardsSeen] = useState(0);
     const [userId, setUserId] = useState(null);
+    const [isFlipped, setIsFlipped] = useState(false);
+    const [backsideIndex, setBacksideIndex] = useState(0);
 
     useEffect(() => {
-        // Fetch the initial flashcard when the component mounts
         fetchFlashcard();
-        // Decode the token to get user_id
         const token = localStorage.getItem('token');
         if (token) {
             const decodedToken = jwtDecode(token);
@@ -26,6 +28,8 @@ const Flashcards = () => {
             const fetchedFlashcard = await fetchRandomFlashcard(parseInt(deck_id), userId);
             setFlashcard(fetchedFlashcard);
             setCardsSeen(cardsSeen + 1);
+            setIsFlipped(false); // Reset flip state for new card
+            setBacksideIndex(0); // Reset backside index for new card
         } catch (error) {
             console.error(error.message);
         }
@@ -34,7 +38,6 @@ const Flashcards = () => {
     const handleMark = async (mark) => {
         try {
             await rateFlashcard(flashcard.id, mark, userId);
-            // Fetch the next flashcard after recording the mark
             fetchFlashcard();
         } catch (error) {
             console.error(error.message);
@@ -44,7 +47,6 @@ const Flashcards = () => {
     const handleDeleteFlashcard = async () => {
         try {
             await deleteFlashcard(flashcard.id, userId);
-            // Fetch the next flashcard after successful deletion
             fetchFlashcard();
             alert('Flashcard deleted successfully');
         } catch (error) {
@@ -60,22 +62,61 @@ const Flashcards = () => {
         }
     };
 
-    const handleCardClick = () => {
-        // Toggle between front and back of the card
-        setFlashcard((prevFlashcard) => ({
-            ...prevFlashcard,
-            showBack: !prevFlashcard.showBack,
-        }));
+    const handleClick = (e) => {
+        e.preventDefault();
+        setIsFlipped(!isFlipped);
     };
+
+    const handleNextBackside = () => {
+        if (backsideIndex < flashcard.multiple_backside.length - 1) {
+            setBacksideIndex(backsideIndex + 1);
+        }
+    };
+
+    const handlePrevBackside = () => {
+        if (backsideIndex > 0) {
+            setBacksideIndex(backsideIndex - 1);
+        }
+    };
+    const handleReturnToDeckDetailsPageClick = () => {
+        navigate(`/decks/${deck_id}`);
+    };
+
 
     return (
         <div className="ex-flash">
-            <div><h2 className="ex-flash-title">Flashcards</h2></div>
-            <div className="ex-flashcard-container" onClick={handleCardClick} onContextMenu={handleContextMenu}>
+            <div><h2 className="ex-flash-title" onClick={handleReturnToDeckDetailsPageClick}>Flashcards</h2></div>
+            <div className="ex-flashcard-container" onContextMenu={handleContextMenu}>
                 {flashcard && (
-                    <div className={`ex-flashcard ${flashcard.showBack ? 'ex-show-back' : ''}`}>
-                        <div
-                            className="card-content">{flashcard.showBack ? flashcard.backside.value : flashcard.word}</div>
+                    <ReactCardFlip isFlipped={isFlipped} flipDirection="horizontal">
+                        <div className="ex-flashcard" onClick={handleClick}>
+                            <div className="card-content">{flashcard.word}</div>
+                        </div>
+
+                        <div className="ex-flashcard ex-show-back" onClick={handleClick}>
+                            <div className="card-content">{flashcard.multiple_backside[backsideIndex].value}</div>
+                        </div>
+                    </ReactCardFlip>
+                )}
+                {isFlipped && flashcard.multiple_backside.length > 1 && (
+                    <div className="carousel-controls">
+                        <button
+                            className={`carousel-button-prev ${backsideIndex === 0 ? 'disabled' : ''}`}
+                            onClick={handlePrevBackside}
+                            style={{ backgroundColor: backsideIndex === 0 ? 'gray' : '' }}
+                        >
+                            Previous
+                        </button>
+                        <button
+                            className={`carousel-button-nxt ${backsideIndex === flashcard.multiple_backside.length - 1 ? 'disabled' : ''}`}
+                            onClick={handleNextBackside}
+                            style={{ backgroundColor: backsideIndex === flashcard.multiple_backside.length - 1 ? 'gray' : '' }}
+                        >
+                            Next
+                        </button>
+                        <div className="carousel-slide-number">
+                            {backsideIndex + 1}/{flashcard.multiple_backside.length}
+                        </div>
                     </div>
                 )}
             </div>

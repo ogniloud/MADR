@@ -2,6 +2,7 @@ import React, {useEffect, useState} from 'react';
 import {jwtDecode} from 'jwt-decode';
 import {fetchRandomMatchingData, rateFlashcard} from "../../API-Components/apiFunctions_exe_cards";
 import './Styles/WordMatch.css';
+import {useNavigate, useParams} from "react-router-dom";
 
 const WordMatch = () => {
     const [matchingData, setMatchingData] = useState(null);
@@ -9,6 +10,9 @@ const WordMatch = () => {
     const [successMessage, setSuccessMessage] = useState('');
     const [errorMessage, setErrorMessage] = useState('');
     const [userId, setUserId] = useState(null);
+    const { deck_id } = useParams();
+    const navigate = useNavigate();
+
 
     useEffect(() => {
         fetchUserIdAndMatchingData();
@@ -84,10 +88,15 @@ const WordMatch = () => {
         }
     };
 
+
+    const handleReturnToDeckDetailsPageClick = () => {
+        navigate(`/decks/${deck_id}`);
+    };
+
     let s = '';
     return (
         <div className="wm-container">
-            <h2 className="wm-title">Word Match </h2>
+            <h2 className="wm-title" onClick={handleReturnToDeckDetailsPageClick}>Word Match </h2>
             <div>
                 <p className="wm-subtitle">Match the words with suitable answers</p>
             </div>

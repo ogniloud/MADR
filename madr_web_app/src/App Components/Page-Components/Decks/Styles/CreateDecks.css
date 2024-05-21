@@ -4,7 +4,7 @@
     display: flex;
     flex-wrap: wrap;
     justify-content: space-around;
-    font-family: 'Poppins', sans-serif;
+    font-family: "Google Sans", sans-serif;
 }
 .cd-title{
         position: absolute;
@@ -22,14 +22,17 @@
 }
 
 .create-decks-container {
-    max-width: 600px;
+    width: 600px;
     margin: auto;
     padding: 20px;
     border: 1px solid #ccc;
     border-radius: 8px;
     background-color: #fff;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    position: relative;
+    right: 360px;
 }
+
 
 .deck-form {
     margin-top: 20px;
@@ -50,15 +53,62 @@ input {
     margin-bottom: 10px;
 }
 
-button {
-    background-color: #007bff;
+.in-deck-add-fc,
+.in-deck-add-dk{
+    font-family: "Google Sans", "sans-serif";
+    background-color: black;
     color: #fff;
+    position: relative;
+    bottom: 46px;
     padding: 10px;
     border: none;
     border-radius: 5px;
     cursor: pointer;
 }
+.in-deck-success-message{
+    bottom: 146px;
+    left: 200px;
+    position: absolute;
+    color: green;
+
+}
 
 button:hover {
-    background-color: #0056b3;
+    background-color: gray;
+}
+
+
+
+.flashcards-grid-container {
+    flex: 1;
+    padding: 20px;
+    background: #f8f9fa;
+    border-radius: 5px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    margin: auto;
+    position: relative;
+    left: 360px; /* Consider adjusting this value */
+    bottom: 660px; /* Consider adjusting this value */
+    width: 100%; /* Ensure the container takes up the full width */
+    overflow-x: auto; /* Enable horizontal scrolling if needed */
+}
+
+.in-deck-flashcards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); /* Each row contains three columns */
+    gap: 20px;
+}
+
+
+
+
+.flashcard-display {
+    background: #fff;
+    padding: 15px;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    max-height: 350px;
+    max-width: 180px;
+    overflow: hidden; /* Prevent text overflow */
+    word-wrap: break-word; /* Ensure long words wrap within the container */
 }

@@ -117,10 +117,10 @@
     position: relative;
     flex-direction: column;
     margin-left: 720px;
-    margin-top: 100px;
+    margin-top: -70px;
     padding: 20px;
     background-color: gray;
-    border-radius: 2px;
+    border-radius: 5px;
     color: white;
     z-index: 10000;
     height: auto;
@@ -141,6 +141,12 @@
 .main-page-search-results ul {
     list-style-type: none;
     padding: 0;
+}
+
+.user-following-message{
+    position: relative;
+    margin-top: -40px;
+
 }
 
 

@@ -1,12 +1,11 @@
 import React, {useEffect, useState} from 'react';
-import {useParams} from 'react-router-dom';
+import {useNavigate, useParams} from 'react-router-dom';
 import {jwtDecode} from 'jwt-decode';
 import {addFlashcard, deleteFlashcard, fetchFlashcards} from "../../API-Components/apiFunctions_browse_cards";
 import './Styles/AllWords.css';
 
 const AllWords = () => {
     const { deck_id } = useParams();
-
     const [word, setWord] = useState('');
     const [answer, setAnswer] = useState('');
     const [backsideType, setBacksideType] = useState(0);
@@ -14,6 +13,7 @@ const AllWords = () => {
     const [successMessage, setSuccessMessage] = useState('');
     const [errorMessage, setErrorMessage] = useState('');
     const [flashcards, setFlashcards] = useState([]);
+    const navigate = useNavigate();
 
     useEffect(() => {
         loadFlashcards();
@@ -79,10 +79,16 @@ const AllWords = () => {
         }
     };
 
+
+    const handleReturnToDeckDetailsPageClick = () => {
+        navigate(`/decks/${deck_id}`);
+    };
+
+
     return (
         <div className="all-words-container">
             <div>
-                <h2 className="all-words-title"> All Words</h2>
+                <h2 className="all-words-title" onClick={handleReturnToDeckDetailsPageClick}> All Words</h2>
             </div>
 
             <div className="all-words-flashcard-list">
