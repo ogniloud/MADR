@@ -24,15 +24,6 @@ function Form() {
     e.preventDefault();
 
     try {
-      // Password validation
-      const passwordPattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{7,}$/;
-      if (!passwordPattern.test(formData.password)) {
-        setError(
-            'Password must be seven or more characters including one uppercase letter, one special character, and alphanumeric characters.'
-        );
-        return;
-      }
-
       const response = await fetch(`${process.env.REACT_APP_API_HOST}/api/signup`, {
         method: 'POST',
         headers: {

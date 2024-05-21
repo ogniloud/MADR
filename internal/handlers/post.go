@@ -104,7 +104,7 @@ func verifyUsernameWords(s string) bool {
 }
 
 func verifyPassword(s string) bool {
-	var sevenOrMore, number, upper bool
+	var sevenOrMore, number, upper, special bool
 	letters := 0
 	for _, c := range s {
 		switch {
@@ -113,12 +113,14 @@ func verifyPassword(s string) bool {
 		case unicode.IsUpper(c):
 			upper = true
 			letters++
+		case unicode.IsPunct(c) || unicode.IsSymbol(c):
+			special = true
 		case unicode.IsLetter(c) || c == ' ':
 			letters++
 		}
 	}
 	sevenOrMore = len(s) >= 7
-	return sevenOrMore && number && upper
+	return sevenOrMore && number && upper && special
 }
 
 func validate(req models.SignUpRequest) error {
@@ -138,10 +140,10 @@ func validate(req models.SignUpRequest) error {
 		return errors.New("email invalid")
 	}
 
-	//if !verifyPassword(req.Password) {
-	//	return errors.New("a password must be seven or more characters including one uppercase letter," +
-	//		" one special character and alphanumeric characters")
-	//}
+	if !verifyPassword(req.Password) {
+		return errors.New("a password must be seven or more characters including one uppercase letter," +
+			" one special character and alphanumeric characters")
+	}
 
 	return nil
 }
