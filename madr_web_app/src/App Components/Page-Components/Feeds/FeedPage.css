@@ -7,6 +7,10 @@
     font-size: 35px; /* Increase the font size */
     font-weight: bold;
     color: #000000;
+    position: relative;
+    bottom:126px;
+    left: 50%;
+    z-index: 999;
 }
 
 
@@ -18,14 +22,26 @@
 }
 
 .feed-item {
-    min-width: 400px;
+    font-family: "Google Sans", "sans-serif";
+    font-size: 20px;
+    min-width: 500px;
     position: relative;
     padding: 10px;
-    border-radius: 5px;
-    border: 1px solid #333; /* Dark gray border */
-    background-color: rgba(242, 242, 242, 0.8); /* Light gray with 80% transparency */
-    transition: background-color 0.3s, box-shadow 0.3s; /* Add transition effect */
+    border-radius: 10px; /* Increase border-radius for more rounded corners */
+    border: 1px solid rgba(255, 255, 255, 0.2); /* Semi-transparent white border */
+    background-color: rgba(255, 255, 255, 0.1); /* White background with 10% transparency */
+    backdrop-filter: blur(10px); /* Blur effect for the glass effect */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Subtle box-shadow for depth */
+    transition: transform 0.3s, background-color 0.3s, box-shadow 0.3s; /* Add transition effect for transform */
 }
+
+.feed-item:hover {
+    transform: translateY(-10px); /* Move the element up by 10px */
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2); /* Enhance box-shadow on hover */
+    background-color: gray;
+    color: white;
+}
+
 
 
 
@@ -44,4 +60,18 @@
     width: 100px;
     height: 40px;
     margin: 5px;
+}
+
+
+.feed-return-home-btn{
+    font-family: "Google Sans", "sans-serif";
+    background: black;
+    color: white;
+    font-size: 20px;
+    height: 50px;
+    width: 400px;
+}
+
+.feed-return-home-btn:hover{
+    background: gray;
 }
