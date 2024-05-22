@@ -1,5 +1,5 @@
 import './Styles/social_group.css'
-import { useNavigate } from "react-router-dom"; // Import useNavigation
+import { useNavigate } from "react-router-dom";
 import React, { useEffect, useState } from 'react';
 import { getCreatedGroupsByUserId, getGroupsByUserId } from "../API-Components/apiFunctions_groups";
 import { jwtDecode } from "jwt-decode";
