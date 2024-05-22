@@ -112,7 +112,7 @@ func main() {
 
 	if err := credentials.ImportGoldenWordsForOld(ctx); err != nil {
 		log.Error("Unable to import golden words for old users", "error", err)
-
+	}
 
 	log.Print("Golden words imported")
 
