@@ -2,14 +2,15 @@ package main
 
 import (
 	"context"
-	"github.com/ogniloud/madr/internal/flashcards/models"
-	"github.com/ogniloud/madr/internal/wordmaster"
 	"net/http"
 	"os"
 	"os/signal"
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/ogniloud/madr/internal/flashcards/models"
+	"github.com/ogniloud/madr/internal/wordmaster"
 
 	"github.com/go-chi/chi/v5"
 
@@ -96,13 +97,13 @@ func main() {
 	}
 
 	b, err := os.ReadFile(initSqlPath)
-	if err != nil {
-		log.Fatal("read init.sql fail", "error", err)
-	}
-
-	_, err = psqlDB.Exec(ctx, string(b))
-	if err != nil {
-		log.Fatal("init.sql exec error", "error", err)
+	if err == nil {
+		_, err = psqlDB.Exec(ctx, string(b))
+		if err != nil {
+			log.Fatal("init.sql exec error", "error", err)
+		}
+	} else {
+		log.Error("read init.sql fail", "error", err)
 	}
 
 	// storage by package definition
