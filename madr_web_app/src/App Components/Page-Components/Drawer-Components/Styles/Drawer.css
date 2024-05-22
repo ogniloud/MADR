@@ -120,6 +120,7 @@
 .logout-button{
     font-family: "Google Sans", "sans-serif";
     background: black;
+    color:white;
     border-radius: 4px;
     border: 2px solid black;
     top: 12px;
