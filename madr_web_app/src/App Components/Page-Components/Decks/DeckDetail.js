@@ -42,9 +42,13 @@ const DeckDetail = () => {
         })
     }
 
+    const handleReturnToDeckPageClick = () => {
+        navigate('/decks');
+    };
+
     return (
         <div className="deck-details-container">
-            <h2 className="deck-details-title">Deck Details</h2>
+            <h2 className="deck-details-title" onClick={handleReturnToDeckPageClick}>Deck Details</h2>
 
             <div className="deck-details-section">
                 <h2 className="title-Browse-Cards">Browse Cards</h2>
@@ -117,24 +121,24 @@ const DeckDetail = () => {
                                     <p>Choose:</p>
                                     {listGroupShared.map((item) => (
                                         <div>
-                                        {item.shared === false && (
-                                            <div onClick={() => {
-                                                shareGroup(parseInt(userId), parseInt(item.group_id), parseInt(deck_id), decodedToken)
-                                                item.shared = true
-                                            }} className="deck-details-flashcard flashcard-link">
-                                                {item.group_name}
-                                            </div>
-                                        ) || item.shared === true && (
-                                            <div className="deck-details-flashcard flashcard-link">
-                                                {item.group_name}: shared
-                                            </div>
-                                        )}
+                                            {item.shared === false && (
+                                                <div onClick={() => {
+                                                    shareGroup(parseInt(userId), parseInt(item.group_id), parseInt(deck_id), decodedToken)
+                                                    item.shared = true
+                                                }} className="deck-details-flashcard flashcard-link">
+                                                    {item.group_name}
+                                                </div>
+                                            ) || item.shared === true && (
+                                                <div className="deck-details-flashcard flashcard-link">
+                                                    {item.group_name}: shared
+                                                </div>
+                                            )}
                                         </div>
                                     ))}
                                 </div>
                             ) || !showList && setListGroupHTML("")
                         }
-                        } className="deck-details-flashcard flashcard-link">
+                    } className="deck-details-flashcard flashcard-link">
                         Share to groups
                     </div>
                     {listGroupHTML}

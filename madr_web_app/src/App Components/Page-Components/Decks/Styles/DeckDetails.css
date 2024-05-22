@@ -61,3 +61,33 @@
     font-family: "Google Sans", serif;
     display: block;
 }
+
+.Follower-Sharing-buttons,
+.deck-share-to-group{
+    position: relative;
+    top: 120px;
+    background: black;
+    color: white;
+    height: 40px;
+    width: 160px;
+    padding: 10px;
+    text-align: center; /* Center align text */
+    line-height: 40px; /* Vertically center text */
+    border-radius: 4px;
+}
+
+.deck-share-to-group{
+    right:350px;
+}
+.Follower-Sharing-buttons{
+    right: 400px;
+}
+
+.Follower-Sharing-buttons:hover{
+    background: gray;
+}
+
+.group-list-item{
+    color: black;
+}
+

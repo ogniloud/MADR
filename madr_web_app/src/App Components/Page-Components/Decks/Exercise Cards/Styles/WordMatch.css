@@ -3,7 +3,7 @@
     display: flex;
     flex-wrap: wrap;
     justify-content: space-around;
-    font-family: 'Poppins', sans-serif;
+    font-family: "Google Sans", "sans-serif";
     height: 100%;
     width: 100%;
 }
@@ -11,7 +11,7 @@
 .wm-title {
     position: absolute;
     top: -25px;
-    right: -70px;
+    right: 120px;
     width: 100%;
     height: 60px;
     background-color: #97D7CB;
@@ -24,6 +24,8 @@
 
 .wm-subtitle {
     margin-top: 10px;
+    position: relative;
+    left:120px;
 }
 
 

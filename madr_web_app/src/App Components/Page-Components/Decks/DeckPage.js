@@ -1,12 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import { Link, Route, Routes } from 'react-router-dom';
 import { jwtDecode } from 'jwt-decode';
+import { useNavigate } from 'react-router-dom';
 import {fetchUserDecks, deleteDeck} from "../API-Components/apiFunctions_decks";
 import DeckDetail from './DeckDetail';
+
 import './Styles/DeckPage.css';
 
 const DecksPage = () => {
     const [createdDecks, setCreatedDecks] = useState([]);
+    const navigate = useNavigate();
 
     useEffect(() => {
         const token = localStorage.getItem('token');
@@ -57,9 +60,14 @@ const DecksPage = () => {
         handleDeleteConfirmation(deckId, e);
     };
 
+    const handleReturnToMainPageClick = () => {
+        navigate('/mainpage');
+    };
+
+
     return (
         <div>
-            <h2 className="title-deck">All Decks</h2>
+            <h2 className="title-deck" onClick={handleReturnToMainPageClick}>All Decks</h2>
             <div className="deck-container">
                 {createdDecks.length > 0 &&
                     createdDecks.map((deck) => (

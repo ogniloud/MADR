@@ -115,6 +115,8 @@ func main() {
 		log.Error("Unable to import golden words for old users", "error", err)
 	}
 
+	log.Print("Golden words imported")
+
 	// get salt length from env
 	saltLengthString := os.Getenv("SALT_LENGTH")
 	if saltLengthString == "" {

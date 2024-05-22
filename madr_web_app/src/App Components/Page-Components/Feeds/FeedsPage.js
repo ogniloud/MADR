@@ -32,9 +32,9 @@ const FeedsPage = () => {
 
     return (
         <div className="feeds-page">
-            <div className="upper-part"></div>
+            <div className="upper-part" onClick={returnToHome}></div>
             <div className="feed-main">
-                <p className="feed-page-title">Feed</p>
+                <p className="feed-page-title" onClick={returnToHome} >Feed</p>
                 <div className="feed-items-list">
                     {feedData.map((item, index) => (
                         <div key={index} className="feed-item">
@@ -86,7 +86,7 @@ const FeedsPage = () => {
                     ))}
                 </div>
             </div>
-            <button onClick={returnToHome}>Return to Home</button>
+            <button className="feed-return-home-btn" onClick={returnToHome}>Return to Home</button>
         </div>
     );
 };

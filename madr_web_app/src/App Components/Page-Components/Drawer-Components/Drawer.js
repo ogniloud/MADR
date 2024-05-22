@@ -41,7 +41,6 @@ const UserDrawer = ({
         setAnchorElFollowings(null);
     };
 
-
     return (
         <Drawer open={open} onClose={onClose}>
             <div className="drawer-content">
@@ -73,10 +72,9 @@ const UserDrawer = ({
                                 }}
                             >
                                 {followers.map((follower, index) => {
-                                    console.log('Follower:', follower);
                                     return (
                                         <MenuItem key={index} onClick={handleClose}>
-                                            {follower.username}
+                                            {follower.Username}
                                         </MenuItem>
                                     );
                                 })}
@@ -85,7 +83,7 @@ const UserDrawer = ({
                         {/* Followings dropdown */}
                         <div className="dropdown-container-followings">
                             <button className="followings-button" onClick={handleClickFollowings}>
-                                Followings ({followings.length})
+                                Following ({followings.length})
                             </button>
                             <Menu
                                 className="menu-dropdown"
@@ -102,10 +100,9 @@ const UserDrawer = ({
                                 }}
                             >
                                 {followings.map((following, index) => {
-                                    console.log('Following:', following);
                                     return (
                                         <MenuItem key={index} onClick={handleClose}>
-                                            {following.username}
+                                            {following.Username}
                                         </MenuItem>
                                     );
                                 })}
