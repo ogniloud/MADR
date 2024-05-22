@@ -83,7 +83,7 @@ const UserDrawer = ({
                         {/* Followings dropdown */}
                         <div className="dropdown-container-followings">
                             <button className="followings-button" onClick={handleClickFollowings}>
-                                Followings ({followings.length})
+                                Following ({followings.length})
                             </button>
                             <Menu
                                 className="menu-dropdown"
